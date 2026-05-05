@@ -1,0 +1,191 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.casaempresario.app"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="24"
+9        android:targetSdkVersion="34" />
+10
+11    <!-- Permissões de armazenamento para acessar fotos da galeria -->
+12    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+12-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:5:5-76
+12-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:5:22-73
+13    <uses-permission
+13-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:6:5-7:38
+14        android:name="android.permission.READ_EXTERNAL_STORAGE"
+14-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:6:22-77
+15        android:maxSdkVersion="32" />
+15-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:7:9-35
+16
+17    <permission
+17-->[androidx.core:core:1.9.0] /home/mateus/.gradle/caches/transforms-3/f0f4ee7c3b88100b2d2cd4b05ab423cd/transformed/core-1.9.0/AndroidManifest.xml:22:5-24:47
+18        android:name="com.casaempresario.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+18-->[androidx.core:core:1.9.0] /home/mateus/.gradle/caches/transforms-3/f0f4ee7c3b88100b2d2cd4b05ab423cd/transformed/core-1.9.0/AndroidManifest.xml:23:9-81
+19        android:protectionLevel="signature" />
+19-->[androidx.core:core:1.9.0] /home/mateus/.gradle/caches/transforms-3/f0f4ee7c3b88100b2d2cd4b05ab423cd/transformed/core-1.9.0/AndroidManifest.xml:24:9-44
+20
+21    <uses-permission android:name="com.casaempresario.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- INTERNET removida: o app é 100% local (Room/SQLite), sem chamadas de rede -->
+21-->[androidx.core:core:1.9.0] /home/mateus/.gradle/caches/transforms-3/f0f4ee7c3b88100b2d2cd4b05ab423cd/transformed/core-1.9.0/AndroidManifest.xml:26:5-97
+21-->[androidx.core:core:1.9.0] /home/mateus/.gradle/caches/transforms-3/f0f4ee7c3b88100b2d2cd4b05ab423cd/transformed/core-1.9.0/AndroidManifest.xml:26:22-94
+22    <application
+22-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:11:5-55:19
+23        android:allowBackup="true"
+23-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:12:9-35
+24        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+24-->[androidx.core:core:1.9.0] /home/mateus/.gradle/caches/transforms-3/f0f4ee7c3b88100b2d2cd4b05ab423cd/transformed/core-1.9.0/AndroidManifest.xml:28:18-86
+25        android:debuggable="true"
+26        android:extractNativeLibs="false"
+27        android:icon="@mipmap/ic_launcher"
+27-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:13:9-43
+28        android:label="@string/app_name"
+28-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:14:9-41
+29        android:roundIcon="@mipmap/ic_launcher_round"
+29-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:15:9-54
+30        android:supportsRtl="true"
+30-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:16:9-35
+31        android:testOnly="true"
+32        android:theme="@style/Theme.CasaEmpresario" >
+32-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:17:9-52
+33
+34        <!-- LOGIN — tela inicial do app -->
+35        <activity
+35-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:20:9-28:20
+36            android:name="com.casaempresario.app.activity.LoginActivity"
+36-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:21:13-51
+37            android:exported="true"
+37-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:22:13-36
+38            android:windowSoftInputMode="adjustResize" >
+38-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:23:13-55
+39            <intent-filter>
+39-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:24:13-27:29
+40                <action android:name="android.intent.action.MAIN" />
+40-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:25:17-69
+40-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:25:25-66
+41
+42                <category android:name="android.intent.category.LAUNCHER" />
+42-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:26:17-77
+42-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:26:27-74
+43            </intent-filter>
+44        </activity>
+45
+46        <!-- CADASTRO -->
+47        <activity
+47-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:31:9-35:68
+48            android:name="com.casaempresario.app.activity.RegisterActivity"
+48-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:32:13-54
+49            android:exported="false"
+49-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:33:13-37
+50            android:parentActivityName="com.casaempresario.app.activity.LoginActivity"
+50-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:35:13-65
+51            android:windowSoftInputMode="adjustResize" />
+51-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:34:13-55
+52
+53        <!-- MAIN — lista de eventos -->
+54        <activity
+54-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:38:9-40:40
+55            android:name="com.casaempresario.app.activity.MainActivity"
+55-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:39:13-50
+56            android:exported="false" />
+56-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:40:13-37
+57
+58        <!-- DETALHE DO EVENTO (com galeria de fotos) -->
+59        <activity
+59-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:43:9-46:67
+60            android:name="com.casaempresario.app.activity.EventDetailActivity"
+60-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:44:13-57
+61            android:exported="false"
+61-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:45:13-37
+62            android:parentActivityName="com.casaempresario.app.activity.MainActivity" />
+62-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:46:13-64
+63
+64        <!-- CRIAR / EDITAR EVENTO (somente admin) -->
+65        <activity
+65-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:49:9-53:67
+66            android:name="com.casaempresario.app.activity.CreateEventActivity"
+66-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:50:13-57
+67            android:exported="false"
+67-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:51:13-37
+68            android:parentActivityName="com.casaempresario.app.activity.MainActivity"
+68-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:53:13-64
+69            android:windowSoftInputMode="adjustResize" />
+69-->/home/mateus/Downloads/CasaEmpresario/app/src/main/AndroidManifest.xml:52:13-55
+70
+71        <service
+71-->[androidx.room:room-runtime:2.6.1] /home/mateus/.gradle/caches/transforms-3/2c5ddfa82d9e551fe5b89586e1bcabc6/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
+72            android:name="androidx.room.MultiInstanceInvalidationService"
+72-->[androidx.room:room-runtime:2.6.1] /home/mateus/.gradle/caches/transforms-3/2c5ddfa82d9e551fe5b89586e1bcabc6/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
+73            android:directBootAware="true"
+73-->[androidx.room:room-runtime:2.6.1] /home/mateus/.gradle/caches/transforms-3/2c5ddfa82d9e551fe5b89586e1bcabc6/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
+74            android:exported="false" />
+74-->[androidx.room:room-runtime:2.6.1] /home/mateus/.gradle/caches/transforms-3/2c5ddfa82d9e551fe5b89586e1bcabc6/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
+75
+76        <provider
+76-->[androidx.emoji2:emoji2:1.2.0] /home/mateus/.gradle/caches/transforms-3/4ef2d37eca9ad04b2c397a091ea18fe4/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:24:9-32:20
+77            android:name="androidx.startup.InitializationProvider"
+77-->[androidx.emoji2:emoji2:1.2.0] /home/mateus/.gradle/caches/transforms-3/4ef2d37eca9ad04b2c397a091ea18fe4/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:25:13-67
+78            android:authorities="com.casaempresario.app.androidx-startup"
+78-->[androidx.emoji2:emoji2:1.2.0] /home/mateus/.gradle/caches/transforms-3/4ef2d37eca9ad04b2c397a091ea18fe4/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:26:13-68
+79            android:exported="false" >
+79-->[androidx.emoji2:emoji2:1.2.0] /home/mateus/.gradle/caches/transforms-3/4ef2d37eca9ad04b2c397a091ea18fe4/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:27:13-37
+80            <meta-data
+80-->[androidx.emoji2:emoji2:1.2.0] /home/mateus/.gradle/caches/transforms-3/4ef2d37eca9ad04b2c397a091ea18fe4/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:29:13-31:52
+81                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+81-->[androidx.emoji2:emoji2:1.2.0] /home/mateus/.gradle/caches/transforms-3/4ef2d37eca9ad04b2c397a091ea18fe4/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:30:17-75
+82                android:value="androidx.startup" />
+82-->[androidx.emoji2:emoji2:1.2.0] /home/mateus/.gradle/caches/transforms-3/4ef2d37eca9ad04b2c397a091ea18fe4/transformed/jetified-emoji2-1.2.0/AndroidManifest.xml:31:17-49
+83            <meta-data
+83-->[androidx.lifecycle:lifecycle-process:2.6.1] /home/mateus/.gradle/caches/transforms-3/f41bcf8a8e0d9819e753268d38a40d88/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:29:13-31:52
+84                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+84-->[androidx.lifecycle:lifecycle-process:2.6.1] /home/mateus/.gradle/caches/transforms-3/f41bcf8a8e0d9819e753268d38a40d88/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:30:17-78
+85                android:value="androidx.startup" />
+85-->[androidx.lifecycle:lifecycle-process:2.6.1] /home/mateus/.gradle/caches/transforms-3/f41bcf8a8e0d9819e753268d38a40d88/transformed/jetified-lifecycle-process-2.6.1/AndroidManifest.xml:31:17-49
+86            <meta-data
+86-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:29:13-31:52
+87                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+87-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:30:17-85
+88                android:value="androidx.startup" />
+88-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:31:17-49
+89        </provider>
+90
+91        <receiver
+91-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:34:9-52:20
+92            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+92-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:35:13-76
+93            android:directBootAware="false"
+93-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:36:13-44
+94            android:enabled="true"
+94-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:37:13-35
+95            android:exported="true"
+95-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:38:13-36
+96            android:permission="android.permission.DUMP" >
+96-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:39:13-57
+97            <intent-filter>
+97-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:40:13-42:29
+98                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+98-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:17-91
+98-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:41:25-88
+99            </intent-filter>
+100            <intent-filter>
+100-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:43:13-45:29
+101                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+101-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:17-85
+101-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:44:25-82
+102            </intent-filter>
+103            <intent-filter>
+103-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:46:13-48:29
+104                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+104-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:17-88
+104-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:47:25-85
+105            </intent-filter>
+106            <intent-filter>
+106-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:49:13-51:29
+107                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+107-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:17-95
+107-->[androidx.profileinstaller:profileinstaller:1.3.0] /home/mateus/.gradle/caches/transforms-3/d7e75382fd4fb70314ddb3a6f5c689ec/transformed/jetified-profileinstaller-1.3.0/AndroidManifest.xml:50:25-92
+108            </intent-filter>
+109        </receiver>
+110    </application>
+111
+112</manifest>

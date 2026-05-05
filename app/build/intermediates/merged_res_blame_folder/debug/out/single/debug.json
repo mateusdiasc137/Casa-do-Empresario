@@ -1,0 +1,114 @@
+[
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.casaempresario.app-main-39:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/drawable_bg_delete_btn.xml.flat",
+        "source": "com.casaempresario.app-main-39:/drawable/bg_delete_btn.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/menu_menu_main.xml.flat",
+        "source": "com.casaempresario.app-main-39:/menu/menu_main.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/drawable_ic_event_placeholder.xml.flat",
+        "source": "com.casaempresario.app-main-39:/drawable/ic_event_placeholder.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/layout_activity_event_detail.xml.flat",
+        "source": "com.casaempresario.app-main-39:/layout/activity_event_detail.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/drawable_gradient_dark.xml.flat",
+        "source": "com.casaempresario.app-main-39:/drawable/gradient_dark.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/drawable_bg_status_chip.xml.flat",
+        "source": "com.casaempresario.app-main-39:/drawable/bg_status_chip.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/layout_activity_register.xml.flat",
+        "source": "com.casaempresario.app-main-39:/layout/activity_register.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/layout_activity_login.xml.flat",
+        "source": "com.casaempresario.app-main-39:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/layout_activity_create_event.xml.flat",
+        "source": "com.casaempresario.app-main-39:/layout/activity_create_event.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/layout_item_photo.xml.flat",
+        "source": "com.casaempresario.app-main-39:/layout/item_photo.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.casaempresario.app-main-39:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/layout_item_event.xml.flat",
+        "source": "com.casaempresario.app-main-39:/layout/item_event.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-xxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/drawable_ic_photo_placeholder.xml.flat",
+        "source": "com.casaempresario.app-main-39:/drawable/ic_photo_placeholder.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/drawable_ic_calendar.xml.flat",
+        "source": "com.casaempresario.app-main-39:/drawable/ic_calendar.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/layout_activity_main.xml.flat",
+        "source": "com.casaempresario.app-main-39:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.casaempresario.app-merged_res-37:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.casaempresario.app-main-39:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    }
+]
