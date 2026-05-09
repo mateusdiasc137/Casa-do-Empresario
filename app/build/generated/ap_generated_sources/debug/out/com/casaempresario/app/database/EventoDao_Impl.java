@@ -29,13 +29,15 @@ public final class EventoDao_Impl implements EventoDao {
 
   private final SharedSQLiteStatement __preparedStmtOfDeleteById;
 
+  private final SharedSQLiteStatement __preparedStmtOfUpdateStatus;
+
   public EventoDao_Impl(@NonNull final RoomDatabase __db) {
     this.__db = __db;
     this.__insertionAdapterOfEvento = new EntityInsertionAdapter<Evento>(__db) {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `eventos` (`id`,`titulo`,`descricao`,`data_evento`,`local`,`capacidade_maxima`,`status`,`criado_por`) VALUES (nullif(?, 0),?,?,?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `eventos` (`id`,`titulo`,`descricao`,`data_evento`,`local`,`capacidade_maxima`,`status`,`criado_por`,`banner_uri`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -75,6 +77,11 @@ public final class EventoDao_Impl implements EventoDao {
           statement.bindNull(8);
         } else {
           statement.bindLong(8, entity.criadoPor);
+        }
+        if (entity.bannerUri == null) {
+          statement.bindNull(9);
+        } else {
+          statement.bindString(9, entity.bannerUri);
         }
       }
     };
@@ -82,7 +89,7 @@ public final class EventoDao_Impl implements EventoDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `eventos` SET `id` = ?,`titulo` = ?,`descricao` = ?,`data_evento` = ?,`local` = ?,`capacidade_maxima` = ?,`status` = ?,`criado_por` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `eventos` SET `id` = ?,`titulo` = ?,`descricao` = ?,`data_evento` = ?,`local` = ?,`capacidade_maxima` = ?,`status` = ?,`criado_por` = ?,`banner_uri` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -123,7 +130,12 @@ public final class EventoDao_Impl implements EventoDao {
         } else {
           statement.bindLong(8, entity.criadoPor);
         }
-        statement.bindLong(9, entity.id);
+        if (entity.bannerUri == null) {
+          statement.bindNull(9);
+        } else {
+          statement.bindString(9, entity.bannerUri);
+        }
+        statement.bindLong(10, entity.id);
       }
     };
     this.__preparedStmtOfDeleteById = new SharedSQLiteStatement(__db) {
@@ -131,6 +143,14 @@ public final class EventoDao_Impl implements EventoDao {
       @NonNull
       public String createQuery() {
         final String _query = "DELETE FROM eventos WHERE id = ?";
+        return _query;
+      }
+    };
+    this.__preparedStmtOfUpdateStatus = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "UPDATE eventos SET status = ? WHERE id = ?";
         return _query;
       }
     };
@@ -185,6 +205,35 @@ public final class EventoDao_Impl implements EventoDao {
   }
 
   @Override
+  public void updateStatus(final Long id, final String novoStatus) {
+    __db.assertNotSuspendingTransaction();
+    final SupportSQLiteStatement _stmt = __preparedStmtOfUpdateStatus.acquire();
+    int _argIndex = 1;
+    if (novoStatus == null) {
+      _stmt.bindNull(_argIndex);
+    } else {
+      _stmt.bindString(_argIndex, novoStatus);
+    }
+    _argIndex = 2;
+    if (id == null) {
+      _stmt.bindNull(_argIndex);
+    } else {
+      _stmt.bindLong(_argIndex, id);
+    }
+    try {
+      __db.beginTransaction();
+      try {
+        _stmt.executeUpdateDelete();
+        __db.setTransactionSuccessful();
+      } finally {
+        __db.endTransaction();
+      }
+    } finally {
+      __preparedStmtOfUpdateStatus.release(_stmt);
+    }
+  }
+
+  @Override
   public List<Evento> getAllEventos() {
     final String _sql = "SELECT * FROM eventos ORDER BY data_evento DESC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
@@ -199,6 +248,7 @@ public final class EventoDao_Impl implements EventoDao {
       final int _cursorIndexOfCapacidadeMaxima = CursorUtil.getColumnIndexOrThrow(_cursor, "capacidade_maxima");
       final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
       final int _cursorIndexOfCriadoPor = CursorUtil.getColumnIndexOrThrow(_cursor, "criado_por");
+      final int _cursorIndexOfBannerUri = CursorUtil.getColumnIndexOrThrow(_cursor, "banner_uri");
       final List<Evento> _result = new ArrayList<Evento>(_cursor.getCount());
       while (_cursor.moveToNext()) {
         final Evento _item;
@@ -239,6 +289,11 @@ public final class EventoDao_Impl implements EventoDao {
         } else {
           _item.criadoPor = _cursor.getLong(_cursorIndexOfCriadoPor);
         }
+        if (_cursor.isNull(_cursorIndexOfBannerUri)) {
+          _item.bannerUri = null;
+        } else {
+          _item.bannerUri = _cursor.getString(_cursorIndexOfBannerUri);
+        }
         _result.add(_item);
       }
       return _result;
@@ -265,6 +320,7 @@ public final class EventoDao_Impl implements EventoDao {
       final int _cursorIndexOfCapacidadeMaxima = CursorUtil.getColumnIndexOrThrow(_cursor, "capacidade_maxima");
       final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
       final int _cursorIndexOfCriadoPor = CursorUtil.getColumnIndexOrThrow(_cursor, "criado_por");
+      final int _cursorIndexOfBannerUri = CursorUtil.getColumnIndexOrThrow(_cursor, "banner_uri");
       final Evento _result;
       if (_cursor.moveToFirst()) {
         _result = new Evento();
@@ -303,6 +359,11 @@ public final class EventoDao_Impl implements EventoDao {
           _result.criadoPor = null;
         } else {
           _result.criadoPor = _cursor.getLong(_cursorIndexOfCriadoPor);
+        }
+        if (_cursor.isNull(_cursorIndexOfBannerUri)) {
+          _result.bannerUri = null;
+        } else {
+          _result.bannerUri = _cursor.getString(_cursorIndexOfBannerUri);
         }
       } else {
         _result = null;
@@ -335,6 +396,7 @@ public final class EventoDao_Impl implements EventoDao {
       final int _cursorIndexOfCapacidadeMaxima = CursorUtil.getColumnIndexOrThrow(_cursor, "capacidade_maxima");
       final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
       final int _cursorIndexOfCriadoPor = CursorUtil.getColumnIndexOrThrow(_cursor, "criado_por");
+      final int _cursorIndexOfBannerUri = CursorUtil.getColumnIndexOrThrow(_cursor, "banner_uri");
       final Evento _result;
       if (_cursor.moveToFirst()) {
         _result = new Evento();
@@ -373,6 +435,11 @@ public final class EventoDao_Impl implements EventoDao {
           _result.criadoPor = null;
         } else {
           _result.criadoPor = _cursor.getLong(_cursorIndexOfCriadoPor);
+        }
+        if (_cursor.isNull(_cursorIndexOfBannerUri)) {
+          _result.bannerUri = null;
+        } else {
+          _result.bannerUri = _cursor.getString(_cursorIndexOfBannerUri);
         }
       } else {
         _result = null;

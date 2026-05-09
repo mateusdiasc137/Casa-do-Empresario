@@ -1,0 +1,13 @@
+# Pastas de build geradas automaticamente
+build/
+app/build/
+
+# Cache do Gradle
+.gradle/
+
+# Configurações locais do Android Studio 
+.idea/
+*.iml
+
+# Caminho do SDK local 
+local.properties

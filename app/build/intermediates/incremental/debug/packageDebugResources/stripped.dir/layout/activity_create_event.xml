@@ -39,7 +39,23 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
+                    <!-- Banner do Evento -->
 
+                    <ImageView
+                        android:id="@+id/img_banner"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:layout_marginBottom="12dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_event_placeholder"
+                        android:background="#DDDDDD" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_selecionar_banner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Selecionar Banner"
+                        android:layout_marginBottom="16dp" />
                     <!-- Título -->
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

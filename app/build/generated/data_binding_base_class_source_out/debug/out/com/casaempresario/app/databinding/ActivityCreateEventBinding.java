@@ -4,6 +4,7 @@ package com.casaempresario.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +27,9 @@ public final class ActivityCreateEventBinding implements ViewBinding {
   public final MaterialButton btnSalvar;
 
   @NonNull
+  public final MaterialButton btnSelecionarBanner;
+
+  @NonNull
   public final TextInputEditText etCapacidade;
 
   @NonNull
@@ -41,23 +45,29 @@ public final class ActivityCreateEventBinding implements ViewBinding {
   public final TextInputEditText etTitulo;
 
   @NonNull
+  public final ImageView imgBanner;
+
+  @NonNull
   public final ProgressBar progressBar;
 
   @NonNull
   public final Toolbar toolbar;
 
   private ActivityCreateEventBinding(@NonNull CoordinatorLayout rootView,
-      @NonNull MaterialButton btnSalvar, @NonNull TextInputEditText etCapacidade,
-      @NonNull TextInputEditText etData, @NonNull TextInputEditText etDescricao,
-      @NonNull TextInputEditText etLocal, @NonNull TextInputEditText etTitulo,
+      @NonNull MaterialButton btnSalvar, @NonNull MaterialButton btnSelecionarBanner,
+      @NonNull TextInputEditText etCapacidade, @NonNull TextInputEditText etData,
+      @NonNull TextInputEditText etDescricao, @NonNull TextInputEditText etLocal,
+      @NonNull TextInputEditText etTitulo, @NonNull ImageView imgBanner,
       @NonNull ProgressBar progressBar, @NonNull Toolbar toolbar) {
     this.rootView = rootView;
     this.btnSalvar = btnSalvar;
+    this.btnSelecionarBanner = btnSelecionarBanner;
     this.etCapacidade = etCapacidade;
     this.etData = etData;
     this.etDescricao = etDescricao;
     this.etLocal = etLocal;
     this.etTitulo = etTitulo;
+    this.imgBanner = imgBanner;
     this.progressBar = progressBar;
     this.toolbar = toolbar;
   }
@@ -95,6 +105,12 @@ public final class ActivityCreateEventBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btn_selecionar_banner;
+      MaterialButton btnSelecionarBanner = ViewBindings.findChildViewById(rootView, id);
+      if (btnSelecionarBanner == null) {
+        break missingId;
+      }
+
       id = R.id.et_capacidade;
       TextInputEditText etCapacidade = ViewBindings.findChildViewById(rootView, id);
       if (etCapacidade == null) {
@@ -125,6 +141,12 @@ public final class ActivityCreateEventBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.img_banner;
+      ImageView imgBanner = ViewBindings.findChildViewById(rootView, id);
+      if (imgBanner == null) {
+        break missingId;
+      }
+
       id = R.id.progress_bar;
       ProgressBar progressBar = ViewBindings.findChildViewById(rootView, id);
       if (progressBar == null) {
@@ -137,8 +159,9 @@ public final class ActivityCreateEventBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityCreateEventBinding((CoordinatorLayout) rootView, btnSalvar, etCapacidade,
-          etData, etDescricao, etLocal, etTitulo, progressBar, toolbar);
+      return new ActivityCreateEventBinding((CoordinatorLayout) rootView, btnSalvar,
+          btnSelecionarBanner, etCapacidade, etData, etDescricao, etLocal, etTitulo, imgBanner,
+          progressBar, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

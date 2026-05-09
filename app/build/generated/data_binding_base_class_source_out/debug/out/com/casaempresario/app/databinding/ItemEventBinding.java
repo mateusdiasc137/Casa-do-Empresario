@@ -24,6 +24,9 @@ public final class ItemEventBinding implements ViewBinding {
   public final ImageView imgCapa;
 
   @NonNull
+  public final TextView tvCriadoPor;
+
+  @NonNull
   public final TextView tvData;
 
   @NonNull
@@ -39,10 +42,11 @@ public final class ItemEventBinding implements ViewBinding {
   public final TextView tvTitulo;
 
   private ItemEventBinding(@NonNull CardView rootView, @NonNull ImageView imgCapa,
-      @NonNull TextView tvData, @NonNull TextView tvFotos, @NonNull TextView tvLocal,
-      @NonNull TextView tvStatus, @NonNull TextView tvTitulo) {
+      @NonNull TextView tvCriadoPor, @NonNull TextView tvData, @NonNull TextView tvFotos,
+      @NonNull TextView tvLocal, @NonNull TextView tvStatus, @NonNull TextView tvTitulo) {
     this.rootView = rootView;
     this.imgCapa = imgCapa;
+    this.tvCriadoPor = tvCriadoPor;
     this.tvData = tvData;
     this.tvFotos = tvFotos;
     this.tvLocal = tvLocal;
@@ -83,6 +87,12 @@ public final class ItemEventBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tv_criado_por;
+      TextView tvCriadoPor = ViewBindings.findChildViewById(rootView, id);
+      if (tvCriadoPor == null) {
+        break missingId;
+      }
+
       id = R.id.tv_data;
       TextView tvData = ViewBindings.findChildViewById(rootView, id);
       if (tvData == null) {
@@ -113,8 +123,8 @@ public final class ItemEventBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ItemEventBinding((CardView) rootView, imgCapa, tvData, tvFotos, tvLocal, tvStatus,
-          tvTitulo);
+      return new ItemEventBinding((CardView) rootView, imgCapa, tvCriadoPor, tvData, tvFotos,
+          tvLocal, tvStatus, tvTitulo);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

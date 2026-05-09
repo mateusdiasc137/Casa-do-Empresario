@@ -73,6 +73,13 @@
                 android:textSize="13sp"
                 android:textColor="#555555"
                 android:layout_marginBottom="4dp" />
+            <TextView
+                android:id="@+id/tv_criado_por"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="#777777"
+                android:layout_marginBottom="4dp"/>
 
             <TextView
                 android:id="@+id/tv_fotos"
