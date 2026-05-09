@@ -12,46 +12,96 @@ import com.casaempresario.app.model.EventPhoto;
 
 /**
  * Banco de dados local Room (SQLite).
- * Versão 4: adicionado UsuarioDao para autenticação local.
  *
- * Na primeira instalação, um usuário administrador padrão é criado automaticamente:
- *   E-mail : admin@admin.com
- *   Senha  : admin123
+ * Versão 5:
+ * - suporte ao banner do evento
+ * - persistência local simplificada
+ *
+ * Admin padrão criado automaticamente:
+ * Email: admin@admin.com
+ * Senha: admin123
  */
-@Database(entities = {Usuario.class, Evento.class, EventPhoto.class}, version = 4)
+@Database(
+        entities = {
+                Usuario.class,
+                Evento.class,
+                EventPhoto.class
+        },
+        version = 5
+)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract EventoDao eventoDao();
+
     public abstract FotoDao fotoDao();
+
     public abstract UsuarioDao usuarioDao();
 
     private static AppDatabase INSTANCE;
 
     public static AppDatabase getDatabase(Context context) {
+
         if (INSTANCE == null) {
+
             synchronized (AppDatabase.class) {
+
                 if (INSTANCE == null) {
+
                     INSTANCE = Room.databaseBuilder(
                                     context.getApplicationContext(),
                                     AppDatabase.class,
-                                    "casa_empresario_db")
-                            .allowMainThreadQueries()          // simplifica operações pontuais na UI
-                            .fallbackToDestructiveMigration()  // recria o banco se a versão mudar
+                                    "casa_empresario_db"
+                            )
+
+                            // simplifica uso no projeto
+                            .allowMainThreadQueries()
+
+                            // recria banco automaticamente
+                            // quando mudar versão
+                            .fallbackToDestructiveMigration()
+
+                            // cria admin padrão
                             .addCallback(new Callback() {
+
                                 @Override
-                                public void onCreate(@NonNull SupportSQLiteDatabase db) {
+                                public void onCreate(
+                                        @NonNull SupportSQLiteDatabase db
+                                ) {
+
                                     super.onCreate(db);
-                                    // Cria o admin padrão na primeira vez que o banco é criado
+
                                     db.execSQL(
-                                        "INSERT INTO usuarios (email, senha, nome, role, criado_em) " +
-                                        "VALUES ('admin@admin.com', 'admin123', 'Administrador', 'ADMIN', datetime('now'))"
+                                            "INSERT INTO usuarios " +
+                                                    "(email, senha, nome, role, criado_em) " +
+                                                    "VALUES (" +
+                                                    "'admin@admin.com', " +
+                                                    "'admin123', " +
+                                                    "'Administrador', " +
+                                                    "'ADMIN', " +
+                                                    "datetime('now')" +
+                                                    ")"
+                                    );
+
+                                    // usuário comum opcional
+                                    db.execSQL(
+                                            "INSERT INTO usuarios " +
+                                                    "(email, senha, nome, role, criado_em) " +
+                                                    "VALUES (" +
+                                                    "'user@user.com', " +
+                                                    "'123456', " +
+                                                    "'Usuário', " +
+                                                    "'USER', " +
+                                                    "datetime('now')" +
+                                                    ")"
                                     );
                                 }
                             })
+
                             .build();
                 }
             }
         }
+
         return INSTANCE;
     }
 }

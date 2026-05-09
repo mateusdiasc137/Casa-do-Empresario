@@ -14,16 +14,21 @@ public interface EventoDao {
     long insert(Evento evento);
 
     @Update
-    void update(Evento evento); // ✅ Agora com a anotação correta para o Room gerar o código de edição
+    void update(Evento evento);
 
     @Query("SELECT * FROM eventos ORDER BY data_evento DESC")
     List<Evento> getAllEventos();
 
     @Query("SELECT * FROM eventos WHERE id = :id")
     Evento getEventoById(long id);
+
     @Query("SELECT * FROM eventos WHERE id = :id")
     Evento getEventoById(Long id);
 
     @Query("DELETE FROM eventos WHERE id = :id")
     void deleteById(Long id);
+
+    /** Atualiza apenas o status do evento, sem reescrever os outros campos. */
+    @Query("UPDATE eventos SET status = :novoStatus WHERE id = :id")
+    void updateStatus(Long id, String novoStatus);
 }

@@ -13,11 +13,12 @@ import com.bumptech.glide.Glide;
 import com.casaempresario.app.R;
 import com.casaempresario.app.database.Evento;
 
+import java.io.File;
 import java.util.List;
 
 /**
  * Adapter da lista de eventos na MainActivity.
- * Usa a entidade Evento (Room) diretamente — sem camada intermediária.
+ * Usa a entidade Evento (Room) diretamente.
  */
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
 
@@ -28,7 +29,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     private List<Evento> eventos;
     private final OnEventClickListener listener;
 
-    public EventAdapter(List<Evento> eventos, OnEventClickListener listener) {
+    public EventAdapter(List<Evento> eventos,
+                        OnEventClickListener listener) {
+
         this.eventos = eventos;
         this.listener = listener;
     }
@@ -40,14 +43,24 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     @NonNull
     @Override
-    public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+    public EventViewHolder onCreateViewHolder(
+            @NonNull ViewGroup parent,
+            int viewType
+    ) {
+
+        View view = LayoutInflater
+                .from(parent.getContext())
                 .inflate(R.layout.item_event, parent, false);
+
         return new EventViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
+    public void onBindViewHolder(
+            @NonNull EventViewHolder holder,
+            int position
+    ) {
+
         holder.bind(eventos.get(position), listener);
     }
 
@@ -59,56 +72,156 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     static class EventViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView imgCapa;
+
         private final TextView tvTitulo;
         private final TextView tvData;
         private final TextView tvLocal;
         private final TextView tvStatus;
         private final TextView tvFotos;
 
+        // NOVO
+        private final TextView tvCriadoPor;
+
         public EventViewHolder(@NonNull View itemView) {
+
             super(itemView);
+
             imgCapa  = itemView.findViewById(R.id.img_capa);
+
             tvTitulo = itemView.findViewById(R.id.tv_titulo);
             tvData   = itemView.findViewById(R.id.tv_data);
             tvLocal  = itemView.findViewById(R.id.tv_local);
             tvStatus = itemView.findViewById(R.id.tv_status);
             tvFotos  = itemView.findViewById(R.id.tv_fotos);
+
+            // NOVO
+            tvCriadoPor =
+                    itemView.findViewById(R.id.tv_criado_por);
         }
 
-        public void bind(Evento evento, OnEventClickListener listener) {
+        public void bind(
+                Evento evento,
+                OnEventClickListener listener
+        ) {
+
+            // TÍTULO
             tvTitulo.setText(evento.titulo);
-            tvLocal.setText("📍 " + (evento.local != null ? evento.local : ""));
+
+            // LOCAL
+            tvLocal.setText(
+                    "📍 " +
+                            (evento.local != null
+                                    ? evento.local
+                                    : "")
+            );
+
+            // FOTOS
             tvFotos.setText("📷 fotos");
 
-            // Formata "2025-08-15T19:00:00" → "15/08/2025 às 19:00"
-            String data = evento.dataEvento;
-            if (data != null && data.contains("T")) {
-                String[] parts = data.split("T");
-                String[] dateParts = parts[0].split("-");
-                String hora = parts[1].length() >= 5 ? parts[1].substring(0, 5) : "";
-                tvData.setText("📅 " + dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0]
-                        + " às " + hora);
+            // CRIADOR
+            if (evento.criadoPor != null) {
+
+                tvCriadoPor.setText(
+                        "Criado por usuário #" +
+                                evento.criadoPor
+                );
+
             } else {
-                tvData.setText("📅 " + (data != null ? data : ""));
+
+                tvCriadoPor.setText(
+                        "Criador desconhecido"
+                );
             }
 
-            // Cor do status
-            String status = evento.status;
-            tvStatus.setText(status);
-            int color;
-            switch (status != null ? status : "") {
-                case "AGENDADO":     color = 0xFF1976D2; break;
-                case "EM_ANDAMENTO": color = 0xFF388E3C; break;
-                case "CONCLUIDO":   color = 0xFF757575; break;
-                case "CANCELADO":   color = 0xFFD32F2F; break;
-                default:            color = 0xFF9C27B0; break;
+            // DATA
+            String data = evento.dataEvento;
+
+            if (data != null && data.contains("T")) {
+
+                String[] parts =
+                        data.split("T");
+
+                String[] dateParts =
+                        parts[0].split("-");
+
+                String hora =
+                        parts[1].length() >= 5
+                                ? parts[1].substring(0, 5)
+                                : "";
+
+                tvData.setText(
+                        "📅 "
+                                + dateParts[2]
+                                + "/"
+                                + dateParts[1]
+                                + "/"
+                                + dateParts[0]
+                                + " às "
+                                + hora
+                );
+
+            } else {
+
+                tvData.setText(
+                        "📅 " +
+                                (data != null ? data : "")
+                );
             }
+
+            // STATUS
+            String status = evento.status;
+
+            tvStatus.setText(status);
+
+            int color;
+
+            switch (status != null ? status : "") {
+
+                case "AGENDADO":
+                    color = 0xFF1976D2;
+                    break;
+
+                case "EM_ANDAMENTO":
+                    color = 0xFF388E3C;
+                    break;
+
+                case "CONCLUIDO":
+                    color = 0xFF757575;
+                    break;
+
+                case "CANCELADO":
+                    color = 0xFFD32F2F;
+                    break;
+
+                default:
+                    color = 0xFF9C27B0;
+                    break;
+            }
+
             tvStatus.setTextColor(color);
 
-            // Imagem de capa: sem URL de rede — usa sempre o placeholder local
-            imgCapa.setImageResource(R.drawable.ic_event_placeholder);
+            // BANNER REAL
+            if (evento.bannerUri != null
+                    && !evento.bannerUri.isEmpty()) {
 
-            itemView.setOnClickListener(v -> listener.onClick(evento));
+                Glide.with(itemView.getContext())
+                        .load(new File(evento.bannerUri))
+                        .placeholder(
+                                R.drawable.ic_event_placeholder
+                        )
+                        .into(imgCapa);
+
+            } else {
+
+                imgCapa.setImageResource(
+                        R.drawable.ic_event_placeholder
+                );
+            }
+
+            // CLICK
+            itemView.setOnClickListener(
+                    v -> listener.onClick(evento)
+            );
         }
     }
 }
