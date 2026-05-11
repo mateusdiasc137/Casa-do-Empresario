@@ -6,6 +6,6 @@ O projeto ainda está em fase inicial e atualmente possui funcionalidades básic
 
 ## Sobre o Projeto
 
-O aplicativo *A Casa do Empresário - Eventos* tem como objetivo facilitar a divulgação de eventos turísticos, culturais, comerciais e locais da região de Viçosa.
+O aplicativo *Casa do Empresário - Eventos* tem como objetivo facilitar a divulgação de eventos turísticos, culturais, comerciais e locais da região de Viçosa.
 
 A proposta é oferecer uma plataforma simples para que usuários possam encontrar eventos e organizadores possam divulgar suas atividades.
