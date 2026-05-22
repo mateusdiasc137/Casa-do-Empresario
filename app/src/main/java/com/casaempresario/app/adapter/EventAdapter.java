@@ -81,6 +81,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         // NOVO
         private final TextView tvCriadoPor;
+        private final TextView tvCategoria;
 
         public EventViewHolder(@NonNull View itemView) {
 
@@ -93,6 +94,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             tvLocal  = itemView.findViewById(R.id.tv_local);
             tvStatus = itemView.findViewById(R.id.tv_status);
             tvFotos  = itemView.findViewById(R.id.tv_fotos);
+            tvCategoria = itemView.findViewById(R.id.tv_categoria);
 
             // NOVO
             tvCriadoPor =
@@ -114,6 +116,14 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
                                     ? evento.local
                                     : "")
             );
+
+            // CATEGORIA
+            if (evento.categoria != null && !evento.categoria.isEmpty()) {
+                tvCategoria.setText("🏷️ " + evento.categoria);
+                tvCategoria.setVisibility(View.VISIBLE);
+            } else {
+                tvCategoria.setVisibility(View.GONE);
+            }
 
             // FOTOS
             tvFotos.setText("📷 fotos");
@@ -205,7 +215,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
                     && !evento.bannerUri.isEmpty()) {
 
                 Glide.with(itemView.getContext())
-                        .load(new File(evento.bannerUri))
+                        .load(evento.bannerUri)
                         .placeholder(
                                 R.drawable.ic_event_placeholder
                         )

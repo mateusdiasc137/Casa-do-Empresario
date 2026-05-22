@@ -4,6 +4,7 @@ package com.casaempresario.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import androidx.viewbinding.ViewBindings;
 import com.casaempresario.app.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
@@ -33,6 +35,9 @@ public final class ActivityCreateEventBinding implements ViewBinding {
   public final TextInputEditText etCapacidade;
 
   @NonNull
+  public final AutoCompleteTextView etCategoria;
+
+  @NonNull
   public final TextInputEditText etData;
 
   @NonNull
@@ -48,6 +53,9 @@ public final class ActivityCreateEventBinding implements ViewBinding {
   public final ImageView imgBanner;
 
   @NonNull
+  public final TextInputLayout layoutLocal;
+
+  @NonNull
   public final ProgressBar progressBar;
 
   @NonNull
@@ -55,19 +63,22 @@ public final class ActivityCreateEventBinding implements ViewBinding {
 
   private ActivityCreateEventBinding(@NonNull CoordinatorLayout rootView,
       @NonNull MaterialButton btnSalvar, @NonNull MaterialButton btnSelecionarBanner,
-      @NonNull TextInputEditText etCapacidade, @NonNull TextInputEditText etData,
-      @NonNull TextInputEditText etDescricao, @NonNull TextInputEditText etLocal,
-      @NonNull TextInputEditText etTitulo, @NonNull ImageView imgBanner,
+      @NonNull TextInputEditText etCapacidade, @NonNull AutoCompleteTextView etCategoria,
+      @NonNull TextInputEditText etData, @NonNull TextInputEditText etDescricao,
+      @NonNull TextInputEditText etLocal, @NonNull TextInputEditText etTitulo,
+      @NonNull ImageView imgBanner, @NonNull TextInputLayout layoutLocal,
       @NonNull ProgressBar progressBar, @NonNull Toolbar toolbar) {
     this.rootView = rootView;
     this.btnSalvar = btnSalvar;
     this.btnSelecionarBanner = btnSelecionarBanner;
     this.etCapacidade = etCapacidade;
+    this.etCategoria = etCategoria;
     this.etData = etData;
     this.etDescricao = etDescricao;
     this.etLocal = etLocal;
     this.etTitulo = etTitulo;
     this.imgBanner = imgBanner;
+    this.layoutLocal = layoutLocal;
     this.progressBar = progressBar;
     this.toolbar = toolbar;
   }
@@ -117,6 +128,12 @@ public final class ActivityCreateEventBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.et_categoria;
+      AutoCompleteTextView etCategoria = ViewBindings.findChildViewById(rootView, id);
+      if (etCategoria == null) {
+        break missingId;
+      }
+
       id = R.id.et_data;
       TextInputEditText etData = ViewBindings.findChildViewById(rootView, id);
       if (etData == null) {
@@ -147,6 +164,12 @@ public final class ActivityCreateEventBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.layout_local;
+      TextInputLayout layoutLocal = ViewBindings.findChildViewById(rootView, id);
+      if (layoutLocal == null) {
+        break missingId;
+      }
+
       id = R.id.progress_bar;
       ProgressBar progressBar = ViewBindings.findChildViewById(rootView, id);
       if (progressBar == null) {
@@ -160,8 +183,8 @@ public final class ActivityCreateEventBinding implements ViewBinding {
       }
 
       return new ActivityCreateEventBinding((CoordinatorLayout) rootView, btnSalvar,
-          btnSelecionarBanner, etCapacidade, etData, etDescricao, etLocal, etTitulo, imgBanner,
-          progressBar, toolbar);
+          btnSelecionarBanner, etCapacidade, etCategoria, etData, etDescricao, etLocal, etTitulo,
+          imgBanner, layoutLocal, progressBar, toolbar);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

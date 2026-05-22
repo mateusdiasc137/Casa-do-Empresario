@@ -4,6 +4,8 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
+import java.util.List;
+
 @Dao
 public interface UsuarioDao {
 
@@ -17,4 +19,7 @@ public interface UsuarioDao {
     /** Verifica se já existe um usuário com este e-mail (para evitar duplicatas). */
     @Query("SELECT * FROM usuarios WHERE email = :email LIMIT 1")
     Usuario findByEmail(String email);
+
+    @Query("SELECT * FROM usuarios WHERE id = :id LIMIT 1")
+    Usuario getUsuarioById(long id);
 }

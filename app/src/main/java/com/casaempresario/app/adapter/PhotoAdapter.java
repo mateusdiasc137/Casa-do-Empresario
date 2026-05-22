@@ -24,15 +24,22 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
         void onDelete(Long fotoId);
     }
 
+    public interface OnPhotoClickListener {
+        void onPhotoClick(EventPhoto foto);
+    }
+
     private List<EventPhoto> fotos;
     private final SessionManager sessionManager;
     private final OnDeleteClickListener deleteListener;
+    private final OnPhotoClickListener clickListener;
 
     public PhotoAdapter(List<EventPhoto> fotos, SessionManager sessionManager,
-                        OnDeleteClickListener deleteListener) {
+                        OnDeleteClickListener deleteListener,
+                        OnPhotoClickListener clickListener) {
         this.fotos = fotos;
         this.sessionManager = sessionManager;
         this.deleteListener = deleteListener;
+        this.clickListener = clickListener;
     }
 
     public void atualizar(List<EventPhoto> novas) {
@@ -51,7 +58,7 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
     @Override
     public void onBindViewHolder(@NonNull PhotoViewHolder holder, int position) {
         EventPhoto foto = fotos.get(position);
-        holder.bind(foto, sessionManager, deleteListener);
+        holder.bind(foto, sessionManager, deleteListener, clickListener);
     }
 
     @Override
@@ -74,9 +81,16 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
             btnDeletar = itemView.findViewById(R.id.btn_deletar);
         }
 
-        public void bind(EventPhoto foto, SessionManager session, OnDeleteClickListener listener) {
+        public void bind(EventPhoto foto, SessionManager session,
+                         OnDeleteClickListener deleteListener,
+                         OnPhotoClickListener clickListener) {
 
-            tvUsuario.setVisibility(View.GONE); // Esconde o campo de nome do usuário por enquanto
+            // Exibir nome do criador/autor da publicação
+            String autor = foto.getUsuarioNome() != null && !foto.getUsuarioNome().isEmpty()
+                    ? foto.getUsuarioNome()
+                    : "Organizador";
+            tvUsuario.setText(autor);
+            tvUsuario.setVisibility(View.VISIBLE);
 
             if (foto.getLegenda() != null && !foto.getLegenda().isEmpty()) {
                 tvLegenda.setVisibility(View.VISIBLE);
@@ -85,19 +99,17 @@ public class PhotoAdapter extends RecyclerView.Adapter<PhotoAdapter.PhotoViewHol
                 tvLegenda.setVisibility(View.GONE);
             }
 
-            // ✅ Lógica de deletar ajustada: Apenas Admins podem deletar no teste local
-            // Removi o 'foto.getUsuarioNome().equals' para evitar o erro de compilação
-            boolean podeDeletar = session.isAdmin();
-
+            // Exclusão rápida opcional no grid para organizador
+            boolean podeDeletar = session.isOrganizador();
             btnDeletar.setVisibility(podeDeletar ? View.VISIBLE : View.GONE);
-            btnDeletar.setOnClickListener(v -> listener.onDelete(foto.getId()));
+            btnDeletar.setOnClickListener(v -> deleteListener.onDelete(foto.getId()));
 
-            // ✅ Ajustei para carregar o arquivo local salvo no celular
-            // Não usamos mais "http://10.0.2.2:8080" porque o caminho é interno (/data/user/0/...)
+            // Clique no item abre o Post em tamanho cheio
+            itemView.setOnClickListener(v -> clickListener.onPhotoClick(foto));
+
             String caminhoLocal = foto.getUrlFoto();
-
             Glide.with(itemView.getContext())
-                    .load(caminhoLocal != null ? new File(caminhoLocal) : null)
+                    .load(caminhoLocal)
                     .placeholder(R.drawable.ic_photo_placeholder)
                     .centerCrop()
                     .into(imgFoto);

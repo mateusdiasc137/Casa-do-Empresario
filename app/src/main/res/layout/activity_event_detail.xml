@@ -111,7 +111,21 @@
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
                         android:textColor="#555555"
-                        android:layout_marginBottom="6dp" />
+                        android:layout_marginBottom="2dp" />
+
+                    <!-- Botão de Mapa Interativo -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_ver_mapa"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🗺️ Visualizar no Mapa"
+                        android:textColor="@color/primary"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="6dp"
+                        android:padding="0dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp" />
 
                     <TextView
                         android:id="@+id/tv_capacidade"
@@ -120,6 +134,129 @@
                         android:textSize="14sp"
                         android:textColor="#555555"
                         android:layout_marginBottom="12dp" />
+
+                    <!-- Categoria Badge -->
+                    <TextView
+                        android:id="@+id/tv_categoria"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary"
+                        android:background="#EEF2FF"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="5dp"
+                        android:layout_marginBottom="12dp"
+                        android:visibility="gone" />
+
+                    <!-- Linha de Ações: Interesse, Agenda, Chat, Compartilhar -->
+                    <LinearLayout
+                        android:id="@+id/layout_acoes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center"
+                        android:layout_marginBottom="16dp"
+                        android:weightSum="4">
+
+                        <LinearLayout
+                            android:id="@+id/btn_interesse"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="8dp">
+                            <ImageView
+                                android:id="@+id/img_interesse"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_heart_outline" />
+                            <TextView
+                                android:id="@+id/tv_interesse"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="11sp"
+                                android:textColor="#555555"
+                                android:text="Interesse"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/btn_agenda"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="8dp">
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_calendar" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="11sp"
+                                android:textColor="#555555"
+                                android:text="Agenda"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/btn_chat"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="8dp">
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_chat" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="11sp"
+                                android:textColor="#555555"
+                                android:text="Chat"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/btn_compartilhar"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="8dp">
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_share" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="11sp"
+                                android:textColor="#555555"
+                                android:text="Compartilhar"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+                    </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
@@ -215,7 +352,7 @@
                         android:id="@+id/tv_sem_fotos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Nenhuma foto ainda.\nSeja o primeiro a postar! 📸"
+                        android:text="Este evento não possui fotos ainda."
                         android:textAlignment="center"
                         android:textColor="#9E9E9E"
                         android:textSize="14sp"

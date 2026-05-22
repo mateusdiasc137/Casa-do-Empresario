@@ -18,4 +18,5 @@ public class Usuario {
 
     @ColumnInfo(name = "criado_em")
     public String criadoEm;
+
 }

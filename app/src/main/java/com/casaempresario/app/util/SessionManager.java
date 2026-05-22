@@ -3,6 +3,7 @@ package com.casaempresario.app.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+// verificar segurança do armazenamento de tokens (criptografia) - Mateus (20/05)
 public class SessionManager {
 
     private static final String PREF_NAME = "CasaEmpresarioSession";
@@ -36,13 +37,24 @@ public class SessionManager {
         return "Bearer " + prefs.getString(KEY_TOKEN, "");
     }
 
-    public String getNome() { return prefs.getString(KEY_NOME, ""); }
-    public String getEmail() { return prefs.getString(KEY_EMAIL, ""); }
-    public String getRole() { return prefs.getString(KEY_ROLE, "USER"); }
-    public Long getUserId() { return prefs.getLong(KEY_USER_ID, -1); }
+    public String getNome() {
+        return prefs.getString(KEY_NOME, "");
+    }
 
-    public boolean isAdmin() {
-        return "ADMIN".equals(getRole());
+    public String getEmail() {
+        return prefs.getString(KEY_EMAIL, "");
+    }
+
+    public String getRole() {
+        return prefs.getString(KEY_ROLE, "PARTICIPANTE");
+    }
+
+    public Long getUserId() {
+        return prefs.getLong(KEY_USER_ID, -1);
+    }
+
+    public boolean isOrganizador() {
+        return "ORGANIZADOR".equals(getRole());
     }
 
     public void logout() {

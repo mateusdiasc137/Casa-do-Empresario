@@ -30,6 +30,11 @@ public class Evento {
     @ColumnInfo(name = "banner_uri")
     public String bannerUri;
 
+    public double latitude;
+    public double longitude;
+
+    public String categoria;
+
     // Getters
     public long getId()                  { return id; }
     public String getTitulo()            { return titulo; }
@@ -42,4 +47,9 @@ public class Evento {
 
     // NOVO
     public String getBannerUri()         { return bannerUri; }
+
+    public double getLatitude()          { return latitude; }
+    public double getLongitude()         { return longitude; }
+
+    public String getCategoria()         { return categoria; }
 }

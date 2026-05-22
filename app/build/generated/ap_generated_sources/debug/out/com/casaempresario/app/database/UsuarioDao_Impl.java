@@ -197,6 +197,60 @@ public final class UsuarioDao_Impl implements UsuarioDao {
     }
   }
 
+  @Override
+  public Usuario getUsuarioById(final long id) {
+    final String _sql = "SELECT * FROM usuarios WHERE id = ? LIMIT 1";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    int _argIndex = 1;
+    _statement.bindLong(_argIndex, id);
+    __db.assertNotSuspendingTransaction();
+    final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+    try {
+      final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+      final int _cursorIndexOfEmail = CursorUtil.getColumnIndexOrThrow(_cursor, "email");
+      final int _cursorIndexOfSenha = CursorUtil.getColumnIndexOrThrow(_cursor, "senha");
+      final int _cursorIndexOfNome = CursorUtil.getColumnIndexOrThrow(_cursor, "nome");
+      final int _cursorIndexOfRole = CursorUtil.getColumnIndexOrThrow(_cursor, "role");
+      final int _cursorIndexOfCriadoEm = CursorUtil.getColumnIndexOrThrow(_cursor, "criado_em");
+      final Usuario _result;
+      if (_cursor.moveToFirst()) {
+        _result = new Usuario();
+        _result.id = _cursor.getLong(_cursorIndexOfId);
+        if (_cursor.isNull(_cursorIndexOfEmail)) {
+          _result.email = null;
+        } else {
+          _result.email = _cursor.getString(_cursorIndexOfEmail);
+        }
+        if (_cursor.isNull(_cursorIndexOfSenha)) {
+          _result.senha = null;
+        } else {
+          _result.senha = _cursor.getString(_cursorIndexOfSenha);
+        }
+        if (_cursor.isNull(_cursorIndexOfNome)) {
+          _result.nome = null;
+        } else {
+          _result.nome = _cursor.getString(_cursorIndexOfNome);
+        }
+        if (_cursor.isNull(_cursorIndexOfRole)) {
+          _result.role = null;
+        } else {
+          _result.role = _cursor.getString(_cursorIndexOfRole);
+        }
+        if (_cursor.isNull(_cursorIndexOfCriadoEm)) {
+          _result.criadoEm = null;
+        } else {
+          _result.criadoEm = _cursor.getString(_cursorIndexOfCriadoEm);
+        }
+      } else {
+        _result = null;
+      }
+      return _result;
+    } finally {
+      _cursor.close();
+      _statement.release();
+    }
+  }
+
   @NonNull
   public static List<Class<?>> getRequiredConverters() {
     return Collections.emptyList();

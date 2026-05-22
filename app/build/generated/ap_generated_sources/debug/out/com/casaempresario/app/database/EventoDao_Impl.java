@@ -37,7 +37,7 @@ public final class EventoDao_Impl implements EventoDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR ABORT INTO `eventos` (`id`,`titulo`,`descricao`,`data_evento`,`local`,`capacidade_maxima`,`status`,`criado_por`,`banner_uri`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?)";
+        return "INSERT OR ABORT INTO `eventos` (`id`,`titulo`,`descricao`,`data_evento`,`local`,`capacidade_maxima`,`status`,`criado_por`,`banner_uri`,`latitude`,`longitude`,`categoria`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -82,6 +82,13 @@ public final class EventoDao_Impl implements EventoDao {
           statement.bindNull(9);
         } else {
           statement.bindString(9, entity.bannerUri);
+        }
+        statement.bindDouble(10, entity.latitude);
+        statement.bindDouble(11, entity.longitude);
+        if (entity.categoria == null) {
+          statement.bindNull(12);
+        } else {
+          statement.bindString(12, entity.categoria);
         }
       }
     };
@@ -89,7 +96,7 @@ public final class EventoDao_Impl implements EventoDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `eventos` SET `id` = ?,`titulo` = ?,`descricao` = ?,`data_evento` = ?,`local` = ?,`capacidade_maxima` = ?,`status` = ?,`criado_por` = ?,`banner_uri` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `eventos` SET `id` = ?,`titulo` = ?,`descricao` = ?,`data_evento` = ?,`local` = ?,`capacidade_maxima` = ?,`status` = ?,`criado_por` = ?,`banner_uri` = ?,`latitude` = ?,`longitude` = ?,`categoria` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -135,7 +142,14 @@ public final class EventoDao_Impl implements EventoDao {
         } else {
           statement.bindString(9, entity.bannerUri);
         }
-        statement.bindLong(10, entity.id);
+        statement.bindDouble(10, entity.latitude);
+        statement.bindDouble(11, entity.longitude);
+        if (entity.categoria == null) {
+          statement.bindNull(12);
+        } else {
+          statement.bindString(12, entity.categoria);
+        }
+        statement.bindLong(13, entity.id);
       }
     };
     this.__preparedStmtOfDeleteById = new SharedSQLiteStatement(__db) {
@@ -249,6 +263,9 @@ public final class EventoDao_Impl implements EventoDao {
       final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
       final int _cursorIndexOfCriadoPor = CursorUtil.getColumnIndexOrThrow(_cursor, "criado_por");
       final int _cursorIndexOfBannerUri = CursorUtil.getColumnIndexOrThrow(_cursor, "banner_uri");
+      final int _cursorIndexOfLatitude = CursorUtil.getColumnIndexOrThrow(_cursor, "latitude");
+      final int _cursorIndexOfLongitude = CursorUtil.getColumnIndexOrThrow(_cursor, "longitude");
+      final int _cursorIndexOfCategoria = CursorUtil.getColumnIndexOrThrow(_cursor, "categoria");
       final List<Evento> _result = new ArrayList<Evento>(_cursor.getCount());
       while (_cursor.moveToNext()) {
         final Evento _item;
@@ -294,6 +311,13 @@ public final class EventoDao_Impl implements EventoDao {
         } else {
           _item.bannerUri = _cursor.getString(_cursorIndexOfBannerUri);
         }
+        _item.latitude = _cursor.getDouble(_cursorIndexOfLatitude);
+        _item.longitude = _cursor.getDouble(_cursorIndexOfLongitude);
+        if (_cursor.isNull(_cursorIndexOfCategoria)) {
+          _item.categoria = null;
+        } else {
+          _item.categoria = _cursor.getString(_cursorIndexOfCategoria);
+        }
         _result.add(_item);
       }
       return _result;
@@ -321,6 +345,9 @@ public final class EventoDao_Impl implements EventoDao {
       final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
       final int _cursorIndexOfCriadoPor = CursorUtil.getColumnIndexOrThrow(_cursor, "criado_por");
       final int _cursorIndexOfBannerUri = CursorUtil.getColumnIndexOrThrow(_cursor, "banner_uri");
+      final int _cursorIndexOfLatitude = CursorUtil.getColumnIndexOrThrow(_cursor, "latitude");
+      final int _cursorIndexOfLongitude = CursorUtil.getColumnIndexOrThrow(_cursor, "longitude");
+      final int _cursorIndexOfCategoria = CursorUtil.getColumnIndexOrThrow(_cursor, "categoria");
       final Evento _result;
       if (_cursor.moveToFirst()) {
         _result = new Evento();
@@ -364,6 +391,13 @@ public final class EventoDao_Impl implements EventoDao {
           _result.bannerUri = null;
         } else {
           _result.bannerUri = _cursor.getString(_cursorIndexOfBannerUri);
+        }
+        _result.latitude = _cursor.getDouble(_cursorIndexOfLatitude);
+        _result.longitude = _cursor.getDouble(_cursorIndexOfLongitude);
+        if (_cursor.isNull(_cursorIndexOfCategoria)) {
+          _result.categoria = null;
+        } else {
+          _result.categoria = _cursor.getString(_cursorIndexOfCategoria);
         }
       } else {
         _result = null;
@@ -397,6 +431,9 @@ public final class EventoDao_Impl implements EventoDao {
       final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
       final int _cursorIndexOfCriadoPor = CursorUtil.getColumnIndexOrThrow(_cursor, "criado_por");
       final int _cursorIndexOfBannerUri = CursorUtil.getColumnIndexOrThrow(_cursor, "banner_uri");
+      final int _cursorIndexOfLatitude = CursorUtil.getColumnIndexOrThrow(_cursor, "latitude");
+      final int _cursorIndexOfLongitude = CursorUtil.getColumnIndexOrThrow(_cursor, "longitude");
+      final int _cursorIndexOfCategoria = CursorUtil.getColumnIndexOrThrow(_cursor, "categoria");
       final Evento _result;
       if (_cursor.moveToFirst()) {
         _result = new Evento();
@@ -440,6 +477,13 @@ public final class EventoDao_Impl implements EventoDao {
           _result.bannerUri = null;
         } else {
           _result.bannerUri = _cursor.getString(_cursorIndexOfBannerUri);
+        }
+        _result.latitude = _cursor.getDouble(_cursorIndexOfLatitude);
+        _result.longitude = _cursor.getDouble(_cursorIndexOfLongitude);
+        if (_cursor.isNull(_cursorIndexOfCategoria)) {
+          _result.categoria = null;
+        } else {
+          _result.categoria = _cursor.getString(_cursorIndexOfCategoria);
         }
       } else {
         _result = null;

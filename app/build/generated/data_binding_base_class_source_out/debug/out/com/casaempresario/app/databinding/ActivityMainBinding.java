@@ -4,38 +4,91 @@ package com.casaempresario.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.casaempresario.app.R;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.textfield.TextInputEditText;
 import java.lang.NullPointerException;
 import java.lang.Override;
 import java.lang.String;
 
 public final class ActivityMainBinding implements ViewBinding {
   @NonNull
-  private final CoordinatorLayout rootView;
+  private final RelativeLayout rootView;
+
+  @NonNull
+  public final AppBarLayout appBar;
+
+  @NonNull
+  public final BottomNavigationView bottomNavigation;
+
+  @NonNull
+  public final MaterialButton btnLogout;
+
+  @NonNull
+  public final MaterialButton btnVerNoMapa;
+
+  @NonNull
+  public final ChipGroup chipGroupCategorias;
+
+  @NonNull
+  public final TextInputEditText etBusca;
 
   @NonNull
   public final FloatingActionButton fabNovoEvento;
 
   @NonNull
+  public final LinearLayout layoutTabHome;
+
+  @NonNull
+  public final LinearLayout layoutTabInterests;
+
+  @NonNull
+  public final LinearLayout layoutTabMessages;
+
+  @NonNull
+  public final ScrollView layoutTabProfile;
+
+  @NonNull
   public final ProgressBar progressBar;
+
+  @NonNull
+  public final RecyclerView recyclerChats;
 
   @NonNull
   public final RecyclerView recyclerEventos;
 
   @NonNull
+  public final RecyclerView recyclerInteresses;
+
+  @NonNull
   public final SwipeRefreshLayout swipeRefresh;
+
+  @NonNull
+  public final SwitchCompat switchLembretes;
+
+  @NonNull
+  public final SwitchCompat switchMensagens;
+
+  @NonNull
+  public final SwitchCompat switchNovosEventos;
 
   @NonNull
   public final TabLayout tabLayout;
@@ -44,25 +97,69 @@ public final class ActivityMainBinding implements ViewBinding {
   public final Toolbar toolbar;
 
   @NonNull
+  public final TextView tvChatsVazio;
+
+  @NonNull
+  public final TextView tvInteressesVazio;
+
+  @NonNull
+  public final TextView tvPerfilEmail;
+
+  @NonNull
+  public final TextView tvPerfilNome;
+
+  @NonNull
+  public final TextView tvPerfilRole;
+
+  @NonNull
   public final TextView tvVazio;
 
-  private ActivityMainBinding(@NonNull CoordinatorLayout rootView,
-      @NonNull FloatingActionButton fabNovoEvento, @NonNull ProgressBar progressBar,
-      @NonNull RecyclerView recyclerEventos, @NonNull SwipeRefreshLayout swipeRefresh,
-      @NonNull TabLayout tabLayout, @NonNull Toolbar toolbar, @NonNull TextView tvVazio) {
+  private ActivityMainBinding(@NonNull RelativeLayout rootView, @NonNull AppBarLayout appBar,
+      @NonNull BottomNavigationView bottomNavigation, @NonNull MaterialButton btnLogout,
+      @NonNull MaterialButton btnVerNoMapa, @NonNull ChipGroup chipGroupCategorias,
+      @NonNull TextInputEditText etBusca, @NonNull FloatingActionButton fabNovoEvento,
+      @NonNull LinearLayout layoutTabHome, @NonNull LinearLayout layoutTabInterests,
+      @NonNull LinearLayout layoutTabMessages, @NonNull ScrollView layoutTabProfile,
+      @NonNull ProgressBar progressBar, @NonNull RecyclerView recyclerChats,
+      @NonNull RecyclerView recyclerEventos, @NonNull RecyclerView recyclerInteresses,
+      @NonNull SwipeRefreshLayout swipeRefresh, @NonNull SwitchCompat switchLembretes,
+      @NonNull SwitchCompat switchMensagens, @NonNull SwitchCompat switchNovosEventos,
+      @NonNull TabLayout tabLayout, @NonNull Toolbar toolbar, @NonNull TextView tvChatsVazio,
+      @NonNull TextView tvInteressesVazio, @NonNull TextView tvPerfilEmail,
+      @NonNull TextView tvPerfilNome, @NonNull TextView tvPerfilRole, @NonNull TextView tvVazio) {
     this.rootView = rootView;
+    this.appBar = appBar;
+    this.bottomNavigation = bottomNavigation;
+    this.btnLogout = btnLogout;
+    this.btnVerNoMapa = btnVerNoMapa;
+    this.chipGroupCategorias = chipGroupCategorias;
+    this.etBusca = etBusca;
     this.fabNovoEvento = fabNovoEvento;
+    this.layoutTabHome = layoutTabHome;
+    this.layoutTabInterests = layoutTabInterests;
+    this.layoutTabMessages = layoutTabMessages;
+    this.layoutTabProfile = layoutTabProfile;
     this.progressBar = progressBar;
+    this.recyclerChats = recyclerChats;
     this.recyclerEventos = recyclerEventos;
+    this.recyclerInteresses = recyclerInteresses;
     this.swipeRefresh = swipeRefresh;
+    this.switchLembretes = switchLembretes;
+    this.switchMensagens = switchMensagens;
+    this.switchNovosEventos = switchNovosEventos;
     this.tabLayout = tabLayout;
     this.toolbar = toolbar;
+    this.tvChatsVazio = tvChatsVazio;
+    this.tvInteressesVazio = tvInteressesVazio;
+    this.tvPerfilEmail = tvPerfilEmail;
+    this.tvPerfilNome = tvPerfilNome;
+    this.tvPerfilRole = tvPerfilRole;
     this.tvVazio = tvVazio;
   }
 
   @Override
   @NonNull
-  public CoordinatorLayout getRoot() {
+  public RelativeLayout getRoot() {
     return rootView;
   }
 
@@ -87,9 +184,69 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.app_bar;
+      AppBarLayout appBar = ViewBindings.findChildViewById(rootView, id);
+      if (appBar == null) {
+        break missingId;
+      }
+
+      id = R.id.bottom_navigation;
+      BottomNavigationView bottomNavigation = ViewBindings.findChildViewById(rootView, id);
+      if (bottomNavigation == null) {
+        break missingId;
+      }
+
+      id = R.id.btn_logout;
+      MaterialButton btnLogout = ViewBindings.findChildViewById(rootView, id);
+      if (btnLogout == null) {
+        break missingId;
+      }
+
+      id = R.id.btn_ver_no_mapa;
+      MaterialButton btnVerNoMapa = ViewBindings.findChildViewById(rootView, id);
+      if (btnVerNoMapa == null) {
+        break missingId;
+      }
+
+      id = R.id.chip_group_categorias;
+      ChipGroup chipGroupCategorias = ViewBindings.findChildViewById(rootView, id);
+      if (chipGroupCategorias == null) {
+        break missingId;
+      }
+
+      id = R.id.et_busca;
+      TextInputEditText etBusca = ViewBindings.findChildViewById(rootView, id);
+      if (etBusca == null) {
+        break missingId;
+      }
+
       id = R.id.fab_novo_evento;
       FloatingActionButton fabNovoEvento = ViewBindings.findChildViewById(rootView, id);
       if (fabNovoEvento == null) {
+        break missingId;
+      }
+
+      id = R.id.layout_tab_home;
+      LinearLayout layoutTabHome = ViewBindings.findChildViewById(rootView, id);
+      if (layoutTabHome == null) {
+        break missingId;
+      }
+
+      id = R.id.layout_tab_interests;
+      LinearLayout layoutTabInterests = ViewBindings.findChildViewById(rootView, id);
+      if (layoutTabInterests == null) {
+        break missingId;
+      }
+
+      id = R.id.layout_tab_messages;
+      LinearLayout layoutTabMessages = ViewBindings.findChildViewById(rootView, id);
+      if (layoutTabMessages == null) {
+        break missingId;
+      }
+
+      id = R.id.layout_tab_profile;
+      ScrollView layoutTabProfile = ViewBindings.findChildViewById(rootView, id);
+      if (layoutTabProfile == null) {
         break missingId;
       }
 
@@ -99,15 +256,45 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.recycler_chats;
+      RecyclerView recyclerChats = ViewBindings.findChildViewById(rootView, id);
+      if (recyclerChats == null) {
+        break missingId;
+      }
+
       id = R.id.recycler_eventos;
       RecyclerView recyclerEventos = ViewBindings.findChildViewById(rootView, id);
       if (recyclerEventos == null) {
         break missingId;
       }
 
+      id = R.id.recycler_interesses;
+      RecyclerView recyclerInteresses = ViewBindings.findChildViewById(rootView, id);
+      if (recyclerInteresses == null) {
+        break missingId;
+      }
+
       id = R.id.swipe_refresh;
       SwipeRefreshLayout swipeRefresh = ViewBindings.findChildViewById(rootView, id);
       if (swipeRefresh == null) {
+        break missingId;
+      }
+
+      id = R.id.switch_lembretes;
+      SwitchCompat switchLembretes = ViewBindings.findChildViewById(rootView, id);
+      if (switchLembretes == null) {
+        break missingId;
+      }
+
+      id = R.id.switch_mensagens;
+      SwitchCompat switchMensagens = ViewBindings.findChildViewById(rootView, id);
+      if (switchMensagens == null) {
+        break missingId;
+      }
+
+      id = R.id.switch_novos_eventos;
+      SwitchCompat switchNovosEventos = ViewBindings.findChildViewById(rootView, id);
+      if (switchNovosEventos == null) {
         break missingId;
       }
 
@@ -123,14 +310,48 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tv_chats_vazio;
+      TextView tvChatsVazio = ViewBindings.findChildViewById(rootView, id);
+      if (tvChatsVazio == null) {
+        break missingId;
+      }
+
+      id = R.id.tv_interesses_vazio;
+      TextView tvInteressesVazio = ViewBindings.findChildViewById(rootView, id);
+      if (tvInteressesVazio == null) {
+        break missingId;
+      }
+
+      id = R.id.tv_perfil_email;
+      TextView tvPerfilEmail = ViewBindings.findChildViewById(rootView, id);
+      if (tvPerfilEmail == null) {
+        break missingId;
+      }
+
+      id = R.id.tv_perfil_nome;
+      TextView tvPerfilNome = ViewBindings.findChildViewById(rootView, id);
+      if (tvPerfilNome == null) {
+        break missingId;
+      }
+
+      id = R.id.tv_perfil_role;
+      TextView tvPerfilRole = ViewBindings.findChildViewById(rootView, id);
+      if (tvPerfilRole == null) {
+        break missingId;
+      }
+
       id = R.id.tv_vazio;
       TextView tvVazio = ViewBindings.findChildViewById(rootView, id);
       if (tvVazio == null) {
         break missingId;
       }
 
-      return new ActivityMainBinding((CoordinatorLayout) rootView, fabNovoEvento, progressBar,
-          recyclerEventos, swipeRefresh, tabLayout, toolbar, tvVazio);
+      return new ActivityMainBinding((RelativeLayout) rootView, appBar, bottomNavigation, btnLogout,
+          btnVerNoMapa, chipGroupCategorias, etBusca, fabNovoEvento, layoutTabHome,
+          layoutTabInterests, layoutTabMessages, layoutTabProfile, progressBar, recyclerChats,
+          recyclerEventos, recyclerInteresses, swipeRefresh, switchLembretes, switchMensagens,
+          switchNovosEventos, tabLayout, toolbar, tvChatsVazio, tvInteressesVazio, tvPerfilEmail,
+          tvPerfilNome, tvPerfilRole, tvVazio);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

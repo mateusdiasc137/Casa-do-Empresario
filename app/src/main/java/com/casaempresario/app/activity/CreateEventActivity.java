@@ -13,9 +13,10 @@ import java.io.InputStream;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.casaempresario.app.database.AppDatabase;
 import com.casaempresario.app.database.Evento;
 import com.casaempresario.app.databinding.ActivityCreateEventBinding;
+import com.casaempresario.app.repository.RepositoryCallback;
+import com.casaempresario.app.repository.RepositoryProvider;
 import com.casaempresario.app.util.SessionManager;
 
 import java.util.Calendar;
@@ -33,6 +34,21 @@ public class CreateEventActivity extends AppCompatActivity {
     private static final int PICK_BANNER = 1001;
     private String bannerUri;
 
+    // Seletor de Localização
+    private static final int PICK_LOCATION = 1002;
+    private Double selectedLatitude = null;
+    private Double selectedLongitude = null;
+    private boolean isProgrammaticChange = false;
+
+    public static final String[] CATEGORIAS = {
+            "Tecnologia",
+            "Networking",
+            "Workshop",
+            "Palestra",
+            "Congresso",
+            "Outros"
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +57,12 @@ public class CreateEventActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         sessionManager = new SessionManager(this);
+
+        if (!sessionManager.isOrganizador()) {
+            Toast.makeText(this, "Acesso negado. Apenas organizadores podem gerenciar eventos.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         // Recupera ID do evento
         long idParam = getIntent().getLongExtra("eventoId", -1);
@@ -59,12 +81,50 @@ public class CreateEventActivity extends AppCompatActivity {
             );
         }
 
+        // Inicializa Dropdown de Categorias
+        android.widget.ArrayAdapter<String> adapterCategorias = new android.widget.ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                CATEGORIAS
+        );
+        binding.etCategoria.setAdapter(adapterCategorias);
+
         // Eventos
         binding.btnSalvar.setOnClickListener(v -> salvar());
 
         binding.etData.setOnClickListener(v -> selecionarData());
 
         binding.etData.setFocusable(false);
+
+        // Seletor de Localização
+        binding.layoutLocal.setEndIconOnClickListener(v -> {
+            Intent intent = new Intent(CreateEventActivity.this, LocationPickerActivity.class);
+            String currentLocal = binding.etLocal.getText().toString().trim();
+            if (!currentLocal.isEmpty()) {
+                intent.putExtra("currentAddress", currentLocal);
+            }
+            if (selectedLatitude != null && selectedLongitude != null) {
+                intent.putExtra("currentLatitude", selectedLatitude);
+                intent.putExtra("currentLongitude", selectedLongitude);
+            }
+            startActivityForResult(intent, PICK_LOCATION);
+        });
+
+        binding.etLocal.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!isProgrammaticChange) {
+                    selectedLatitude = null;
+                    selectedLongitude = null;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {}
+        });
 
         // Banner
         binding.btnSelecionarBanner.setOnClickListener(
@@ -73,7 +133,30 @@ public class CreateEventActivity extends AppCompatActivity {
 
         // Carrega evento para edição
         if (eventoId != null) {
-            carregarEventoDoBanco();
+            RepositoryProvider.getEventRepository(this).getEventoById(eventoId, new RepositoryCallback<Evento>() {
+                @Override
+                public void onSuccess(Evento e) {
+                    if (e != null) {
+                        boolean isCreator = sessionManager.isOrganizador() && e.criadoPor != null && e.criadoPor.equals(sessionManager.getUserId());
+                        if (!isCreator) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(CreateEventActivity.this, "Permissão negada: apenas o criador do evento pode editá-lo.", Toast.LENGTH_SHORT).show();
+                                finish();
+                            });
+                            return;
+                        }
+                        runOnUiThread(() -> carregarEventoDoBanco(e));
+                    }
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(CreateEventActivity.this, "Erro ao validar evento", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+                }
+            });
         }
     }
 
@@ -142,6 +225,21 @@ public class CreateEventActivity extends AppCompatActivity {
                 ).show();
             }
         }
+
+        if (requestCode == PICK_LOCATION && resultCode == RESULT_OK && data != null) {
+             String address = data.getStringExtra("selectedAddress");
+             double lat = data.getDoubleExtra("selectedLatitude", 0.0);
+             double lng = data.getDoubleExtra("selectedLongitude", 0.0);
+
+             if (address != null) {
+                 isProgrammaticChange = true;
+                 binding.etLocal.setText(address);
+                 selectedLatitude = lat;
+                 selectedLongitude = lng;
+                 isProgrammaticChange = false;
+                 Toast.makeText(this, "Local selecionado via mapa!", Toast.LENGTH_SHORT).show();
+             }
+         }
     }
 
     private void selecionarData() {
@@ -211,13 +309,17 @@ public class CreateEventActivity extends AppCompatActivity {
         String capStr =
                 binding.etCapacidade.getText().toString().trim();
 
+        String categoria =
+                binding.etCategoria.getText().toString().trim();
+
         if (titulo.isEmpty()
                 || local.isEmpty()
-                || binding.etData.getText().toString().isEmpty()) {
+                || binding.etData.getText().toString().isEmpty()
+                || categoria.isEmpty()) {
 
             Toast.makeText(
                     this,
-                    "Preencha título, local e data",
+                    "Preencha título, local, categoria e data",
                     Toast.LENGTH_SHORT
             ).show();
 
@@ -243,139 +345,177 @@ public class CreateEventActivity extends AppCompatActivity {
         new Thread(() -> {
 
             try {
+                // Validação de endereço com Geocoder no background thread
+                double latVal = 0.0;
+                double lngVal = 0.0;
+                if (selectedLatitude != null && selectedLongitude != null) {
+                    latVal = selectedLatitude;
+                    lngVal = selectedLongitude;
+                } else {
+                    try {
+                        android.location.Geocoder geocoder = new android.location.Geocoder(CreateEventActivity.this, java.util.Locale.getDefault());
+                        java.util.List<android.location.Address> addresses = geocoder.getFromLocationName(local, 1);
+                        if (addresses == null || addresses.isEmpty()) {
+                            runOnUiThread(() -> {
+                                setLoading(false);
+                                Toast.makeText(CreateEventActivity.this, "❌ Endereço não encontrado. Por favor, digite um endereço real válido.", Toast.LENGTH_LONG).show();
+                            });
+                            return;
+                        }
+                        android.location.Address address = addresses.get(0);
+                        latVal = address.getLatitude();
+                        lngVal = address.getLongitude();
+                    } catch (Exception ex) {
+                        runOnUiThread(() -> {
+                            setLoading(false);
+                            Toast.makeText(CreateEventActivity.this, "⚠️ Não foi possível validar o endereço (verifique sua internet e se o endereço é real).", Toast.LENGTH_LONG).show();
+                        });
+                        return;
+                    }
+                }
 
-                AppDatabase db =
-                        AppDatabase.getDatabase(this);
-
-                Evento evento = new Evento();
+                double finalLat = latVal;
+                double finalLng = lngVal;
 
                 if (eventoId != null) {
+                    RepositoryProvider.getEventRepository(this).getEventoById(eventoId, new RepositoryCallback<Evento>() {
+                        @Override
+                        public void onSuccess(Evento original) {
+                            Evento evento = new Evento();
+                            evento.id = eventoId;
+                            evento.status = (original != null) ? original.status : "AGENDADO";
+                            evento.criadoPor = (original != null) ? original.criadoPor : sessionManager.getUserId();
 
-                    Evento original =
-                            db.eventoDao().getEventoById(eventoId);
+                            evento.titulo = titulo;
+                            evento.descricao = descricao;
+                            evento.dataEvento = dataISO;
+                            evento.local = local;
+                            evento.capacidadeMaxima = capacidade;
+                            evento.categoria = categoria;
+                            evento.latitude = finalLat;
+                            evento.longitude = finalLng;
+                            evento.bannerUri = bannerUri;
 
-                    evento.id = eventoId;
+                            RepositoryProvider.getEventRepository(CreateEventActivity.this).update(evento, new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    runOnUiThread(() -> {
+                                        setLoading(false);
+                                        Toast.makeText(CreateEventActivity.this, "✅ Evento atualizado com sucesso!", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    });
+                                }
 
-                    evento.status =
-                            original != null
-                                    ? original.status
-                                    : "AGENDADO";
+                                @Override
+                                public void onError(Exception e) {
+                                    runOnUiThread(() -> {
+                                        setLoading(false);
+                                        Toast.makeText(CreateEventActivity.this, "❌ Erro ao atualizar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    });
+                                }
+                            });
+                        }
 
-                    evento.criadoPor =
-                            original != null
-                                    ? original.criadoPor
-                                    : sessionManager.getUserId();
-
+                        @Override
+                        public void onError(Exception e) {
+                            runOnUiThread(() -> {
+                                setLoading(false);
+                                Toast.makeText(CreateEventActivity.this, "❌ Erro ao carregar evento original", Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    });
                 } else {
-
+                    Evento evento = new Evento();
                     evento.status = "AGENDADO";
+                    evento.criadoPor = sessionManager.getUserId();
+                    evento.titulo = titulo;
+                    evento.descricao = descricao;
+                    evento.dataEvento = dataISO;
+                    evento.local = local;
+                    evento.capacidadeMaxima = capacidade;
+                    evento.categoria = categoria;
+                    evento.latitude = finalLat;
+                    evento.longitude = finalLng;
+                    evento.bannerUri = bannerUri;
 
-                    evento.criadoPor =
-                            sessionManager.getUserId();
+                    RepositoryProvider.getEventRepository(this).insert(evento, new RepositoryCallback<Long>() {
+                        @Override
+                        public void onSuccess(Long newId) {
+                            runOnUiThread(() -> {
+                                setLoading(false);
+                                Toast.makeText(CreateEventActivity.this, "✅ Evento salvo com sucesso!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            });
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            runOnUiThread(() -> {
+                                setLoading(false);
+                                Toast.makeText(CreateEventActivity.this, "❌ Erro ao salvar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            });
+                        }
+                    });
                 }
-
-                evento.titulo = titulo;
-                evento.descricao = descricao;
-                evento.dataEvento = dataISO;
-                evento.local = local;
-                evento.capacidadeMaxima = capacidade;
-
-                // Banner
-                evento.bannerUri = bannerUri;
-
-                if (eventoId == null) {
-                    db.eventoDao().insert(evento);
-                } else {
-                    db.eventoDao().update(evento);
-                }
-
-                runOnUiThread(() -> {
-
-                    setLoading(false);
-
-                    Toast.makeText(
-                            this,
-                            "✅ Evento salvo com sucesso!",
-                            Toast.LENGTH_SHORT
-                    ).show();
-
-                    finish();
-                });
 
             } catch (Exception e) {
-
                 runOnUiThread(() -> {
-
                     setLoading(false);
-
-                    Toast.makeText(
-                            this,
-                            "❌ Erro: " + e.getMessage(),
-                            Toast.LENGTH_LONG
-                    ).show();
+                    Toast.makeText(CreateEventActivity.this, "❌ Erro: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
             }
 
         }).start();
     }
 
-    private void carregarEventoDoBanco() {
+    private void carregarEventoDoBanco(Evento e) {
+        if (e != null) {
 
-        try {
+            binding.etTitulo.setText(e.titulo);
 
-            AppDatabase db =
-                    AppDatabase.getDatabase(this);
+            binding.etDescricao.setText(e.descricao);
 
-            Evento e =
-                    db.eventoDao().getEventoById(eventoId);
+            isProgrammaticChange = true;
+            binding.etLocal.setText(e.local);
+            if (e.latitude != 0.0 || e.longitude != 0.0) {
+                selectedLatitude = e.latitude;
+                selectedLongitude = e.longitude;
+            }
+            isProgrammaticChange = false;
 
-            if (e != null) {
-
-                binding.etTitulo.setText(e.titulo);
-
-                binding.etDescricao.setText(e.descricao);
-
-                binding.etLocal.setText(e.local);
-
-                if (e.capacidadeMaxima != null) {
-
-                    binding.etCapacidade.setText(
-                            String.valueOf(e.capacidadeMaxima)
-                    );
-                }
-
-                if (e.dataEvento != null
-                        && e.dataEvento.contains("T")) {
-
-                    String dataFormatada =
-                            e.dataEvento
-                                    .replace("T", " às ")
-                                    .substring(0, 16);
-
-                    binding.etData.setText(dataFormatada);
-                }
-
-                // Banner
-                bannerUri = e.bannerUri;
-
-                if (bannerUri != null
-                        && !bannerUri.isEmpty()) {
-
-                    Glide.with(this)
-                            .load(Uri.parse(bannerUri))
-                            .into(binding.imgBanner);
-                }
-
-                binding.btnSalvar.setText("ATUALIZAR EVENTO");
+            if (e.categoria != null) {
+                binding.etCategoria.setText(e.categoria, false);
             }
 
-        } catch (Exception e) {
+            if (e.capacidadeMaxima != null) {
+                binding.etCapacidade.setText(
+                        String.valueOf(e.capacidadeMaxima)
+                );
+            }
 
-            Toast.makeText(
-                    this,
-                    "Erro ao carregar dados",
-                    Toast.LENGTH_SHORT
-            ).show();
+            if (e.dataEvento != null
+                    && e.dataEvento.contains("T")) {
+
+                String dataFormatada =
+                        e.dataEvento
+                                .replace("T", " às ")
+                                .substring(0, 16);
+
+                binding.etData.setText(dataFormatada);
+            }
+
+            // Banner
+            bannerUri = e.bannerUri;
+
+            if (bannerUri != null
+                    && !bannerUri.isEmpty()) {
+
+                Glide.with(this)
+                        .load(bannerUri)
+                        .into(binding.imgBanner);
+            }
+
+            binding.btnSalvar.setText("ATUALIZAR EVENTO");
         }
     }
 

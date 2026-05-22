@@ -13,21 +13,21 @@ import com.casaempresario.app.model.EventPhoto;
 /**
  * Banco de dados local Room (SQLite).
  *
- * Versão 5:
- * - suporte ao banner do evento
- * - persistência local simplificada
+ * Versão 8:
+ * - Adicionado campo categoria na entidade Evento.
  *
- * Admin padrão criado automaticamente:
- * Email: admin@admin.com
- * Senha: admin123
+ * Versão 7:
+ * - Ajuste nos papéis dos usuários: apenas PARTICIPANTE e ORGANIZADOR.
  */
 @Database(
         entities = {
                 Usuario.class,
                 Evento.class,
-                EventPhoto.class
+                EventPhoto.class,
+                Interesse.class,
+                Mensagem.class
         },
-        version = 5
+        version = 8
 )
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -36,6 +36,10 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract FotoDao fotoDao();
 
     public abstract UsuarioDao usuarioDao();
+
+    public abstract InteresseDao interesseDao();
+
+    public abstract MensagemDao mensagemDao();
 
     private static AppDatabase INSTANCE;
 
@@ -56,11 +60,10 @@ public abstract class AppDatabase extends RoomDatabase {
                             // simplifica uso no projeto
                             .allowMainThreadQueries()
 
-                            // recria banco automaticamente
-                            // quando mudar versão
+                            // recria banco automaticamente quando mudar versão
                             .fallbackToDestructiveMigration()
 
-                            // cria admin padrão
+                            // cria usuários padrão
                             .addCallback(new Callback() {
 
                                 @Override
@@ -70,27 +73,41 @@ public abstract class AppDatabase extends RoomDatabase {
 
                                     super.onCreate(db);
 
+                                    // Seed do Organizador (Equipe)
+                                    db.execSQL(
+                                            "INSERT INTO usuarios " +
+                                                    "(email, senha, nome, role, criado_em) " +
+                                                    "VALUES (" +
+                                                    "'equipe@casadoempresario.com', " +
+                                                    "'equipe123', " +
+                                                    "'Equipe Casa do Empresário', " +
+                                                    "'ORGANIZADOR', " +
+                                                    "datetime('now')" +
+                                                    ")"
+                                    );
+
+                                    // Seed do Administrador Padrão (Compatibilidade)
                                     db.execSQL(
                                             "INSERT INTO usuarios " +
                                                     "(email, senha, nome, role, criado_em) " +
                                                     "VALUES (" +
                                                     "'admin@admin.com', " +
                                                     "'admin123', " +
-                                                    "'Administrador', " +
-                                                    "'ADMIN', " +
+                                                    "'Administrador Geral', " +
+                                                    "'ORGANIZADOR', " +
                                                     "datetime('now')" +
                                                     ")"
                                     );
 
-                                    // usuário comum opcional
+                                    // Seed de um Participante comum de teste
                                     db.execSQL(
                                             "INSERT INTO usuarios " +
                                                     "(email, senha, nome, role, criado_em) " +
                                                     "VALUES (" +
-                                                    "'user@user.com', " +
+                                                    "'participante@teste.com', " +
                                                     "'123456', " +
-                                                    "'Usuário', " +
-                                                    "'USER', " +
+                                                    "'Participante Teste', " +
+                                                    "'PARTICIPANTE', " +
                                                     "datetime('now')" +
                                                     ")"
                                     );

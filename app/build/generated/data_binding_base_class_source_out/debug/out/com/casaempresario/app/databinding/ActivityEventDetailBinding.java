@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -30,16 +31,37 @@ public final class ActivityEventDetailBinding implements ViewBinding {
   public final AppBarLayout appBar;
 
   @NonNull
+  public final LinearLayout btnAgenda;
+
+  @NonNull
+  public final LinearLayout btnChat;
+
+  @NonNull
+  public final LinearLayout btnCompartilhar;
+
+  @NonNull
   public final MaterialButton btnEditar;
 
   @NonNull
   public final MaterialButton btnExcluir;
 
   @NonNull
+  public final LinearLayout btnInteresse;
+
+  @NonNull
+  public final MaterialButton btnVerMapa;
+
+  @NonNull
   public final FloatingActionButton fabAdicionarFoto;
 
   @NonNull
   public final ImageView imgCapa;
+
+  @NonNull
+  public final ImageView imgInteresse;
+
+  @NonNull
+  public final LinearLayout layoutAcoes;
 
   @NonNull
   public final ProgressBar progressUpload;
@@ -54,10 +76,16 @@ public final class ActivityEventDetailBinding implements ViewBinding {
   public final TextView tvCapacidade;
 
   @NonNull
+  public final TextView tvCategoria;
+
+  @NonNull
   public final TextView tvData;
 
   @NonNull
   public final TextView tvDescricao;
+
+  @NonNull
+  public final TextView tvInteresse;
 
   @NonNull
   public final TextView tvLocal;
@@ -75,25 +103,37 @@ public final class ActivityEventDetailBinding implements ViewBinding {
   public final TextView tvTotalFotos;
 
   private ActivityEventDetailBinding(@NonNull CoordinatorLayout rootView,
-      @NonNull AppBarLayout appBar, @NonNull MaterialButton btnEditar,
-      @NonNull MaterialButton btnExcluir, @NonNull FloatingActionButton fabAdicionarFoto,
-      @NonNull ImageView imgCapa, @NonNull ProgressBar progressUpload,
+      @NonNull AppBarLayout appBar, @NonNull LinearLayout btnAgenda, @NonNull LinearLayout btnChat,
+      @NonNull LinearLayout btnCompartilhar, @NonNull MaterialButton btnEditar,
+      @NonNull MaterialButton btnExcluir, @NonNull LinearLayout btnInteresse,
+      @NonNull MaterialButton btnVerMapa, @NonNull FloatingActionButton fabAdicionarFoto,
+      @NonNull ImageView imgCapa, @NonNull ImageView imgInteresse,
+      @NonNull LinearLayout layoutAcoes, @NonNull ProgressBar progressUpload,
       @NonNull RecyclerView recyclerFotos, @NonNull Toolbar toolbar, @NonNull TextView tvCapacidade,
-      @NonNull TextView tvData, @NonNull TextView tvDescricao, @NonNull TextView tvLocal,
-      @NonNull TextView tvSemFotos, @NonNull TextView tvStatus, @NonNull TextView tvTitulo,
-      @NonNull TextView tvTotalFotos) {
+      @NonNull TextView tvCategoria, @NonNull TextView tvData, @NonNull TextView tvDescricao,
+      @NonNull TextView tvInteresse, @NonNull TextView tvLocal, @NonNull TextView tvSemFotos,
+      @NonNull TextView tvStatus, @NonNull TextView tvTitulo, @NonNull TextView tvTotalFotos) {
     this.rootView = rootView;
     this.appBar = appBar;
+    this.btnAgenda = btnAgenda;
+    this.btnChat = btnChat;
+    this.btnCompartilhar = btnCompartilhar;
     this.btnEditar = btnEditar;
     this.btnExcluir = btnExcluir;
+    this.btnInteresse = btnInteresse;
+    this.btnVerMapa = btnVerMapa;
     this.fabAdicionarFoto = fabAdicionarFoto;
     this.imgCapa = imgCapa;
+    this.imgInteresse = imgInteresse;
+    this.layoutAcoes = layoutAcoes;
     this.progressUpload = progressUpload;
     this.recyclerFotos = recyclerFotos;
     this.toolbar = toolbar;
     this.tvCapacidade = tvCapacidade;
+    this.tvCategoria = tvCategoria;
     this.tvData = tvData;
     this.tvDescricao = tvDescricao;
+    this.tvInteresse = tvInteresse;
     this.tvLocal = tvLocal;
     this.tvSemFotos = tvSemFotos;
     this.tvStatus = tvStatus;
@@ -134,6 +174,24 @@ public final class ActivityEventDetailBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btn_agenda;
+      LinearLayout btnAgenda = ViewBindings.findChildViewById(rootView, id);
+      if (btnAgenda == null) {
+        break missingId;
+      }
+
+      id = R.id.btn_chat;
+      LinearLayout btnChat = ViewBindings.findChildViewById(rootView, id);
+      if (btnChat == null) {
+        break missingId;
+      }
+
+      id = R.id.btn_compartilhar;
+      LinearLayout btnCompartilhar = ViewBindings.findChildViewById(rootView, id);
+      if (btnCompartilhar == null) {
+        break missingId;
+      }
+
       id = R.id.btn_editar;
       MaterialButton btnEditar = ViewBindings.findChildViewById(rootView, id);
       if (btnEditar == null) {
@@ -146,6 +204,18 @@ public final class ActivityEventDetailBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btn_interesse;
+      LinearLayout btnInteresse = ViewBindings.findChildViewById(rootView, id);
+      if (btnInteresse == null) {
+        break missingId;
+      }
+
+      id = R.id.btn_ver_mapa;
+      MaterialButton btnVerMapa = ViewBindings.findChildViewById(rootView, id);
+      if (btnVerMapa == null) {
+        break missingId;
+      }
+
       id = R.id.fab_adicionar_foto;
       FloatingActionButton fabAdicionarFoto = ViewBindings.findChildViewById(rootView, id);
       if (fabAdicionarFoto == null) {
@@ -155,6 +225,18 @@ public final class ActivityEventDetailBinding implements ViewBinding {
       id = R.id.img_capa;
       ImageView imgCapa = ViewBindings.findChildViewById(rootView, id);
       if (imgCapa == null) {
+        break missingId;
+      }
+
+      id = R.id.img_interesse;
+      ImageView imgInteresse = ViewBindings.findChildViewById(rootView, id);
+      if (imgInteresse == null) {
+        break missingId;
+      }
+
+      id = R.id.layout_acoes;
+      LinearLayout layoutAcoes = ViewBindings.findChildViewById(rootView, id);
+      if (layoutAcoes == null) {
         break missingId;
       }
 
@@ -182,6 +264,12 @@ public final class ActivityEventDetailBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tv_categoria;
+      TextView tvCategoria = ViewBindings.findChildViewById(rootView, id);
+      if (tvCategoria == null) {
+        break missingId;
+      }
+
       id = R.id.tv_data;
       TextView tvData = ViewBindings.findChildViewById(rootView, id);
       if (tvData == null) {
@@ -191,6 +279,12 @@ public final class ActivityEventDetailBinding implements ViewBinding {
       id = R.id.tv_descricao;
       TextView tvDescricao = ViewBindings.findChildViewById(rootView, id);
       if (tvDescricao == null) {
+        break missingId;
+      }
+
+      id = R.id.tv_interesse;
+      TextView tvInteresse = ViewBindings.findChildViewById(rootView, id);
+      if (tvInteresse == null) {
         break missingId;
       }
 
@@ -224,9 +318,11 @@ public final class ActivityEventDetailBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityEventDetailBinding((CoordinatorLayout) rootView, appBar, btnEditar,
-          btnExcluir, fabAdicionarFoto, imgCapa, progressUpload, recyclerFotos, toolbar,
-          tvCapacidade, tvData, tvDescricao, tvLocal, tvSemFotos, tvStatus, tvTitulo, tvTotalFotos);
+      return new ActivityEventDetailBinding((CoordinatorLayout) rootView, appBar, btnAgenda,
+          btnChat, btnCompartilhar, btnEditar, btnExcluir, btnInteresse, btnVerMapa,
+          fabAdicionarFoto, imgCapa, imgInteresse, layoutAcoes, progressUpload, recyclerFotos,
+          toolbar, tvCapacidade, tvCategoria, tvData, tvDescricao, tvInteresse, tvLocal, tvSemFotos,
+          tvStatus, tvTitulo, tvTotalFotos);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

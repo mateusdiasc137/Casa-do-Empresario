@@ -7,21 +7,22 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.casaempresario.app.database.AppDatabase;
 import com.casaempresario.app.database.Usuario;
 import com.casaempresario.app.databinding.ActivityLoginBinding;
+import com.casaempresario.app.repository.RepositoryCallback;
+import com.casaempresario.app.repository.RepositoryProvider;
+import com.casaempresario.app.repository.UserRepository;
 import com.casaempresario.app.util.SessionManager;
 
 /**
  * Tela de Login.
- * Autentica o usuário consultando o banco local (Room/SQLite).
+ * Autentica o usuário consultando o banco local (Room/SQLite) ou firebase.
  * Admin padrão criado automaticamente: admin@admin.com / admin123
  */
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
     private SessionManager sessionManager;
-    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,6 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        db = AppDatabase.getDatabase(this);
         sessionManager = new SessionManager(this);
 
         // Se já estiver logado, vai direto para a tela principal
@@ -39,8 +39,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         binding.btnEntrar.setOnClickListener(v -> fazerLogin());
-        binding.btnCadastrar.setOnClickListener(v ->
-                startActivity(new Intent(this, RegisterActivity.class)));
+        binding.btnCadastrar.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
     }
 
     private void fazerLogin() {
@@ -54,27 +53,34 @@ public class LoginActivity extends AppCompatActivity {
 
         setLoading(true);
 
-        // Consulta o banco em background para não travar a UI
-        new Thread(() -> {
-            Usuario usuario = db.usuarioDao().login(email, senha);
+        RepositoryProvider.getUserRepository(this).login(email, senha, new RepositoryCallback<Usuario>() {
+            @Override
+            public void onSuccess(Usuario usuario) {
+                runOnUiThread(() -> {
+                    setLoading(false);
+                    if (usuario != null) {
+                        sessionManager.salvarSessao(
+                                "session-token",
+                                usuario.nome,
+                                usuario.email,
+                                usuario.role,
+                                usuario.id);
+                        irParaMain();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Email ou senha incorretos", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
-            runOnUiThread(() -> {
-                setLoading(false);
-                if (usuario != null) {
-                    // Salva a sessão localmente com os dados do usuário encontrado
-                    sessionManager.salvarSessao(
-                            "local-session",  // token simbólico (sem API)
-                            usuario.nome,
-                            usuario.email,
-                            usuario.role,
-                            usuario.id
-                    );
-                    irParaMain();
-                } else {
-                    Toast.makeText(this, "Email ou senha incorretos", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }).start();
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> {
+                    setLoading(false);
+                    Toast.makeText(LoginActivity.this, "Erro ao autenticar: " + e.getMessage(), Toast.LENGTH_SHORT)
+                            .show();
+                });
+            }
+        });
     }
 
     private void irParaMain() {

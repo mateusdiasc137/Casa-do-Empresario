@@ -17,12 +17,15 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import android.net.Uri;
 import com.bumptech.glide.Glide;
 import com.casaempresario.app.adapter.PhotoAdapter;
-import com.casaempresario.app.database.AppDatabase;
 import com.casaempresario.app.database.Evento;
+import com.casaempresario.app.database.Interesse;
 import com.casaempresario.app.databinding.ActivityEventDetailBinding;
 import com.casaempresario.app.model.EventPhoto;
+import com.casaempresario.app.repository.RepositoryCallback;
+import com.casaempresario.app.repository.RepositoryProvider;
 import com.casaempresario.app.util.SessionManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import android.provider.CalendarContract;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,7 +42,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private PhotoAdapter photoAdapter;
     private Long eventoId;
-    private AppDatabase db;
+    private Evento currentEvento;
 
     // Labels e valores dos status disponíveis
     private static final String[] STATUS_LABELS = {
@@ -70,6 +73,13 @@ public class EventDetailActivity extends AppCompatActivity {
                 }
             });
 
+    private final ActivityResultLauncher<Intent> verDetalheFotoLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK) {
+                    carregarFotos();
+                }
+            });
+
     private final ActivityResultLauncher<String> pedirPermissao =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
                 if (granted) abrirGaleria();
@@ -82,7 +92,6 @@ public class EventDetailActivity extends AppCompatActivity {
         binding = ActivityEventDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        db = AppDatabase.getDatabase(this);
         sessionManager = new SessionManager(this);
         eventoId = getIntent().getLongExtra("eventoId", -1);
 
@@ -95,29 +104,32 @@ public class EventDetailActivity extends AppCompatActivity {
         carregarEvento();
         carregarFotos();
 
-        if (sessionManager.isAdmin()) {
-            // Botão editar evento
-            binding.btnEditar.setVisibility(View.VISIBLE);
-            binding.btnEditar.setOnClickListener(v -> {
-                Intent intent = new Intent(this, CreateEventActivity.class);
-                intent.putExtra("eventoId", eventoId);
-                editarEventoLauncher.launch(intent);
-            });
+        // Botão editar evento
+        binding.btnEditar.setOnClickListener(v -> {
+            Intent intent = new Intent(this, CreateEventActivity.class);
+            intent.putExtra("eventoId", eventoId);
+            editarEventoLauncher.launch(intent);
+        });
 
-            // Botão alterar status
-            binding.tvStatus.setVisibility(View.VISIBLE);
-            binding.tvStatus.setOnClickListener(v -> mostrarDialogStatus());
+        // Botão alterar status
+        binding.tvStatus.setOnClickListener(v -> {
+            if (currentEvento != null && sessionManager.isOrganizador() && currentEvento.criadoPor != null && currentEvento.criadoPor.equals(sessionManager.getUserId())) {
+                mostrarDialogStatus();
+            }
+        });
 
-            // Botão excluir evento
-            binding.btnExcluir.setVisibility(View.VISIBLE);
-            binding.btnExcluir.setOnClickListener(v -> confirmarExclusaoEvento());
-        }
+        // Botão excluir evento
+        binding.btnExcluir.setOnClickListener(v -> confirmarExclusaoEvento());
 
-        // Qualquer usuário logado pode adicionar fotos
-        if (sessionManager.isLogado()) {
+        // Apenas Organizadores podem adicionar fotos
+        if (sessionManager.isLogado() && sessionManager.isOrganizador()) {
             binding.fabAdicionarFoto.setVisibility(View.VISIBLE);
             binding.fabAdicionarFoto.setOnClickListener(v -> verificarPermissao());
+        } else {
+            binding.fabAdicionarFoto.setVisibility(View.GONE);
         }
+
+        setupAcoes();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -126,9 +138,8 @@ public class EventDetailActivity extends AppCompatActivity {
 
     private void mostrarDialogStatus() {
         // Descobre qual é o status atual para marcá-lo no dialog
-        Evento eventoAtual = db.eventoDao().getEventoById(eventoId);
-        String statusAtual = (eventoAtual != null && eventoAtual.status != null)
-                ? eventoAtual.status : "AGENDADO";
+        String statusAtual = (currentEvento != null && currentEvento.status != null)
+                ? currentEvento.status : "AGENDADO";
 
         int indiceSelecionado = 0;
         for (int i = 0; i < STATUS_VALORES.length; i++) {
@@ -156,18 +167,47 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void salvarNovoStatus(String novoStatus) {
-        new Thread(() -> {
-            try {
-                db.eventoDao().updateStatus(eventoId, novoStatus);
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Status atualizado!", Toast.LENGTH_SHORT).show();
-                    carregarEvento(); // Atualiza a tela com o novo status
-                });
-            } catch (Exception e) {
-                runOnUiThread(() ->
-                        Toast.makeText(this, "Erro ao atualizar status", Toast.LENGTH_SHORT).show());
+        if (currentEvento == null || !sessionManager.isOrganizador() || currentEvento.criadoPor == null || !currentEvento.criadoPor.equals(sessionManager.getUserId())) {
+            Toast.makeText(this, "Permissão negada: apenas o criador do evento pode alterar o status.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        RepositoryProvider.getEventRepository(this).updateStatus(eventoId, novoStatus, new RepositoryCallback<Void>() {
+            @Override
+            public void onSuccess(Void result) {
+                if ("CONCLUIDO".equals(novoStatus) || "CANCELADO".equals(novoStatus)) {
+                    RepositoryProvider.getInterestRepository(EventDetailActivity.this).deleteByEvento(eventoId, new RepositoryCallback<Void>() {
+                        @Override
+                        public void onSuccess(Void interestResult) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(EventDetailActivity.this, "Status atualizado e interesses limpos!", Toast.LENGTH_SHORT).show();
+                                checkInterest(); // Recarrega estado local do coração/interesse
+                                carregarEvento(); // Atualiza a tela com o novo status
+                            });
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            runOnUiThread(() -> {
+                                Toast.makeText(EventDetailActivity.this, "Status atualizado (erro ao limpar interesses)", Toast.LENGTH_SHORT).show();
+                                checkInterest();
+                                carregarEvento();
+                            });
+                        }
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        Toast.makeText(EventDetailActivity.this, "Status atualizado!", Toast.LENGTH_SHORT).show();
+                        carregarEvento(); // Atualiza a tela com o novo status
+                    });
+                }
             }
-        }).start();
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() ->
+                        Toast.makeText(EventDetailActivity.this, "Erro ao atualizar status", Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -175,16 +215,34 @@ public class EventDetailActivity extends AppCompatActivity {
     // ─────────────────────────────────────────────────────────────────────────
 
     private void setupFotos() {
-        photoAdapter = new PhotoAdapter(new ArrayList<>(), sessionManager, this::confirmarDeletar);
+        photoAdapter = new PhotoAdapter(new ArrayList<>(), sessionManager, this::confirmarDeletar, this::abrirVisualizacaoPost);
         binding.recyclerFotos.setLayoutManager(new GridLayoutManager(this, 2));
         binding.recyclerFotos.setAdapter(photoAdapter);
     }
 
+    private void abrirVisualizacaoPost(EventPhoto foto) {
+        Intent intent = new Intent(this, PhotoPostActivity.class);
+        intent.putExtra("fotoId", foto.getId());
+        verDetalheFotoLauncher.launch(intent);
+    }
+
     private void carregarEvento() {
-        Evento eventoDb = db.eventoDao().getEventoById(eventoId);
-        if (eventoDb != null) {
-            preencherDados(eventoDb);
-        }
+        RepositoryProvider.getEventRepository(this).getEventoById(eventoId, new RepositoryCallback<Evento>() {
+            @Override
+            public void onSuccess(Evento eventoDb) {
+                runOnUiThread(() -> {
+                    if (eventoDb != null) {
+                        currentEvento = eventoDb;
+                        preencherDados(eventoDb);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> Toast.makeText(EventDetailActivity.this, "Erro ao carregar evento", Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 
     private void preencherDados(Evento evento) {
@@ -211,6 +269,26 @@ public class EventDetailActivity extends AppCompatActivity {
 
         binding.tvStatus.setText(evento.status);
 
+        // Categoria
+        if (evento.categoria != null && !evento.categoria.trim().isEmpty()) {
+            binding.tvCategoria.setText("🏷️ " + evento.categoria);
+            binding.tvCategoria.setVisibility(View.VISIBLE);
+        } else {
+            binding.tvCategoria.setVisibility(View.GONE);
+        }
+
+        // Botão de Mapa Interativo
+        if (evento.latitude != 0.0 || evento.longitude != 0.0) {
+            binding.btnVerMapa.setVisibility(View.VISIBLE);
+            binding.btnVerMapa.setOnClickListener(v -> {
+                Intent intent = new Intent(this, MapActivity.class);
+                intent.putExtra("focusEventoId", eventoId);
+                startActivity(intent);
+            });
+        } else {
+            binding.btnVerMapa.setVisibility(View.GONE);
+        }
+
         // ─────────────────────────────────────
         // CARREGAR BANNER
         // ─────────────────────────────────────
@@ -219,7 +297,7 @@ public class EventDetailActivity extends AppCompatActivity {
                 && !evento.bannerUri.isEmpty()) {
 
             Glide.with(this)
-                    .load(new File(evento.bannerUri))
+                    .load(evento.bannerUri)
                     .into(binding.imgCapa);
 
         } else {
@@ -269,13 +347,64 @@ public class EventDetailActivity extends AppCompatActivity {
                             + evento.capacidadeMaxima
             );
         }
+
+        // Regra de edição/exclusão/status para o criador do evento (Organizador)
+        boolean isCreator = sessionManager.isOrganizador() && evento.criadoPor != null && evento.criadoPor.equals(sessionManager.getUserId());
+        if (isCreator) {
+            binding.btnEditar.setVisibility(View.VISIBLE);
+            binding.btnExcluir.setVisibility(View.VISIBLE);
+            binding.tvStatus.setClickable(true);
+            binding.tvStatus.setFocusable(true);
+        } else {
+            binding.btnEditar.setVisibility(View.GONE);
+            binding.btnExcluir.setVisibility(View.GONE);
+            binding.tvStatus.setClickable(false);
+            binding.tvStatus.setFocusable(false);
+        }
+
+        // Falar com Organizador só é visível para participantes (PARTICIPANTE) e se não for o próprio criador do evento
+        boolean isParticipant = "PARTICIPANTE".equals(sessionManager.getRole());
+        if (isParticipant && evento.criadoPor != null && !evento.criadoPor.equals(sessionManager.getUserId())) {
+            binding.btnChat.setVisibility(View.VISIBLE);
+        } else {
+            binding.btnChat.setVisibility(View.GONE);
+        }
+
+        // Bloqueio visual se o evento estiver concluído ou cancelado
+        boolean finalizado = "CONCLUIDO".equals(evento.status) || "CANCELADO".equals(evento.status);
+        if (finalizado) {
+            binding.btnInteresse.setEnabled(false);
+            binding.btnInteresse.setAlpha(0.5f);
+            binding.btnAgenda.setEnabled(false);
+            binding.btnAgenda.setAlpha(0.5f);
+            binding.btnCompartilhar.setEnabled(false);
+            binding.btnCompartilhar.setAlpha(0.5f);
+        } else {
+            binding.btnInteresse.setEnabled(true);
+            binding.btnInteresse.setAlpha(1.0f);
+            binding.btnAgenda.setEnabled(true);
+            binding.btnAgenda.setAlpha(1.0f);
+            binding.btnCompartilhar.setEnabled(true);
+            binding.btnCompartilhar.setAlpha(1.0f);
+        }
     }
 
     private void carregarFotos() {
-        List<EventPhoto> fotos = db.fotoDao().getFotosByEvento(eventoId);
-        photoAdapter.atualizar(fotos);
-        binding.tvSemFotos.setVisibility(fotos.isEmpty() ? View.VISIBLE : View.GONE);
-        binding.tvTotalFotos.setText(fotos.size() + " fotos");
+        RepositoryProvider.getPhotoRepository(this).getFotosByEvento(eventoId, new RepositoryCallback<List<EventPhoto>>() {
+            @Override
+            public void onSuccess(List<EventPhoto> fotos) {
+                runOnUiThread(() -> {
+                    photoAdapter.atualizar(fotos);
+                    binding.tvSemFotos.setVisibility(fotos.isEmpty() ? View.VISIBLE : View.GONE);
+                    binding.tvTotalFotos.setText(fotos.size() + " fotos");
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> Toast.makeText(EventDetailActivity.this, "Erro ao carregar fotos", Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -315,6 +444,10 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void salvarFotoLocal(Uri uri, String legenda) {
+        if (!sessionManager.isLogado() || !sessionManager.isOrganizador()) {
+            runOnUiThread(() -> Toast.makeText(this, "Apenas organizadores podem adicionar fotos", Toast.LENGTH_SHORT).show());
+            return;
+        }
         binding.progressUpload.setVisibility(View.VISIBLE);
 
         new Thread(() -> {
@@ -336,20 +469,32 @@ public class EventDetailActivity extends AppCompatActivity {
                 foto.setEventoId(eventoId);
                 foto.setUrlFoto(file.getAbsolutePath());
                 foto.setLegenda(legenda);
+                foto.setUsuarioNome(sessionManager.getNome());
                 foto.setEnviadoEm(new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date()));
 
-                db.fotoDao().insert(foto);
+                RepositoryProvider.getPhotoRepository(EventDetailActivity.this).insert(foto, new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        runOnUiThread(() -> {
+                            binding.progressUpload.setVisibility(View.GONE);
+                            Toast.makeText(EventDetailActivity.this, "Foto salva com sucesso!", Toast.LENGTH_SHORT).show();
+                            carregarFotos();
+                        });
+                    }
 
-                runOnUiThread(() -> {
-                    binding.progressUpload.setVisibility(View.GONE);
-                    Toast.makeText(this, "Foto salva com sucesso!", Toast.LENGTH_SHORT).show();
-                    carregarFotos();
+                    @Override
+                    public void onError(Exception e) {
+                        runOnUiThread(() -> {
+                            binding.progressUpload.setVisibility(View.GONE);
+                            Toast.makeText(EventDetailActivity.this, "Erro ao salvar foto: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+                    }
                 });
 
             } catch (Exception e) {
                 runOnUiThread(() -> {
                     binding.progressUpload.setVisibility(View.GONE);
-                    Toast.makeText(this, "Erro ao salvar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(EventDetailActivity.this, "Erro ao salvar: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
             }
         }).start();
@@ -365,25 +510,42 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void deletarFoto(Long fotoId) {
-        new Thread(() -> {
-            try {
-                EventPhoto foto = db.fotoDao().getFotoById(fotoId);
+        RepositoryProvider.getPhotoRepository(this).getFotoById(fotoId, new RepositoryCallback<EventPhoto>() {
+            @Override
+            public void onSuccess(EventPhoto foto) {
                 if (foto != null) {
-                    if (foto.getUrlFoto() != null) {
-                        File file = new File(foto.getUrlFoto());
-                        if (file.exists()) file.delete();
-                    }
-                    db.fotoDao().deleteById(fotoId);
-                    runOnUiThread(() -> {
-                        Toast.makeText(this, "Foto excluída!", Toast.LENGTH_SHORT).show();
-                        carregarFotos();
-                    });
+                    new Thread(() -> {
+                        try {
+                            if (foto.getUrlFoto() != null) {
+                                File file = new File(foto.getUrlFoto());
+                                if (file.exists()) file.delete();
+                            }
+                            RepositoryProvider.getPhotoRepository(EventDetailActivity.this).deleteById(fotoId, new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) {
+                                    runOnUiThread(() -> {
+                                        Toast.makeText(EventDetailActivity.this, "Foto excluída!", Toast.LENGTH_SHORT).show();
+                                        carregarFotos();
+                                    });
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    runOnUiThread(() -> Toast.makeText(EventDetailActivity.this, "Erro ao excluir foto: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                                }
+                            });
+                        } catch (Exception e) {
+                            runOnUiThread(() -> Toast.makeText(EventDetailActivity.this, "Erro ao excluir arquivo físico", Toast.LENGTH_SHORT).show());
+                        }
+                    }).start();
                 }
-            } catch (Exception e) {
-                runOnUiThread(() ->
-                        Toast.makeText(this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show());
             }
-        }).start();
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> Toast.makeText(EventDetailActivity.this, "Erro ao buscar foto: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -400,28 +562,61 @@ public class EventDetailActivity extends AppCompatActivity {
     }
 
     private void deletarEventoCompleto() {
-        new Thread(() -> {
-            try {
-                // Apaga os arquivos físicos das fotos antes de remover do banco
-                List<EventPhoto> fotos = db.fotoDao().getFotosByEvento(eventoId);
-                for (EventPhoto f : fotos) {
-                    if (f.getUrlFoto() != null) {
-                        File file = new File(f.getUrlFoto());
-                        if (file.exists()) file.delete();
-                    }
-                }
-                // O CASCADE do Room remove as fotos do banco junto com o evento
-                db.eventoDao().deleteById(eventoId);
+        if (currentEvento == null || !sessionManager.isOrganizador() || currentEvento.criadoPor == null || !currentEvento.criadoPor.equals(sessionManager.getUserId())) {
+            Toast.makeText(this, "Permissão negada: apenas o criador do evento pode excluí-lo.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        RepositoryProvider.getPhotoRepository(this).getFotosByEvento(eventoId, new RepositoryCallback<List<EventPhoto>>() {
+            @Override
+            public void onSuccess(List<EventPhoto> fotos) {
+                new Thread(() -> {
+                    try {
+                        for (EventPhoto f : fotos) {
+                            if (f.getUrlFoto() != null) {
+                                File file = new File(f.getUrlFoto());
+                                if (file.exists()) file.delete();
+                            }
+                        }
+                        
+                        RepositoryProvider.getEventRepository(EventDetailActivity.this).deleteById(eventoId, new RepositoryCallback<Void>() {
+                            @Override
+                            public void onSuccess(Void result) {
+                                runOnUiThread(() -> {
+                                    Toast.makeText(EventDetailActivity.this, "Evento removido com sucesso!", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                });
+                            }
 
-                runOnUiThread(() -> {
-                    Toast.makeText(this, "Evento removido com sucesso!", Toast.LENGTH_SHORT).show();
-                    finish();
-                });
-            } catch (Exception e) {
-                runOnUiThread(() ->
-                        Toast.makeText(this, "Erro ao excluir evento", Toast.LENGTH_SHORT).show());
+                            @Override
+                            public void onError(Exception e) {
+                                runOnUiThread(() -> Toast.makeText(EventDetailActivity.this, "Erro ao excluir evento: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                            }
+                        });
+                    } catch (Exception e) {
+                        runOnUiThread(() -> Toast.makeText(EventDetailActivity.this, "Erro ao excluir fotos locais", Toast.LENGTH_SHORT).show());
+                    }
+                }).start();
             }
-        }).start();
+
+            @Override
+            public void onError(Exception e) {
+                // Se falhar a busca por fotos (ex: sem conexão no Firebase), prossegue deletando o evento
+                RepositoryProvider.getEventRepository(EventDetailActivity.this).deleteById(eventoId, new RepositoryCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void result) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(EventDetailActivity.this, "Evento removido com sucesso!", Toast.LENGTH_SHORT).show();
+                            finish();
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception ex) {
+                        runOnUiThread(() -> Toast.makeText(EventDetailActivity.this, "Erro ao excluir evento: " + ex.getMessage(), Toast.LENGTH_SHORT).show());
+                    }
+                });
+            }
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -444,5 +639,156 @@ public class EventDetailActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // AÇÕES DO EVENTO (Interesse, Agenda, Chat, Compartilhar)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private boolean isInterested = false;
+
+    private void setupAcoes() {
+        if (!sessionManager.isLogado()) {
+            binding.layoutAcoes.setVisibility(View.GONE);
+            return;
+        }
+
+        checkInterest();
+
+        binding.btnInteresse.setOnClickListener(v -> toggleInteresse());
+        binding.btnAgenda.setOnClickListener(v -> adicionarAAgenda());
+        binding.btnChat.setOnClickListener(v -> abrirChatComOrganizador());
+        binding.btnCompartilhar.setOnClickListener(v -> compartilharEvento());
+    }
+
+    private void checkInterest() {
+        RepositoryProvider.getInterestRepository(this).getInteresse(sessionManager.getUserId(), eventoId, new RepositoryCallback<Interesse>() {
+            @Override
+            public void onSuccess(Interesse interesse) {
+                isInterested = (interesse != null);
+                runOnUiThread(() -> {
+                    if (isInterested) {
+                        binding.imgInteresse.setImageResource(com.casaempresario.app.R.drawable.ic_heart_filled);
+                        binding.tvInteresse.setText("Gostei!");
+                        binding.tvInteresse.setTextColor(0xFFE91E63);
+                    } else {
+                        binding.imgInteresse.setImageResource(com.casaempresario.app.R.drawable.ic_heart_outline);
+                        binding.tvInteresse.setText("Interesse");
+                        binding.tvInteresse.setTextColor(0xFF555555);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // Silencioso
+            }
+        });
+    }
+
+    private void toggleInteresse() {
+        if (currentEvento != null && ("CONCLUIDO".equals(currentEvento.status) || "CANCELADO".equals(currentEvento.status))) {
+            Toast.makeText(this, "Ação não permitida: evento finalizado.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        long userId = sessionManager.getUserId();
+        if (isInterested) {
+            RepositoryProvider.getInterestRepository(this).deleteByUsuarioAndEvento(userId, eventoId, new RepositoryCallback<Void>() {
+                @Override
+                public void onSuccess(Void result) {
+                    runOnUiThread(() -> {
+                        isInterested = false;
+                        binding.imgInteresse.setImageResource(com.casaempresario.app.R.drawable.ic_heart_outline);
+                        binding.tvInteresse.setText("Interesse");
+                        binding.tvInteresse.setTextColor(0xFF555555);
+                        Toast.makeText(EventDetailActivity.this, "Interesse removido", Toast.LENGTH_SHORT).show();
+                    });
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    runOnUiThread(() -> Toast.makeText(EventDetailActivity.this, "Erro ao remover interesse", Toast.LENGTH_SHORT).show());
+                }
+            });
+        } else {
+            Interesse interesse = new Interesse();
+            interesse.usuarioId = userId;
+            interesse.eventoId = eventoId;
+            interesse.criadoEm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+            RepositoryProvider.getInterestRepository(this).insert(interesse, new RepositoryCallback<Long>() {
+                @Override
+                public void onSuccess(Long newId) {
+                    runOnUiThread(() -> {
+                        isInterested = true;
+                        binding.imgInteresse.setImageResource(com.casaempresario.app.R.drawable.ic_heart_filled);
+                        binding.tvInteresse.setText("Gostei!");
+                        binding.tvInteresse.setTextColor(0xFFE91E63);
+                        Toast.makeText(EventDetailActivity.this, "Interesse marcado! ❤️", Toast.LENGTH_SHORT).show();
+                    });
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    runOnUiThread(() -> Toast.makeText(EventDetailActivity.this, "Erro ao marcar interesse", Toast.LENGTH_SHORT).show());
+                }
+            });
+        }
+    }
+
+    private void adicionarAAgenda() {
+        if (currentEvento == null) return;
+        if ("CONCLUIDO".equals(currentEvento.status) || "CANCELADO".equals(currentEvento.status)) {
+            Toast.makeText(this, "Ação não permitida: evento finalizado.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try {
+            long startTimeMillis = System.currentTimeMillis();
+            if (currentEvento.dataEvento != null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
+                Date d = sdf.parse(currentEvento.dataEvento);
+                if (d != null) {
+                    startTimeMillis = d.getTime();
+                }
+            }
+
+            Intent intent = new Intent(Intent.ACTION_INSERT)
+                    .setData(CalendarContract.Events.CONTENT_URI)
+                    .putExtra(CalendarContract.Events.TITLE, currentEvento.titulo)
+                    .putExtra(CalendarContract.Events.DESCRIPTION, currentEvento.descricao)
+                    .putExtra(CalendarContract.Events.EVENT_LOCATION, currentEvento.local)
+                    .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTimeMillis)
+                    .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, startTimeMillis + (60 * 60 * 1000));
+
+            startActivity(intent);
+        } catch (Exception e) {
+            Toast.makeText(this, "Erro ao abrir agenda nativa", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void abrirChatComOrganizador() {
+        if (currentEvento == null || currentEvento.criadoPor == null) return;
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra("eventoId", eventoId);
+        intent.putExtra("outroUserId", currentEvento.criadoPor);
+        startActivity(intent);
+    }
+
+    private void compartilharEvento() {
+        if (currentEvento == null) return;
+        if ("CONCLUIDO".equals(currentEvento.status) || "CANCELADO".equals(currentEvento.status)) {
+            Toast.makeText(this, "Ação não permitida: evento finalizado.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String texto = "Olha só este evento incrível na Casa do Empresário!\n\n" +
+                "🏆 *" + currentEvento.titulo + "*\n" +
+                "📅 Data: " + formatarData(currentEvento.dataEvento) + "\n" +
+                "📍 Local: " + currentEvento.local + "\n\n" +
+                (currentEvento.descricao != null ? currentEvento.descricao : "");
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_SUBJECT, currentEvento.titulo);
+        intent.putExtra(Intent.EXTRA_TEXT, texto);
+        startActivity(Intent.createChooser(intent, "Compartilhar Evento"));
     }
 }

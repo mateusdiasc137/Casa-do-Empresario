@@ -7,9 +7,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.casaempresario.app.database.AppDatabase;
 import com.casaempresario.app.database.Usuario;
 import com.casaempresario.app.databinding.ActivityRegisterBinding;
+import com.casaempresario.app.repository.RepositoryCallback;
+import com.casaempresario.app.repository.RepositoryProvider;
+import com.casaempresario.app.repository.UserRepository;
 import com.casaempresario.app.util.SessionManager;
 
 import java.text.SimpleDateFormat;
@@ -25,7 +27,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private ActivityRegisterBinding binding;
     private SessionManager sessionManager;
-    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,6 @@ public class RegisterActivity extends AppCompatActivity {
         binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        db = AppDatabase.getDatabase(this);
         sessionManager = new SessionManager(this);
 
         binding.btnCadastrar.setOnClickListener(v -> cadastrar());
@@ -70,45 +70,59 @@ public class RegisterActivity extends AppCompatActivity {
 
         setLoading(true);
 
-        new Thread(() -> {
-            try {
-                // Verifica se o e-mail já está cadastrado
-                Usuario existente = db.usuarioDao().findByEmail(email);
+        UserRepository userRepo = RepositoryProvider.getUserRepository(this);
+        userRepo.findByEmail(email, new RepositoryCallback<Usuario>() {
+            @Override
+            public void onSuccess(Usuario existente) {
                 if (existente != null) {
                     runOnUiThread(() -> {
                         setLoading(false);
-                        Toast.makeText(this, "E-mail já cadastrado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, "E-mail já cadastrado", Toast.LENGTH_SHORT).show();
                     });
                     return;
                 }
 
-                // Cria o novo usuário como USER (não admin)
+                String role = "PARTICIPANTE";
+
                 Usuario novoUsuario = new Usuario();
                 novoUsuario.nome     = nome;
                 novoUsuario.email    = email;
                 novoUsuario.senha    = senha;
-                novoUsuario.role     = "USER";
+                novoUsuario.role     = role;
                 novoUsuario.criadoEm = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                         .format(new Date());
 
-                long novoId = db.usuarioDao().insert(novoUsuario);
+                userRepo.insert(novoUsuario, new RepositoryCallback<Long>() {
+                    @Override
+                    public void onSuccess(Long novoId) {
+                        runOnUiThread(() -> {
+                            setLoading(false);
+                            sessionManager.salvarSessao("session-token", nome, email, role, novoId);
+                            Toast.makeText(RegisterActivity.this, "Bem-vindo, " + nome + "! ✅", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        });
+                    }
 
-                runOnUiThread(() -> {
-                    setLoading(false);
-                    sessionManager.salvarSessao("local-session", nome, email, "USER", novoId);
-                    Toast.makeText(this, "Bem-vindo, " + nome + "! ✅", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                });
-
-            } catch (Exception e) {
-                runOnUiThread(() -> {
-                    setLoading(false);
-                    Toast.makeText(this, "Erro ao criar conta: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onError(Exception e) {
+                        runOnUiThread(() -> {
+                            setLoading(false);
+                            Toast.makeText(RegisterActivity.this, "Erro ao criar conta: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+                    }
                 });
             }
-        }).start();
+
+            @Override
+            public void onError(Exception e) {
+                runOnUiThread(() -> {
+                    setLoading(false);
+                    Toast.makeText(RegisterActivity.this, "Erro ao validar e-mail: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
+            }
+        });
     }
 
     private void setLoading(boolean loading) {

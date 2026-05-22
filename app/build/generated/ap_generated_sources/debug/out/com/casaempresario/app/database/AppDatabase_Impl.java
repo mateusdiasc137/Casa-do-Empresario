@@ -31,18 +31,29 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile UsuarioDao _usuarioDao;
 
+  private volatile InteresseDao _interesseDao;
+
+  private volatile MensagemDao _mensagemDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(5) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(8) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `usuarios` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `email` TEXT, `senha` TEXT, `nome` TEXT, `role` TEXT, `criado_em` TEXT)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `eventos` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `titulo` TEXT, `descricao` TEXT, `data_evento` TEXT, `local` TEXT, `capacidade_maxima` INTEGER, `status` TEXT, `criado_por` INTEGER, `banner_uri` TEXT)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `eventos` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `titulo` TEXT, `descricao` TEXT, `data_evento` TEXT, `local` TEXT, `capacidade_maxima` INTEGER, `status` TEXT, `criado_por` INTEGER, `banner_uri` TEXT, `latitude` REAL NOT NULL, `longitude` REAL NOT NULL, `categoria` TEXT)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `fotos_evento` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `eventoId` INTEGER NOT NULL, `urlFoto` TEXT, `legenda` TEXT, `enviadoEm` TEXT, `usuarioNome` TEXT, FOREIGN KEY(`eventoId`) REFERENCES `eventos`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_fotos_evento_eventoId` ON `fotos_evento` (`eventoId`)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `interesses` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `usuario_id` INTEGER NOT NULL, `evento_id` INTEGER NOT NULL, `criado_em` TEXT, FOREIGN KEY(`usuario_id`) REFERENCES `usuarios`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`evento_id`) REFERENCES `eventos`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_interesses_usuario_id` ON `interesses` (`usuario_id`)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_interesses_evento_id` ON `interesses` (`evento_id`)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `mensagens` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `evento_id` INTEGER NOT NULL, `remetente_id` INTEGER NOT NULL, `destinatario_id` INTEGER NOT NULL, `texto` TEXT, `timestamp` TEXT, FOREIGN KEY(`evento_id`) REFERENCES `eventos`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`remetente_id`) REFERENCES `usuarios`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`destinatario_id`) REFERENCES `usuarios`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_mensagens_evento_id` ON `mensagens` (`evento_id`)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_mensagens_remetente_id` ON `mensagens` (`remetente_id`)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_mensagens_destinatario_id` ON `mensagens` (`destinatario_id`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c6bbb30eb4f82b3280e90d8cf6c555ef')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '159c80b89697f3c8f76e2efcf4e08a56')");
       }
 
       @Override
@@ -50,6 +61,8 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("DROP TABLE IF EXISTS `usuarios`");
         db.execSQL("DROP TABLE IF EXISTS `eventos`");
         db.execSQL("DROP TABLE IF EXISTS `fotos_evento`");
+        db.execSQL("DROP TABLE IF EXISTS `interesses`");
+        db.execSQL("DROP TABLE IF EXISTS `mensagens`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -110,7 +123,7 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoUsuarios + "\n"
                   + " Found:\n" + _existingUsuarios);
         }
-        final HashMap<String, TableInfo.Column> _columnsEventos = new HashMap<String, TableInfo.Column>(9);
+        final HashMap<String, TableInfo.Column> _columnsEventos = new HashMap<String, TableInfo.Column>(12);
         _columnsEventos.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsEventos.put("titulo", new TableInfo.Column("titulo", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsEventos.put("descricao", new TableInfo.Column("descricao", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -120,6 +133,9 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsEventos.put("status", new TableInfo.Column("status", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsEventos.put("criado_por", new TableInfo.Column("criado_por", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsEventos.put("banner_uri", new TableInfo.Column("banner_uri", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsEventos.put("latitude", new TableInfo.Column("latitude", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsEventos.put("longitude", new TableInfo.Column("longitude", "REAL", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsEventos.put("categoria", new TableInfo.Column("categoria", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysEventos = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesEventos = new HashSet<TableInfo.Index>(0);
         final TableInfo _infoEventos = new TableInfo("eventos", _columnsEventos, _foreignKeysEventos, _indicesEventos);
@@ -147,9 +163,49 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoFotosEvento + "\n"
                   + " Found:\n" + _existingFotosEvento);
         }
+        final HashMap<String, TableInfo.Column> _columnsInteresses = new HashMap<String, TableInfo.Column>(4);
+        _columnsInteresses.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsInteresses.put("usuario_id", new TableInfo.Column("usuario_id", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsInteresses.put("evento_id", new TableInfo.Column("evento_id", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsInteresses.put("criado_em", new TableInfo.Column("criado_em", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysInteresses = new HashSet<TableInfo.ForeignKey>(2);
+        _foreignKeysInteresses.add(new TableInfo.ForeignKey("usuarios", "CASCADE", "NO ACTION", Arrays.asList("usuario_id"), Arrays.asList("id")));
+        _foreignKeysInteresses.add(new TableInfo.ForeignKey("eventos", "CASCADE", "NO ACTION", Arrays.asList("evento_id"), Arrays.asList("id")));
+        final HashSet<TableInfo.Index> _indicesInteresses = new HashSet<TableInfo.Index>(2);
+        _indicesInteresses.add(new TableInfo.Index("index_interesses_usuario_id", false, Arrays.asList("usuario_id"), Arrays.asList("ASC")));
+        _indicesInteresses.add(new TableInfo.Index("index_interesses_evento_id", false, Arrays.asList("evento_id"), Arrays.asList("ASC")));
+        final TableInfo _infoInteresses = new TableInfo("interesses", _columnsInteresses, _foreignKeysInteresses, _indicesInteresses);
+        final TableInfo _existingInteresses = TableInfo.read(db, "interesses");
+        if (!_infoInteresses.equals(_existingInteresses)) {
+          return new RoomOpenHelper.ValidationResult(false, "interesses(com.casaempresario.app.database.Interesse).\n"
+                  + " Expected:\n" + _infoInteresses + "\n"
+                  + " Found:\n" + _existingInteresses);
+        }
+        final HashMap<String, TableInfo.Column> _columnsMensagens = new HashMap<String, TableInfo.Column>(6);
+        _columnsMensagens.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMensagens.put("evento_id", new TableInfo.Column("evento_id", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMensagens.put("remetente_id", new TableInfo.Column("remetente_id", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMensagens.put("destinatario_id", new TableInfo.Column("destinatario_id", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMensagens.put("texto", new TableInfo.Column("texto", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMensagens.put("timestamp", new TableInfo.Column("timestamp", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysMensagens = new HashSet<TableInfo.ForeignKey>(3);
+        _foreignKeysMensagens.add(new TableInfo.ForeignKey("eventos", "CASCADE", "NO ACTION", Arrays.asList("evento_id"), Arrays.asList("id")));
+        _foreignKeysMensagens.add(new TableInfo.ForeignKey("usuarios", "CASCADE", "NO ACTION", Arrays.asList("remetente_id"), Arrays.asList("id")));
+        _foreignKeysMensagens.add(new TableInfo.ForeignKey("usuarios", "CASCADE", "NO ACTION", Arrays.asList("destinatario_id"), Arrays.asList("id")));
+        final HashSet<TableInfo.Index> _indicesMensagens = new HashSet<TableInfo.Index>(3);
+        _indicesMensagens.add(new TableInfo.Index("index_mensagens_evento_id", false, Arrays.asList("evento_id"), Arrays.asList("ASC")));
+        _indicesMensagens.add(new TableInfo.Index("index_mensagens_remetente_id", false, Arrays.asList("remetente_id"), Arrays.asList("ASC")));
+        _indicesMensagens.add(new TableInfo.Index("index_mensagens_destinatario_id", false, Arrays.asList("destinatario_id"), Arrays.asList("ASC")));
+        final TableInfo _infoMensagens = new TableInfo("mensagens", _columnsMensagens, _foreignKeysMensagens, _indicesMensagens);
+        final TableInfo _existingMensagens = TableInfo.read(db, "mensagens");
+        if (!_infoMensagens.equals(_existingMensagens)) {
+          return new RoomOpenHelper.ValidationResult(false, "mensagens(com.casaempresario.app.database.Mensagem).\n"
+                  + " Expected:\n" + _infoMensagens + "\n"
+                  + " Found:\n" + _existingMensagens);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "c6bbb30eb4f82b3280e90d8cf6c555ef", "97ff1dd871990794a4077d0292953585");
+    }, "159c80b89697f3c8f76e2efcf4e08a56", "de57dd6b9566e11e3099cd5b94c769f4");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -160,7 +216,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "usuarios","eventos","fotos_evento");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "usuarios","eventos","fotos_evento","interesses","mensagens");
   }
 
   @Override
@@ -179,6 +235,8 @@ public final class AppDatabase_Impl extends AppDatabase {
       _db.execSQL("DELETE FROM `usuarios`");
       _db.execSQL("DELETE FROM `eventos`");
       _db.execSQL("DELETE FROM `fotos_evento`");
+      _db.execSQL("DELETE FROM `interesses`");
+      _db.execSQL("DELETE FROM `mensagens`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -199,6 +257,8 @@ public final class AppDatabase_Impl extends AppDatabase {
     _typeConvertersMap.put(EventoDao.class, EventoDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(FotoDao.class, FotoDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(UsuarioDao.class, UsuarioDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(InteresseDao.class, InteresseDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(MensagemDao.class, MensagemDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -255,6 +315,34 @@ public final class AppDatabase_Impl extends AppDatabase {
           _usuarioDao = new UsuarioDao_Impl(this);
         }
         return _usuarioDao;
+      }
+    }
+  }
+
+  @Override
+  public InteresseDao interesseDao() {
+    if (_interesseDao != null) {
+      return _interesseDao;
+    } else {
+      synchronized(this) {
+        if(_interesseDao == null) {
+          _interesseDao = new InteresseDao_Impl(this);
+        }
+        return _interesseDao;
+      }
+    }
+  }
+
+  @Override
+  public MensagemDao mensagemDao() {
+    if (_mensagemDao != null) {
+      return _mensagemDao;
+    } else {
+      synchronized(this) {
+        if(_mensagemDao == null) {
+          _mensagemDao = new MensagemDao_Impl(this);
+        }
+        return _mensagemDao;
       }
     }
   }
