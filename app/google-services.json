@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "352332001303",
+    "project_id": "casa-do-empresario-c0002",
+    "storage_bucket": "casa-do-empresario-c0002.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:352332001303:android:16021c989b8797941dec52",
+        "android_client_info": {
+          "package_name": "com.casaempresario.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFR8uo4Ozz_REm2kF_hL--V0MlbkdssZs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

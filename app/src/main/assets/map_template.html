@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            background-color: #F5F5F5;
+        }
+        html, body, #map {
+            height: 100%;
+            width: 100vw;
+        }
+        .custom-popup .leaflet-popup-content-wrapper {
+            background: #ffffff;
+            color: #212121;
+            font-family: 'Roboto', sans-serif;
+            border-radius: 8px;
+            padding: 4px;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.2);
+        }
+        .custom-popup .leaflet-popup-content h3 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #9C27B0;
+        }
+        .custom-popup .leaflet-popup-content p {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            color: #666;
+        }
+        .custom-popup .leaflet-popup-content button {
+            background-color: #9C27B0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script>
+        // Inicializa o mapa com foco em Viçosa, MG, Brasil
+        var map = L.map('map', {
+            zoomControl: false
+        }).setView([-20.7582, -42.8821], 15);
+
+        L.control.zoom({
+            position: 'bottomright'
+        }).addTo(map);
+
+        // Carrega os tiles do OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var markers = {};
+
+        function addMarker(lat, lng, title, location, id) {
+            if (markers[id]) {
+                map.removeLayer(markers[id]);
+            }
+
+            var marker = L.marker([lat, lng]).addTo(map);
+            
+            var popupContent = '<div class="custom-popup">' +
+                '<h3>' + title + '</h3>' +
+                '<p>📍 ' + location + '</p>' +
+                '<button onclick="abrirDetalhes(' + id + ')">Ver Detalhes</button>' +
+                '</div>';
+                
+            marker.bindPopup(popupContent);
+            markers[id] = marker;
+        }
+
+        function abrirDetalhes(id) {
+            if (window.AndroidInterface) {
+                window.AndroidInterface.abrirEvento(id);
+            }
+        }
+
+        function limparMarcadores() {
+            for (var id in markers) {
+                map.removeLayer(markers[id]);
+            }
+            markers = {};
+        }
+    </script>
+</body>
+</html>
