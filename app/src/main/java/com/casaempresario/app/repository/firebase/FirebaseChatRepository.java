@@ -20,7 +20,11 @@ public class FirebaseChatRepository implements ChatRepository {
     @Override
     public void insert(Mensagem mensagem, RepositoryCallback<Long> callback) {
         if (mensagem.id == 0) {
-            mensagem.id = System.currentTimeMillis() + (long) (Math.random() * 100000L);
+            // Multiplicamos por 10000 e somamos um aleatório de 0-9999.
+            // Isso garante que a ordem cronológica (System.currentTimeMillis)
+            // nunca seja sobreposta pelo número aleatório, evitando que
+            // mensagens mais novas apareçam com ID menor (por cima).
+            mensagem.id = (System.currentTimeMillis() * 10000L) + (long) (Math.random() * 10000L);
         }
         firestore.collection(COLLECTION)
                 .document(String.valueOf(mensagem.id))
