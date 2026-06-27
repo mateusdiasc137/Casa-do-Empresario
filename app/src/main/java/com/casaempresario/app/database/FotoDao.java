@@ -16,11 +16,11 @@ public interface FotoDao {
     @Query("SELECT * FROM fotos_evento WHERE eventoId = :eventoId")
     List<EventPhoto> getFotosByEvento(long eventoId);
 
-    // ✅  método para buscar uma foto específica pelo ID
+    // Busca uma foto específica pelo ID
     @Query("SELECT * FROM fotos_evento WHERE id = :fotoId")
     EventPhoto getFotoById(Long fotoId);
 
-    // ✅  método para deletar a entrada no banco
+    // Remove a entrada do banco
     @Query("DELETE FROM fotos_evento WHERE id = :fotoId")
     void deleteById(Long fotoId);
 }

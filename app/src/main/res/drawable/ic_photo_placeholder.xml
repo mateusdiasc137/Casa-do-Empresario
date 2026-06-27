@@ -4,15 +4,9 @@
     android:height="150dp"
     android:viewportWidth="150"
     android:viewportHeight="150">
-
-    <path android:fillColor="#EDE7F6"
-        android:pathData="M0,0 L150,0 L150,150 L0,150 Z" />
-
-    <!-- Ícone câmera -->
-    <path android:fillColor="#9C27B0"
-        android:pathData="M55,55 L65,45 L85,45 L95,55 L105,55 L105,100 L45,100 L45,55 Z" />
-    <path android:fillColor="#EDE7F6"
-        android:pathData="M75,65 m-15,0 a15,15 0 1,0 30,0 a15,15 0 1,0 -30,0" />
-    <path android:fillColor="#9C27B0"
-        android:pathData="M75,65 m-9,0 a9,9 0 1,0 18,0 a9,9 0 1,0 -18,0" />
+    <path android:fillColor="#111827" android:pathData="M0,0 L150,0 L150,150 L0,150 Z" />
+    <path android:fillColor="#1F2937" android:pathData="M0,112 C29,89 51,101 75,80 C101,57 121,63 150,42 L150,150 L0,150 Z" />
+    <path android:fillColor="#44D6B45A" android:pathData="M46,54 L59,41 L91,41 L104,54 L116,54 L116,116 L34,116 L34,54 Z" />
+    <path android:fillColor="#D6B45A" android:pathData="M75,68 m-20,0 a20,20 0,1 0,40 0 a20,20 0,1 0,-40 0" />
+    <path android:fillColor="#111827" android:pathData="M75,68 m-11,0 a11,11 0,1 0,22 0 a11,11 0,1 0,-22 0" />
 </vector>

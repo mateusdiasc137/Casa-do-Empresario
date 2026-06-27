@@ -44,8 +44,8 @@ public class FirebaseChatRepository implements ChatRepository {
                         }
                     });
                     
-                    // Ordenar por ID ou timestamp (ID gerado pelo currentTimeMillis é naturalmente ordenado se for sequencial,
-                    // mas podemos ordenar usando uma comparação simples de timestamp ou ID)
+                    // Mantém as mensagens em ordem cronológica,
+                    // usando timestamp ou ID como referência.)
                     Collections.sort(thread, (m1, m2) -> Long.compare(m1.id, m2.id));
                     
                     callback.onSuccess(thread);
@@ -65,7 +65,7 @@ public class FirebaseChatRepository implements ChatRepository {
                             mensagens.add(msg);
                         }
                     });
-                    // Ordenar por ID decrescente (mais recente primeiro)
+                    // Mantém as conversas recentes no topo
                     Collections.sort(mensagens, (m1, m2) -> Long.compare(m2.id, m1.id));
                     callback.onSuccess(mensagens);
                 })

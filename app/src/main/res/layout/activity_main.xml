@@ -3,48 +3,51 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@drawable/bg_app_premium">
 
-    <!-- AppBar -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:background="@android:color/transparent"
         app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary"
+            android:layout_height="66dp"
+            android:background="@drawable/gradient_primary"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:titleTextColor="@color/white" />
-
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:titleTextColor="@color/cev_gold" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Bottom Navigation Bar -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="74dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/surface"
-        app:menu="@menu/bottom_nav_menu"
-        app:elevation="8dp"
-        app:itemIconTint="@color/primary"
-        app:itemTextColor="@color/text_main" />
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/bg_bottom_nav_premium"
+        app:elevation="16dp"
+        app:itemHorizontalTranslationEnabled="false"
+        app:itemIconTint="@color/bottom_nav_item"
+        app:itemRippleColor="#22D6B45A"
+        app:itemTextColor="@color/bottom_nav_item"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu" />
 
-    <!-- Content Containers -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_navigation"
         android:layout_below="@id/app_bar">
 
-        <!-- ───────────────────────────────────────────────────────────── -->
-        <!-- TAB 1: EVENT LIST (HOME) -->
-        <!-- ───────────────────────────────────────────────────────────── -->
         <LinearLayout
             android:id="@+id/layout_tab_home"
             android:layout_width="match_parent"
@@ -52,239 +55,775 @@
             android:orientation="vertical"
             android:visibility="visible">
 
-            <!-- Search Field -->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Buscar eventos por título ou local..."
-                android:layout_margin="16dp"
-                app:startIconDrawable="@android:drawable/ic_menu_search"
-                app:boxCornerRadiusTopStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusBottomEnd="12dp"
-                app:endIconMode="clear_text">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_busca"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:textColor="@color/text_main" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tab_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/primary"
-                app:tabTextColor="#BBFFFFFF"
-                app:tabSelectedTextColor="@android:color/white"
-                app:tabIndicatorColor="@android:color/white" />
-
-            <!-- Category Chips Filter Row -->
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="none"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="6dp"
-                android:paddingHorizontal="16dp"
-                android:clipToPadding="false">
-
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/chip_group_categorias"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:singleLine="true"
-                    app:singleSelection="true"
-                    app:selectionRequired="true" />
-            </HorizontalScrollView>
-
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipe_refresh"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <FrameLayout
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/home_scroll"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:fillViewport="true">
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_eventos"
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="12dp"
-                        android:clipToPadding="false" />
-
-                    <ProgressBar
-                        android:id="@+id/progress_bar"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:visibility="gone" />
+                        android:orientation="vertical"
+                        android:paddingBottom="12dp">
 
-                    <TextView
-                        android:id="@+id/tv_vazio"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="Nenhum evento encontrado"
-                        android:textSize="16sp"
-                        android:textColor="@color/text_muted"
-                        android:visibility="gone" />
-                </FrameLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingStart="18dp"
+                            android:paddingTop="18dp"
+                            android:paddingEnd="18dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_chip_subtle"
+                                android:paddingHorizontal="12dp"
+                                android:paddingVertical="6dp"
+                                android:text="CEV • Plataforma oficial"
+                                android:textColor="@color/cev_gold"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                android:text="Agenda da cidade"
+                                android:textColor="@color/cev_text_primary"
+                                android:textSize="29sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:text="Descubra eventos, oportunidades e conexões em Viçosa com uma navegação mais rápida e elegante."
+                                android:textColor="@color/cev_text_muted"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="18dp"
+                            android:layout_marginEnd="16dp"
+                            app:cardBackgroundColor="@color/cev_surface"
+                            app:cardCornerRadius="30dp"
+                            app:cardElevation="10dp"
+                            app:strokeColor="@color/cev_gold_border"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="18dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Explore eventos com mais facilidade"
+                                    android:textColor="@color/cev_text_primary"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Pesquise rapidamente e filtre o que realmente importa para você."
+                                    android:textColor="@color/cev_text_muted"
+                                    android:textSize="12sp" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:text="Use a busca inteligente para encontrar eventos por título, local, descrição ou organizador."
+                                    android:textColor="@color/cev_text_muted"
+                                    android:textSize="12sp" />
+
+                                <com.google.android.material.textfield.TextInputLayout
+                                    style="@style/Widget.CasaEmpresario.TextInputLayout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="16dp"
+                                    android:hint="Buscar por título, local, descrição ou organizador"
+                                    app:boxCornerRadiusBottomEnd="20dp"
+                                    app:boxCornerRadiusBottomStart="20dp"
+                                    app:boxCornerRadiusTopEnd="20dp"
+                                    app:boxCornerRadiusTopStart="20dp"
+                                    app:endIconMode="clear_text"
+                                    app:startIconDrawable="@drawable/ic_search"
+                                    app:startIconTint="@color/cev_gold">
+
+                                    <com.google.android.material.textfield.TextInputEditText
+                                        android:id="@+id/et_busca"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:inputType="text"
+                                        android:textColor="@color/cev_text_primary"
+                                        android:textColorHint="@color/cev_text_muted" />
+                                </com.google.android.material.textfield.TextInputLayout>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginEnd="16dp"
+                            app:cardBackgroundColor="@color/cev_surface"
+                            app:cardCornerRadius="28dp"
+                            app:cardElevation="8dp"
+                            app:strokeColor="@color/outline"
+                            app:strokeWidth="1dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="Navegue do seu jeito"
+                                    android:textColor="@color/cev_text_primary"
+                                    android:textSize="16sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Escolha o status e a categoria para refinar sua busca."
+                                    android:textColor="@color/cev_text_muted"
+                                    android:textSize="12sp" />
+
+                                <com.google.android.material.tabs.TabLayout
+                                    android:id="@+id/tab_layout"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="48dp"
+                                    android:layout_marginTop="14dp"
+                                    android:background="@drawable/bg_subtle_panel"
+                                    app:tabGravity="fill"
+                                    app:tabIndicatorColor="@color/cev_gold"
+                                    app:tabIndicatorFullWidth="false"
+                                    app:tabIndicatorHeight="3dp"
+                                    app:tabMode="fixed"
+                                    app:tabRippleColor="#22D6B45A"
+                                    app:tabSelectedTextColor="@color/cev_gold"
+                                    app:tabTextColor="@color/cev_text_muted" />
+
+                                <HorizontalScrollView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:scrollbars="none">
+
+                                    <com.google.android.material.chip.ChipGroup
+                                        android:id="@+id/chip_group_categorias"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        app:selectionRequired="true"
+                                        app:singleLine="true"
+                                        app:singleSelection="true" />
+                                </HorizontalScrollView>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="18dp"
+                            android:paddingTop="16dp"
+                            android:paddingEnd="18dp"
+                            android:paddingBottom="4dp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Eventos em destaque"
+                                    android:textColor="@color/cev_text_primary"
+                                    android:textSize="19sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Atualizado em tempo real conforme os filtros escolhidos."
+                                    android:textColor="@color/cev_text_muted"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/bg_chip_subtle"
+                                android:paddingHorizontal="12dp"
+                                android:paddingVertical="6dp"
+                                android:text="Feed"
+                                android:textColor="@color/cev_gold"
+                                android:textSize="11sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="300dp">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recycler_eventos"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clipToPadding="false"
+                                android:nestedScrollingEnabled="false"
+                                android:paddingStart="8dp"
+                                android:paddingTop="2dp"
+                                android:paddingEnd="8dp"
+                                android:paddingBottom="100dp" />
+
+                            <ProgressBar
+                                android:id="@+id/progress_bar"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="36dp"
+                                android:indeterminateTint="@color/cev_gold"
+                                android:visibility="gone" />
+
+                            <TextView
+                                android:id="@+id/tv_vazio"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="42dp"
+                                android:background="@drawable/bg_subtle_panel"
+                                android:paddingHorizontal="20dp"
+                                android:paddingVertical="14dp"
+                                android:text="Nenhum evento encontrado"
+                                android:textColor="@color/cev_text_muted"
+                                android:textSize="15sp"
+                                android:visibility="gone" />
+                        </FrameLayout>
+                    </LinearLayout>
+                </androidx.core.widget.NestedScrollView>
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         </LinearLayout>
 
-        <!-- ───────────────────────────────────────────────────────────── -->
-        <!-- TAB 2: INTERESTS -->
-        <!-- ───────────────────────────────────────────────────────────── -->
+        <LinearLayout
+            android:id="@+id/layout_tab_feed"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:fillViewport="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingBottom="104dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingStart="18dp"
+                        android:paddingTop="18dp"
+                        android:paddingEnd="18dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/bg_metric_pill_secondary"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="6dp"
+                            android:text="Comunicação ao vivo"
+                            android:textColor="@color/cev_text_primary"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:text="Notícias e comunicação"
+                            android:textColor="@color/cev_text_primary"
+                            android:textSize="28sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Um espaço para avisos, promoções de eventos e conversas públicas entre organizadores e participantes."
+                            android:textColor="@color/cev_text_muted"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="18dp"
+                        android:layout_marginEnd="16dp"
+                        app:cardBackgroundColor="@color/cev_surface"
+                        app:cardCornerRadius="28dp"
+                        app:cardElevation="10dp"
+                        app:strokeColor="@color/cev_gold_border"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="18dp">
+
+                            <TextView
+                                android:id="@+id/tv_feed_titulo_publicacao"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Criar publicação"
+                                android:textColor="@color/cev_text_primary"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_feed_subtitulo_publicacao"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Publique avisos, tire dúvidas ou converse com todos em tempo real."
+                                android:textColor="@color/cev_text_muted"
+                                android:textSize="12sp" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.CasaEmpresario.TextInputLayout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="14dp"
+                                app:hintEnabled="false"
+                                app:boxCornerRadiusBottomEnd="18dp"
+                                app:boxCornerRadiusBottomStart="18dp"
+                                app:boxCornerRadiusTopEnd="18dp"
+                                app:boxCornerRadiusTopStart="18dp"
+                                app:startIconDrawable="@drawable/ic_feed"
+                                app:startIconTint="@color/cev_gold">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/et_feed_mensagem"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="top"
+                                    android:inputType="textMultiLine|textCapSentences"
+                                    android:minLines="3"
+                                    android:hint="Ex.: Últimas vagas para o evento de hoje. Esperamos vocês!"
+                                    android:paddingTop="12dp"
+                                    android:paddingBottom="12dp"
+                                    android:textColor="@color/cev_text_primary"
+                                    android:textColorHint="@color/cev_text_muted" />
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <FrameLayout
+                                android:id="@+id/layout_feed_imagem_preview"
+                                android:layout_width="match_parent"
+                                android:layout_height="190dp"
+                                android:layout_marginTop="12dp"
+                                android:visibility="gone">
+
+                                <ImageView
+                                    android:id="@+id/img_feed_preview"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:background="@drawable/bg_event_placeholder_premium"
+                                    android:scaleType="centerCrop" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_feed_remover_imagem"
+                                    style="@style/Widget.CasaEmpresario.Button.Text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="42dp"
+                                    android:layout_gravity="top|end"
+                                    android:layout_margin="8dp"
+                                    android:text="Remover"
+                                    android:textColor="@color/white"
+                                    app:backgroundTint="#AA000000"
+                                    app:cornerRadius="18dp" />
+                            </FrameLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_feed_foto"
+                                style="@style/Widget.CasaEmpresario.Button.Outlined"
+                                android:layout_width="match_parent"
+                                android:layout_height="50dp"
+                                android:layout_marginTop="12dp"
+                                android:text="Adicionar foto à publicação"
+                                android:textColor="@color/cev_gold"
+                                app:cornerRadius="18dp"
+                                app:icon="@android:drawable/ic_menu_gallery"
+                                app:iconTint="@color/cev_gold" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_feed_enviar"
+                                style="@style/Widget.CasaEmpresario.Button.Primary"
+                                android:layout_width="match_parent"
+                                android:layout_height="52dp"
+                                android:layout_marginTop="12dp"
+                                android:text="Publicar no feed"
+                                android:textColor="@color/cev_background"
+                                android:textStyle="bold"
+                                app:backgroundTint="@color/secondary"
+                                app:cornerRadius="18dp"
+                                app:icon="@drawable/ic_feed"
+                                app:iconTint="@color/cev_background" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="18dp"
+                        android:paddingTop="18dp"
+                        android:paddingEnd="18dp"
+                        android:paddingBottom="4dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Publicações recentes"
+                                android:textColor="@color/cev_text_primary"
+                                android:textSize="19sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Novas mensagens aparecem automaticamente."
+                                android:textColor="@color/cev_text_muted"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <ProgressBar
+                            android:id="@+id/progress_feed"
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:indeterminateTint="@color/secondary"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="220dp">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_feed"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:nestedScrollingEnabled="false"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="18dp" />
+
+                        <TextView
+                            android:id="@+id/tv_feed_vazio"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginStart="18dp"
+                            android:layout_marginTop="36dp"
+                            android:layout_marginEnd="18dp"
+                            android:background="@drawable/bg_subtle_panel"
+                            android:gravity="center"
+                            android:padding="18dp"
+                            android:text="Ainda não há publicações no feed."
+                            android:textColor="@color/cev_text_muted"
+                            android:textSize="14sp" />
+                    </FrameLayout>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/layout_tab_interests"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="gone"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:visibility="gone">
 
-            <!-- Button to Open Map -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Meus interesses"
+                android:textColor="@color/cev_text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="16dp"
+                android:text="Eventos que você marcou para acompanhar de perto."
+                android:textColor="@color/cev_text_muted"
+                android:textSize="13sp" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_ver_no_mapa"
+                style="@style/Widget.CasaEmpresario.Button.Primary"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:text="Visualizar no Mapa de Eventos"
+                android:layout_height="54dp"
                 android:layout_marginBottom="16dp"
-                app:cornerRadius="12dp"
+                android:text="Visualizar no mapa de eventos"
+                android:textColor="@color/cev_background"
+                android:textStyle="bold"
+                app:backgroundTint="@color/cev_gold"
+                app:cornerRadius="18dp"
                 app:icon="@android:drawable/ic_dialog_map"
-                app:backgroundTint="@color/primary"
-                android:textColor="@color/white" />
+                app:iconTint="@color/cev_background" />
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_interesses"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:clipToPadding="false" />
+                    android:clipToPadding="false"
+                    android:paddingBottom="88dp" />
 
                 <TextView
                     android:id="@+id/tv_interesses_vazio"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:background="@drawable/bg_subtle_panel"
+                    android:gravity="center"
+                    android:padding="18dp"
                     android:text="Você não marcou interesse em nenhum evento."
-                    android:textSize="14sp"
-                    android:textColor="@color/text_muted" />
+                    android:textColor="@color/cev_text_muted"
+                    android:textSize="14sp" />
             </FrameLayout>
         </LinearLayout>
 
-        <!-- ───────────────────────────────────────────────────────────── -->
-        <!-- TAB 3: MESSAGES (CHAT INBOX) -->
-        <!-- ───────────────────────────────────────────────────────────── -->
         <LinearLayout
             android:id="@+id/layout_tab_messages"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:visibility="gone"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mensagens"
+                android:textColor="@color/cev_text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="16dp"
+                android:text="Continue conversas com organizadores e participantes."
+                android:textColor="@color/cev_text_muted"
+                android:textSize="13sp" />
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="0dp"
+                android:layout_weight="1">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_chats"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:clipToPadding="false" />
+                    android:clipToPadding="false"
+                    android:paddingBottom="88dp" />
 
                 <TextView
                     android:id="@+id/tv_chats_vazio"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:background="@drawable/bg_subtle_panel"
+                    android:gravity="center"
+                    android:padding="18dp"
                     android:text="Nenhuma conversa iniciada."
-                    android:textSize="14sp"
-                    android:textColor="@color/text_muted" />
+                    android:textColor="@color/cev_text_muted"
+                    android:textSize="14sp" />
             </FrameLayout>
         </LinearLayout>
 
-        <!-- ───────────────────────────────────────────────────────────── -->
-        <!-- TAB 4: PROFILE & SETTINGS -->
-        <!-- ───────────────────────────────────────────────────────────── -->
         <ScrollView
             android:id="@+id/layout_tab_profile"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:fillViewport="true">
+            android:fillViewport="true"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="20dp"
+                android:paddingBottom="96dp">
 
-                <!-- Profile Info Card -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Perfil"
+                    android:textColor="@color/cev_text_primary"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="16dp"
-                    app:strokeWidth="0dp">
+                    app:cardBackgroundColor="@color/cev_surface"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="8dp"
+                    app:strokeColor="@color/cev_gold_border"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
+                        android:orientation="horizontal"
                         android:padding="20dp">
 
-                        <TextView
-                            android:id="@+id/tv_perfil_nome"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Nome do Usuário"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_main" />
+                        <FrameLayout
+                            android:layout_width="72dp"
+                            android:layout_height="72dp"
+                            android:background="@drawable/bg_avatar_gold">
 
-                        <TextView
-                            android:id="@+id/tv_perfil_email"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="usuario@email.com"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_muted"
-                            android:layout_marginTop="4dp" />
+                            <ImageView
+                                android:id="@+id/img_perfil_foto"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:visibility="gone" />
 
-                        <TextView
-                            android:id="@+id/tv_perfil_role"
-                            android:layout_width="wrap_content"
+                            <TextView
+                                android:id="@+id/tv_perfil_avatar"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:gravity="center"
+                                android:text="CEV"
+                                android:textColor="@color/cev_background"
+                                android:textSize="17sp"
+                                android:textStyle="bold" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Tipo de Conta: PARTICIPANTE"
-                            android:textSize="12sp"
-                            android:textColor="@color/primary"
-                            android:textStyle="bold"
-                            android:layout_marginTop="12dp"
-                            android:background="#EEF2FF"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="6dp" />
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_perfil_nome"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nome do Usuário"
+                                android:textColor="@color/cev_text_primary"
+                                android:textSize="21sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tv_perfil_email"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="usuario@email.com"
+                                android:textColor="@color/cev_text_muted"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tv_perfil_role"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:background="@drawable/badge_gold"
+                                android:paddingHorizontal="12dp"
+                                android:paddingVertical="6dp"
+                                android:text="Tipo de Conta: PARTICIPANTE"
+                                android:textColor="@color/cev_background"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_alterar_foto_perfil"
+                                style="@style/Widget.CasaEmpresario.Button.Outlined"
+                                android:layout_width="match_parent"
+                                android:layout_height="48dp"
+                                android:layout_marginTop="12dp"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:text="Alterar foto"
+                                android:textColor="@color/cev_gold"
+                                android:textSize="12sp"
+                                app:cornerRadius="16dp"
+                                app:icon="@android:drawable/ic_menu_camera"
+                                app:iconPadding="8dp"
+                                app:iconTint="@color/cev_gold" />
+                        </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Notification Preferences Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
                     android:layout_marginBottom="24dp"
-                    app:strokeWidth="0dp">
+                    app:cardBackgroundColor="@color/cev_surface"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="8dp"
+                    app:strokeColor="@color/outline"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -295,69 +834,76 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Preferências de Notificação"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/text_main"
-                            android:layout_marginBottom="12dp" />
+                            android:layout_marginBottom="12dp"
+                            android:text="Preferências de notificação"
+                            android:textColor="@color/cev_text_primary"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/switch_novos_eventos"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Novos Eventos"
-                            android:paddingVertical="8dp"
                             android:checked="true"
-                            android:textColor="@color/text_main" />
+                            android:paddingVertical="10dp"
+                            android:text="Novos eventos"
+                            android:textColor="@color/cev_text_primary"
+                            app:thumbTint="@color/cev_gold"
+                            app:trackTint="@color/cev_gold_border" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/switch_mensagens"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Mensagens e Chats"
-                            android:paddingVertical="8dp"
                             android:checked="true"
-                            android:textColor="@color/text_main" />
+                            android:paddingVertical="10dp"
+                            android:text="Mensagens e chats"
+                            android:textColor="@color/cev_text_primary"
+                            app:thumbTint="@color/cev_gold"
+                            app:trackTint="@color/cev_gold_border" />
 
                         <androidx.appcompat.widget.SwitchCompat
                             android:id="@+id/switch_lembretes"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Lembretes de Evento de Interesse"
-                            android:paddingVertical="8dp"
                             android:checked="true"
-                            android:textColor="@color/text_main" />
+                            android:paddingVertical="10dp"
+                            android:text="Lembretes dos eventos de interesse"
+                            android:textColor="@color/cev_text_primary"
+                            app:thumbTint="@color/cev_gold"
+                            app:trackTint="@color/cev_gold_border" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Logout Button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_logout"
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:text="Fazer Logout"
-                    app:cornerRadius="12dp"
+                    android:layout_height="54dp"
+                    android:text="Fazer logout"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
                     app:backgroundTint="@color/status_cancelado"
-                    android:textColor="@color/white" />
-
+                    app:cornerRadius="18dp" />
             </LinearLayout>
         </ScrollView>
     </FrameLayout>
 
-    <!-- Floating Action Button for Organizers -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_novo_evento"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="80dp"
         android:layout_marginEnd="20dp"
-        android:src="@android:drawable/ic_input_add"
-        android:contentDescription="Novo Evento"
+        android:layout_marginBottom="100dp"
+        android:text="Criar evento"
+        android:textStyle="bold"
         android:visibility="gone"
-        app:backgroundTint="@color/primary"
-        app:tint="@color/white"
-        app:elevation="6dp" />
+        app:backgroundTint="@color/secondary"
+        app:elevation="12dp"
+        app:icon="@android:drawable/ic_input_add"
+        app:iconPadding="8dp"
+        app:iconTint="@color/cev_background"
+        android:textColor="@color/cev_background" />
 
 </RelativeLayout>

@@ -49,4 +49,7 @@ public class Mensagem {
 
     public String texto;
     public String timestamp;
+
+    @ColumnInfo(name = "remetente_foto_uri")
+    public String remetenteFotoUri;
 }

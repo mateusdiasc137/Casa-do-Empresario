@@ -16,6 +16,9 @@ public class Evento {
     @ColumnInfo(name = "data_evento")
     public String dataEvento;
 
+    @ColumnInfo(name = "data_fim_evento")
+    public String dataFimEvento;
+
     public String local;
 
     @ColumnInfo(name = "capacidade_maxima")
@@ -26,7 +29,7 @@ public class Evento {
     @ColumnInfo(name = "criado_por")
     public Long criadoPor;
 
-    // NOVO
+    // Campo usado na interface
     @ColumnInfo(name = "banner_uri")
     public String bannerUri;
 
@@ -40,12 +43,13 @@ public class Evento {
     public String getTitulo()            { return titulo; }
     public String getDescricao()         { return descricao; }
     public String getDataEvento()        { return dataEvento; }
+    public String getDataFimEvento()     { return dataFimEvento; }
     public String getLocal()             { return local; }
     public Integer getCapacidadeMaxima() { return capacidadeMaxima; }
     public String getStatus()            { return status; }
     public Long getCriadoPor()           { return criadoPor; }
 
-    // NOVO
+    // Campo usado na interface
     public String getBannerUri()         { return bannerUri; }
 
     public double getLatitude()          { return latitude; }

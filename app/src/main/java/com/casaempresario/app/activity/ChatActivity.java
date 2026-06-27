@@ -43,6 +43,10 @@ public class ChatActivity extends AppCompatActivity {
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.getRoot().setAlpha(0f);
+        binding.getRoot().setTranslationY(18f);
+        binding.getRoot().animate().alpha(1f).translationY(0f).setDuration(300).start();
+
         sessionManager = new SessionManager(this);
 
         userId = sessionManager.getUserId();
@@ -63,7 +67,8 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        adapter = new ChatAdapter(new ArrayList<>(), userId);
+        adapter = new ChatAdapter(new ArrayList<>(), userId, sessionManager.getProfilePhotoUri(), null);
+        adapter.setInitials(gerarIniciais(sessionManager.getNome()), "CE");
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setStackFromEnd(true);
         binding.recyclerMensagens.setLayoutManager(layoutManager);
@@ -80,6 +85,8 @@ public class ChatActivity extends AppCompatActivity {
                             getSupportActionBar().setTitle(outroUser.nome);
                         }
                         binding.tvEventoOrganizador.setText("Contato: " + outroUser.nome);
+                        adapter.setUserPhotos(sessionManager.getProfilePhotoUri(), outroUser.fotoPerfilUri);
+                        adapter.setInitials(gerarIniciais(sessionManager.getNome()), gerarIniciais(outroUser.nome));
                     }
                 });
 
@@ -147,6 +154,7 @@ public class ChatActivity extends AppCompatActivity {
         msg.destinatarioId = outroUserId;
         msg.texto = texto;
         msg.timestamp = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+        msg.remetenteFotoUri = sessionManager.getProfilePhotoUri();
 
         RepositoryProvider.getChatRepository(this).insert(msg, new RepositoryCallback<Long>() {
             @Override
@@ -176,6 +184,7 @@ public class ChatActivity extends AppCompatActivity {
                         resposta.destinatarioId = userId;
                         resposta.texto = "Olá! Recebi sua mensagem sobre o evento. Te respondo em breve! 📅";
                         resposta.timestamp = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+                        resposta.remetenteFotoUri = outroUser.fotoPerfilUri;
 
                         RepositoryProvider.getChatRepository(ChatActivity.this).insert(resposta, new RepositoryCallback<Long>() {
                             @Override
@@ -197,6 +206,17 @@ public class ChatActivity extends AppCompatActivity {
                 // Silencioso
             }
         });
+    }
+
+    private String gerarIniciais(String nome) {
+        if (nome == null || nome.trim().isEmpty()) {
+            return "CE";
+        }
+        String[] partes = nome.trim().split("\\s+");
+        if (partes.length == 1) {
+            return partes[0].substring(0, Math.min(2, partes[0].length())).toUpperCase();
+        }
+        return (partes[0].substring(0, 1) + partes[partes.length - 1].substring(0, 1)).toUpperCase();
     }
 
     @Override

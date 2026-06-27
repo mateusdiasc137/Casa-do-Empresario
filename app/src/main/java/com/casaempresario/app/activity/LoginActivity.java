@@ -1,23 +1,26 @@
 package com.casaempresario.app.activity;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.casaempresario.app.R;
 import com.casaempresario.app.database.Usuario;
 import com.casaempresario.app.databinding.ActivityLoginBinding;
 import com.casaempresario.app.repository.RepositoryCallback;
 import com.casaempresario.app.repository.RepositoryProvider;
-import com.casaempresario.app.repository.UserRepository;
 import com.casaempresario.app.util.SessionManager;
 
 /**
  * Tela de Login.
- * Autentica o usuário consultando o banco local (Room/SQLite) ou firebase.
- * Admin padrão criado automaticamente: admin@admin.com / admin123
+ * Autentica o usuário consultando o banco configurado para o aplicativo.
+ * As contas iniciais são carregadas durante a criação do banco.
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -32,6 +35,35 @@ public class LoginActivity extends AppCompatActivity {
 
         sessionManager = new SessionManager(this);
 
+        // Animações visuais da tela de entrada
+        binding.getRoot().setAlpha(0f);
+        binding.getRoot().setTranslationY(24f);
+        binding.getRoot().animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(420)
+                .start();
+
+        binding.ringOuter.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate_cw));
+        binding.ringInner.startAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate_ccw));
+
+        ObjectAnimator pulse = ObjectAnimator.ofFloat(binding.pulseDot, "alpha", 1f, 0.25f);
+        pulse.setDuration(1000);
+        pulse.setRepeatMode(ObjectAnimator.REVERSE);
+        pulse.setRepeatCount(ObjectAnimator.INFINITE);
+        pulse.start();
+
+        binding.logoCore.animate()
+                .scaleX(1.05f)
+                .scaleY(1.05f)
+                .setDuration(900)
+                .withEndAction(() -> binding.logoCore.animate()
+                        .scaleX(1f)
+                        .scaleY(1f)
+                        .setDuration(900)
+                        .start())
+                .start();
+
         // Se já estiver logado, vai direto para a tela principal
         if (sessionManager.isLogado()) {
             irParaMain();
@@ -40,6 +72,10 @@ public class LoginActivity extends AppCompatActivity {
 
         binding.btnEntrar.setOnClickListener(v -> fazerLogin());
         binding.btnCadastrar.setOnClickListener(v -> startActivity(new Intent(this, RegisterActivity.class)));
+        binding.btnExplorarSemLogin.setOnClickListener(v -> {
+            sessionManager.salvarVisitante();
+            irParaMain();
+        });
     }
 
     private void fazerLogin() {
@@ -65,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                                 usuario.email,
                                 usuario.role,
                                 usuario.id);
+                        sessionManager.setProfilePhotoUri(usuario.fotoPerfilUri);
                         irParaMain();
                     } else {
                         Toast.makeText(LoginActivity.this, "Email ou senha incorretos", Toast.LENGTH_SHORT).show();
@@ -76,8 +113,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onError(Exception e) {
                 runOnUiThread(() -> {
                     setLoading(false);
-                    Toast.makeText(LoginActivity.this, "Erro ao autenticar: " + e.getMessage(), Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(LoginActivity.this, "Erro ao autenticar: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
             }
         });
@@ -91,6 +127,6 @@ public class LoginActivity extends AppCompatActivity {
     private void setLoading(boolean loading) {
         binding.btnEntrar.setEnabled(!loading);
         binding.progressBar.setVisibility(loading ? View.VISIBLE : View.GONE);
-        binding.btnEntrar.setText(loading ? "Entrando..." : "Entrar");
+        binding.btnEntrar.setText(loading ? "Entrando..." : "ENTRAR");
     }
 }

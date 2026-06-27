@@ -1,36 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="start"
+    android:gravity="start|center_vertical"
+    android:orientation="horizontal"
     android:paddingHorizontal="16dp"
-    android:paddingVertical="4dp">
+    android:paddingVertical="6dp">
+
+    <FrameLayout
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/bg_avatar_gold">
+
+        <ImageView
+            android:id="@+id/img_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_avatar_iniciais"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="CE"
+            android:textColor="@color/cev_background"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_message_received"
         android:orientation="vertical"
-        android:paddingHorizontal="14dp"
-        android:paddingVertical="10dp"
-        android:maxWidth="260dp">
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="11dp">
 
         <TextView
             android:id="@+id/tv_texto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:textColor="#212121" />
+            android:textColor="@color/cev_text_primary"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/tv_timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginTop="2dp"
-            android:textSize="10sp"
-            android:textColor="#757575" />
+            android:layout_marginTop="3dp"
+            android:textColor="@color/cev_text_muted"
+            android:textSize="10sp" />
     </LinearLayout>
 </LinearLayout>

@@ -1,50 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@drawable/bg_app_premium">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="300dp"
+        android:background="@color/cev_background"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:contentScrim="@color/cev_background"
+            app:expandedTitleTextAppearance="@style/TextAppearance.AppCompat.Title"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:contentScrim="@color/purple_700"
-            app:titleEnabled="true">
+            app:titleEnabled="false">
 
             <ImageView
                 android:id="@+id/img_capa"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
+                android:background="@drawable/bg_event_placeholder_premium"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
                 android:src="@drawable/ic_event_placeholder"
                 app:layout_collapseMode="parallax" />
 
-            <!-- Gradiente escuro sobre imagem -->
             <View
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/gradient_dark" />
+                android:layout_height="0dp"
+                android:background="@android:color/transparent" />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin" />
-
+                android:background="@android:color/transparent"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="92dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -53,292 +58,311 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Card principal do evento -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                android:layout_marginBottom="12dp">
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="14dp"
+                app:cardBackgroundColor="@color/cev_surface"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="12dp"
+                app:strokeColor="@color/cev_gold_border"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="20dp">
 
-                    <!-- Título + Status -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="12dp">
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/tv_titulo"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="#212121" />
+                            android:lineSpacingMultiplier="1.12"
+                            android:textColor="@color/cev_text_primary"
+                            android:textSize="23sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tv_status"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:textSize="12sp"
-                            android:textStyle="bold"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="4dp"
+                            android:layout_marginTop="10dp"
                             android:background="@drawable/bg_status_chip"
-                            android:text="AGENDADO" />
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="6dp"
+                            android:text="AGENDADO"
+                            android:textColor="@color/cev_gold_light"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
 
-                    <!-- Informações -->
                     <TextView
                         android:id="@+id/tv_data"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="#555555"
-                        android:layout_marginBottom="6dp" />
+                        android:layout_marginTop="14dp"
+                        android:textColor="@color/cev_gold"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_local"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="#555555"
-                        android:layout_marginBottom="2dp" />
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/cev_text_muted"
+                        android:textSize="14sp" />
 
-                    <!-- Botão de Mapa Interativo -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_ver_mapa"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        style="@style/Widget.CasaEmpresario.Button.Text"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🗺️ Visualizar no Mapa"
-                        android:textColor="@color/primary"
-                        android:textSize="13sp"
-                        android:layout_marginBottom="6dp"
-                        android:padding="0dp"
-                        android:minWidth="0dp"
-                        android:minHeight="0dp" />
+                        android:layout_height="42dp"
+                        android:layout_marginTop="2dp"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="8dp"
+                        android:text="🗺️ Visualizar no mapa"
+                        android:textColor="@color/cev_gold"
+                        android:textSize="13sp" />
 
                     <TextView
                         android:id="@+id/tv_capacidade"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="#555555"
-                        android:layout_marginBottom="12dp" />
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/cev_text_muted"
+                        android:textSize="14sp" />
 
-                    <!-- Categoria Badge -->
                     <TextView
                         android:id="@+id/tv_categoria"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_chip_subtle"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="6dp"
+                        android:textColor="@color/cev_gold_light"
                         android:textSize="12sp"
                         android:textStyle="bold"
-                        android:textColor="@color/primary"
-                        android:background="#EEF2FF"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="5dp"
-                        android:layout_marginBottom="12dp"
                         android:visibility="gone" />
 
-                    <!-- Linha de Ações: Interesse, Agenda, Chat, Compartilhar -->
                     <LinearLayout
                         android:id="@+id/layout_acoes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginTop="18dp"
                         android:gravity="center"
-                        android:layout_marginBottom="16dp"
+                        android:orientation="horizontal"
                         android:weightSum="4">
 
                         <LinearLayout
                             android:id="@+id/btn_interesse"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="86dp"
+                            android:layout_marginEnd="6dp"
                             android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:background="?android:attr/selectableItemBackground"
+                            android:background="@drawable/bg_action_tile"
                             android:clickable="true"
                             android:focusable="true"
-                            android:padding="8dp">
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
                             <ImageView
                                 android:id="@+id/img_interesse"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
                                 android:src="@drawable/ic_heart_outline" />
+
                             <TextView
                                 android:id="@+id/tv_interesse"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="11sp"
-                                android:textColor="#555555"
+                                android:layout_marginTop="6dp"
+                                android:gravity="center"
                                 android:text="Interesse"
-                                android:layout_marginTop="4dp" />
+                                android:textColor="@color/cev_text_muted"
+                                android:textSize="11sp" />
                         </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/btn_agenda"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="86dp"
+                            android:layout_marginHorizontal="3dp"
                             android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:background="?android:attr/selectableItemBackground"
+                            android:background="@drawable/bg_action_tile"
                             android:clickable="true"
                             android:focusable="true"
-                            android:padding="8dp">
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_calendar" />
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:src="@drawable/ic_calendar"
+                                app:tint="@color/cev_gold" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="11sp"
-                                android:textColor="#555555"
+                                android:layout_marginTop="6dp"
                                 android:text="Agenda"
-                                android:layout_marginTop="4dp" />
+                                android:textColor="@color/cev_text_muted"
+                                android:textSize="11sp" />
                         </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/btn_chat"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="86dp"
+                            android:layout_marginHorizontal="3dp"
                             android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:background="?android:attr/selectableItemBackground"
+                            android:background="@drawable/bg_action_tile"
                             android:clickable="true"
                             android:focusable="true"
-                            android:padding="8dp">
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_chat" />
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:src="@drawable/ic_chat"
+                                app:tint="@color/cev_gold" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="11sp"
-                                android:textColor="#555555"
+                                android:layout_marginTop="6dp"
                                 android:text="Chat"
-                                android:layout_marginTop="4dp" />
+                                android:textColor="@color/cev_text_muted"
+                                android:textSize="11sp" />
                         </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/btn_compartilhar"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="86dp"
+                            android:layout_marginStart="6dp"
                             android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:background="?android:attr/selectableItemBackground"
+                            android:background="@drawable/bg_action_tile"
                             android:clickable="true"
                             android:focusable="true"
-                            android:padding="8dp">
+                            android:foreground="?attr/selectableItemBackground"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
                             <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_share" />
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:src="@drawable/ic_share"
+                                app:tint="@color/cev_gold" />
+
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textSize="11sp"
-                                android:textColor="#555555"
+                                android:layout_marginTop="6dp"
                                 android:text="Compartilhar"
-                                android:layout_marginTop="4dp" />
+                                android:textColor="@color/cev_text_muted"
+                                android:textSize="11sp" />
                         </LinearLayout>
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="#E0E0E0"
-                        android:layout_marginBottom="12dp" />
+                        android:layout_marginTop="18dp"
+                        android:layout_marginBottom="14dp"
+                        android:background="@color/divider" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Descrição"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:textColor="#9C27B0"
-                        android:layout_marginBottom="6dp" />
+                        android:layout_marginBottom="8dp"
+                        android:letterSpacing="0.12"
+                        android:text="DESCRIÇÃO"
+                        android:textColor="@color/cev_gold"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_descricao"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="#424242"
-                        android:lineSpacingMultiplier="1.4"
-                        android:layout_marginBottom="12dp" />
+                        android:layout_marginBottom="14dp"
+                        android:lineSpacingMultiplier="1.35"
+                        android:textColor="@color/cev_text_primary"
+                        android:textSize="14sp" />
 
-                    <!-- Botão editar (só ADMIN) -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_editar"
+                        style="@style/Widget.CasaEmpresario.Button.Outlined"
                         android:layout_width="match_parent"
-                        android:layout_height="44dp"
-                        android:text="✏️ Editar Evento"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_height="50dp"
                         android:layout_marginBottom="8dp"
+                        android:text="✏️ Editar evento"
                         android:visibility="gone" />
 
-                    <!-- ✅ Botão excluir corrigido -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_excluir"
+                        style="@style/Widget.CasaEmpresario.Button.Text"
                         android:layout_width="match_parent"
-                        android:layout_height="44dp"
-                        android:text="🗑️ Excluir Evento"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:textColor="#D32F2F"
+                        android:layout_height="48dp"
+                        android:text="🗑️ Excluir evento"
+                        android:textColor="@color/status_cancelado"
                         android:visibility="gone" />
-
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card de Fotos -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
+                app:cardBackgroundColor="@color/cev_surface"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="8dp"
+                app:strokeColor="@color/outline"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="18dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginBottom="12dp">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="📷 Galeria de Fotos"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="#212121" />
+                            android:text="Galeria do evento"
+                            android:textColor="@color/cev_text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/tv_total_fotos"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="13sp"
-                            android:textColor="#9C27B0" />
+                            android:background="@drawable/bg_chip_subtle"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="5dp"
+                            android:textColor="@color/cev_gold"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                     <ProgressBar
@@ -346,41 +370,48 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginTop="12dp"
+                        android:indeterminateTint="@color/cev_gold"
                         android:visibility="gone" />
 
                     <TextView
                         android:id="@+id/tv_sem_fotos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Este evento não possui fotos ainda."
-                        android:textAlignment="center"
-                        android:textColor="#9E9E9E"
-                        android:textSize="14sp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_subtle_panel"
+                        android:gravity="center"
                         android:paddingVertical="24dp"
+                        android:text="Este evento ainda não possui fotos."
+                        android:textColor="@color/cev_text_muted"
+                        android:textSize="14sp"
                         android:visibility="gone" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recycler_fotos"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
                         android:nestedScrollingEnabled="false" />
-
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- FAB adicionar foto -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_adicionar_foto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@android:drawable/ic_menu_camera"
-        android:contentDescription="Adicionar Foto"
+        android:layout_margin="18dp"
+        android:text="Nova foto"
+        android:textStyle="bold"
         android:visibility="gone"
-        app:backgroundTint="@color/purple_700" />
+        app:backgroundTint="@color/secondary"
+        app:elevation="12dp"
+        app:icon="@android:drawable/ic_menu_camera"
+        app:iconPadding="8dp"
+        app:iconTint="@color/cev_background"
+        android:textColor="@color/cev_background" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

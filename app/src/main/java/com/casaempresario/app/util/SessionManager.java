@@ -12,6 +12,7 @@ public class SessionManager {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_ROLE = "role";
     private static final String KEY_USER_ID = "userId";
+    private static final String KEY_PROFILE_PHOTO_URI = "profilePhotoUri";
 
     private final SharedPreferences prefs;
 
@@ -26,11 +27,26 @@ public class SessionManager {
         editor.putString(KEY_EMAIL, email);
         editor.putString(KEY_ROLE, role);
         editor.putLong(KEY_USER_ID, userId != null ? userId : -1);
+        editor.putString(KEY_PROFILE_PHOTO_URI, "");
+        editor.apply();
+    }
+
+    public void salvarVisitante() {
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.remove(KEY_TOKEN);
+        editor.putString(KEY_NOME, "Visitante");
+        editor.putString(KEY_EMAIL, "");
+        editor.putString(KEY_ROLE, "VISITANTE");
+        editor.putLong(KEY_USER_ID, -1);
         editor.apply();
     }
 
     public boolean isLogado() {
         return prefs.getString(KEY_TOKEN, null) != null;
+    }
+
+    public boolean isVisitante() {
+        return "VISITANTE".equalsIgnoreCase(getRole()) || !isLogado();
     }
 
     public String getToken() {
@@ -53,8 +69,16 @@ public class SessionManager {
         return prefs.getLong(KEY_USER_ID, -1);
     }
 
+    public String getProfilePhotoUri() {
+        return prefs.getString(KEY_PROFILE_PHOTO_URI, "");
+    }
+
+    public void setProfilePhotoUri(String profilePhotoUri) {
+        prefs.edit().putString(KEY_PROFILE_PHOTO_URI, profilePhotoUri != null ? profilePhotoUri : "").apply();
+    }
+
     public boolean isOrganizador() {
-        return "ORGANIZADOR".equals(getRole());
+        return isLogado() && "ORGANIZADOR".equalsIgnoreCase(getRole());
     }
 
     public void logout() {

@@ -2,6 +2,8 @@ package com.casaempresario.app.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import com.casaempresario.app.model.EventPhoto;
 import com.casaempresario.app.repository.RepositoryCallback;
 import com.casaempresario.app.repository.RepositoryProvider;
 import com.casaempresario.app.util.SessionManager;
+import com.casaempresario.app.util.EventStatusUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import android.provider.CalendarContract;
 
@@ -91,6 +94,9 @@ public class EventDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityEventDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.getRoot().setAlpha(0f);
+        binding.getRoot().animate().alpha(1f).setDuration(320).start();
 
         sessionManager = new SessionManager(this);
         eventoId = getIntent().getLongExtra("eventoId", -1);
@@ -171,7 +177,7 @@ public class EventDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Permissão negada: apenas o criador do evento pode alterar o status.", Toast.LENGTH_SHORT).show();
             return;
         }
-        RepositoryProvider.getEventRepository(this).updateStatus(eventoId, novoStatus, new RepositoryCallback<Void>() {
+        RepositoryProvider.getEventRepository(EventDetailActivity.this).updateStatus(eventoId, novoStatus, new RepositoryCallback<Void>() {
             @Override
             public void onSuccess(Void result) {
                 if ("CONCLUIDO".equals(novoStatus) || "CANCELADO".equals(novoStatus)) {
@@ -232,6 +238,17 @@ public class EventDetailActivity extends AppCompatActivity {
             public void onSuccess(Evento eventoDb) {
                 runOnUiThread(() -> {
                     if (eventoDb != null) {
+                        String statusNovo = EventStatusUtils.calcularStatusAutomatico(eventoDb);
+                        if (eventoDb.status == null || !eventoDb.status.equalsIgnoreCase(statusNovo)) {
+                            eventoDb.status = statusNovo;
+                            RepositoryProvider.getEventRepository(EventDetailActivity.this).updateStatus(eventoDb.id, statusNovo, new RepositoryCallback<Void>() {
+                                @Override
+                                public void onSuccess(Void result) { }
+
+                                @Override
+                                public void onError(Exception e) { }
+                            });
+                        }
                         currentEvento = eventoDb;
                         preencherDados(eventoDb);
                     }
@@ -248,7 +265,7 @@ public class EventDetailActivity extends AppCompatActivity {
     private void preencherDados(Evento evento) {
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(evento.titulo);
+            getSupportActionBar().setTitle("Detalhes do evento");
         }
 
         binding.tvTitulo.setText(evento.titulo);
@@ -258,7 +275,7 @@ public class EventDetailActivity extends AppCompatActivity {
         );
 
         binding.tvData.setText(
-                "📅 " + formatarData(evento.dataEvento)
+                "📅 " + formatarPeriodo(evento.dataEvento, evento.dataFimEvento)
         );
 
         binding.tvDescricao.setText(
@@ -339,6 +356,17 @@ public class EventDetailActivity extends AppCompatActivity {
         }
 
         binding.tvStatus.setTextColor(color);
+        GradientDrawable statusBackground = new GradientDrawable();
+        statusBackground.setShape(GradientDrawable.RECTANGLE);
+        statusBackground.setColor(Color.argb(
+                35,
+                Color.red(color),
+                Color.green(color),
+                Color.blue(color)
+        ));
+        statusBackground.setStroke(1, color);
+        statusBackground.setCornerRadius(999f);
+        binding.tvStatus.setBackground(statusBackground);
 
         if (evento.capacidadeMaxima != null) {
 
@@ -635,6 +663,25 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 
+    private String formatarPeriodo(String inicio, String fim) {
+        String inicioFormatado = formatarData(inicio);
+        if (fim == null || !fim.contains("T")) return inicioFormatado;
+
+        try {
+            String[] inicioParts = inicio.split("T");
+            String[] fimParts = fim.split("T");
+            String horaFim = fimParts[1].substring(0, 5);
+
+            if (inicioParts[0].equals(fimParts[0])) {
+                return inicioFormatado + " até " + horaFim;
+            }
+
+            return inicioFormatado + " até " + formatarData(fim);
+        } catch (Exception e) {
+            return inicioFormatado;
+        }
+    }
+
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
@@ -743,12 +790,15 @@ public class EventDetailActivity extends AppCompatActivity {
         }
         try {
             long startTimeMillis = System.currentTimeMillis();
-            if (currentEvento.dataEvento != null) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault());
-                Date d = sdf.parse(currentEvento.dataEvento);
-                if (d != null) {
-                    startTimeMillis = d.getTime();
-                }
+            long endTimeMillis = startTimeMillis + (60 * 60 * 1000);
+            Date inicio = EventStatusUtils.parseDate(currentEvento.dataEvento);
+            Date fim = EventStatusUtils.parseDate(currentEvento.dataFimEvento);
+
+            if (inicio != null) {
+                startTimeMillis = inicio.getTime();
+                endTimeMillis = fim != null && fim.after(inicio)
+                        ? fim.getTime()
+                        : EventStatusUtils.getEventEndTimeMillis(currentEvento);
             }
 
             Intent intent = new Intent(Intent.ACTION_INSERT)
@@ -757,7 +807,7 @@ public class EventDetailActivity extends AppCompatActivity {
                     .putExtra(CalendarContract.Events.DESCRIPTION, currentEvento.descricao)
                     .putExtra(CalendarContract.Events.EVENT_LOCATION, currentEvento.local)
                     .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTimeMillis)
-                    .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, startTimeMillis + (60 * 60 * 1000));
+                    .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTimeMillis);
 
             startActivity(intent);
         } catch (Exception e) {

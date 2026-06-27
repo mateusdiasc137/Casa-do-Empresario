@@ -7,4 +7,5 @@ public interface UserRepository {
     void findByEmail(String email, RepositoryCallback<Usuario> callback);
     void getUsuarioById(long id, RepositoryCallback<Usuario> callback);
     void insert(Usuario usuario, RepositoryCallback<Long> callback);
+    void updateFotoPerfil(long id, String fotoPerfilUri, RepositoryCallback<Void> callback);
 }
