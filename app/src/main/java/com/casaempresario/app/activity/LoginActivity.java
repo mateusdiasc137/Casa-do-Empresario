@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +19,8 @@ import com.casaempresario.app.util.SessionManager;
 /**
  * Tela de Login.
  * Autentica o usuário consultando o banco configurado para o aplicativo.
- * As contas iniciais são carregadas durante a criação do banco.
+ * As contas iniciais são carregadas durante a criação do banco e a tela de entrada
+ * apresenta a identidade visual do CapiHub.
  */
 public class LoginActivity extends AppCompatActivity {
 
@@ -53,16 +53,25 @@ public class LoginActivity extends AppCompatActivity {
         pulse.setRepeatCount(ObjectAnimator.INFINITE);
         pulse.start();
 
-        binding.logoCore.animate()
-                .scaleX(1.05f)
-                .scaleY(1.05f)
-                .setDuration(900)
-                .withEndAction(() -> binding.logoCore.animate()
-                        .scaleX(1f)
-                        .scaleY(1f)
-                        .setDuration(900)
-                        .start())
-                .start();
+        ObjectAnimator floatMascot = ObjectAnimator.ofFloat(binding.logoCore, "translationY", 0f, -10f, 0f);
+        floatMascot.setDuration(2600);
+        floatMascot.setRepeatCount(ObjectAnimator.INFINITE);
+        floatMascot.start();
+
+        ObjectAnimator tiltMascot = ObjectAnimator.ofFloat(binding.mascotImage, "rotation", -2f, 2f, -2f);
+        tiltMascot.setDuration(2800);
+        tiltMascot.setRepeatCount(ObjectAnimator.INFINITE);
+        tiltMascot.start();
+
+        ObjectAnimator breatheMascot = ObjectAnimator.ofFloat(binding.logoCore, "scaleX", 1f, 1.03f, 1f);
+        breatheMascot.setDuration(2200);
+        breatheMascot.setRepeatCount(ObjectAnimator.INFINITE);
+        breatheMascot.start();
+
+        ObjectAnimator breatheMascotY = ObjectAnimator.ofFloat(binding.logoCore, "scaleY", 1f, 1.03f, 1f);
+        breatheMascotY.setDuration(2200);
+        breatheMascotY.setRepeatCount(ObjectAnimator.INFINITE);
+        breatheMascotY.start();
 
         // Se já estiver logado, vai direto para a tela principal
         if (sessionManager.isLogado()) {
