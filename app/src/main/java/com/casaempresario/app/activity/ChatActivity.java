@@ -16,6 +16,7 @@ import com.casaempresario.app.database.Evento;
 import com.casaempresario.app.database.Mensagem;
 import com.casaempresario.app.database.Usuario;
 import com.casaempresario.app.databinding.ActivityChatBinding;
+import com.casaempresario.app.repository.ChatRepository;
 import com.casaempresario.app.repository.RepositoryCallback;
 import com.casaempresario.app.repository.RepositoryProvider;
 import com.casaempresario.app.util.SessionManager;
@@ -35,6 +36,7 @@ public class ChatActivity extends AppCompatActivity {
     private long userId;
     private long outroUserId;
     private long eventoId;
+    private ChatRepository.ChatListener chatListener;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     @Override
@@ -61,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
 
         setupRecyclerView();
         carregarDadosCabecalho();
-        carregarHistorico();
+        iniciarAtualizacaoTempoReal();
 
         binding.btnEnviar.setOnClickListener(v -> enviarMensagem());
     }
@@ -121,6 +123,30 @@ public class ChatActivity extends AppCompatActivity {
                 // Silencioso
             }
         });
+    }
+
+    private void iniciarAtualizacaoTempoReal() {
+        if (chatListener != null) {
+            chatListener.remove();
+        }
+
+        chatListener = RepositoryProvider.getChatRepository(this).listenChatThread(userId, outroUserId, eventoId,
+                new RepositoryCallback<List<Mensagem>>() {
+                    @Override
+                    public void onSuccess(List<Mensagem> thread) {
+                        runOnUiThread(() -> {
+                            adapter.atualizar(thread);
+                            if (adapter.getItemCount() > 0) {
+                                binding.recyclerMensagens.scrollToPosition(adapter.getItemCount() - 1);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        runOnUiThread(() -> Toast.makeText(ChatActivity.this, "Erro ao atualizar mensagens", Toast.LENGTH_SHORT).show());
+                    }
+                });
     }
 
     private void carregarHistorico() {
@@ -221,6 +247,16 @@ public class ChatActivity extends AppCompatActivity {
             return partes[0].substring(0, Math.min(2, partes[0].length())).toUpperCase();
         }
         return (partes[0].substring(0, 1) + partes[partes.length - 1].substring(0, 1)).toUpperCase();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (chatListener != null) {
+            chatListener.remove();
+            chatListener = null;
+        }
+        handler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 
     @Override

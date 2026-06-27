@@ -4,7 +4,7 @@ import com.casaempresario.app.database.Mensagem;
 import com.casaempresario.app.repository.ChatRepository;
 import com.casaempresario.app.repository.RepositoryCallback;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.ListenerRegistration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,10 +20,6 @@ public class FirebaseChatRepository implements ChatRepository {
     @Override
     public void insert(Mensagem mensagem, RepositoryCallback<Long> callback) {
         if (mensagem.id == 0) {
-            // Multiplicamos por 10000 e somamos um aleatório de 0-9999.
-            // Isso garante que a ordem cronológica (System.currentTimeMillis)
-            // nunca seja sobreposta pelo número aleatório, evitando que
-            // mensagens mais novas apareçam com ID menor (por cima).
             mensagem.id = (System.currentTimeMillis() * 10000L) + (long) (Math.random() * 10000L);
         }
         firestore.collection(COLLECTION)
@@ -42,19 +38,42 @@ public class FirebaseChatRepository implements ChatRepository {
                     List<Mensagem> thread = new ArrayList<>();
                     queryDocumentSnapshots.forEach(doc -> {
                         Mensagem msg = doc.toObject(Mensagem.class);
-                        if ((msg.remetenteId == userA && msg.destinatarioId == userB) ||
-                            (msg.remetenteId == userB && msg.destinatarioId == userA)) {
+                        if (pertenceAConversa(msg, userA, userB)) {
                             thread.add(msg);
                         }
                     });
-                    
-                    // Mantém as mensagens em ordem cronológica,
-                    // usando timestamp ou ID como referência.)
-                    Collections.sort(thread, (m1, m2) -> Long.compare(m1.id, m2.id));
-                    
+                    ordenarCronologico(thread);
                     callback.onSuccess(thread);
                 })
                 .addOnFailureListener(callback::onError);
+    }
+
+    @Override
+    public ChatRepository.ChatListener listenChatThread(long userA, long userB, long eventoId, RepositoryCallback<List<Mensagem>> callback) {
+        ListenerRegistration registration = firestore.collection(COLLECTION)
+                .whereEqualTo("eventoId", eventoId)
+                .addSnapshotListener((snapshots, error) -> {
+                    if (error != null) {
+                        callback.onError(error);
+                        return;
+                    }
+                    if (snapshots == null) {
+                        callback.onSuccess(new ArrayList<>());
+                        return;
+                    }
+
+                    List<Mensagem> thread = new ArrayList<>();
+                    snapshots.forEach(doc -> {
+                        Mensagem msg = doc.toObject(Mensagem.class);
+                        if (pertenceAConversa(msg, userA, userB)) {
+                            thread.add(msg);
+                        }
+                    });
+                    ordenarCronologico(thread);
+                    callback.onSuccess(thread);
+                });
+
+        return registration::remove;
     }
 
     @Override
@@ -69,10 +88,19 @@ public class FirebaseChatRepository implements ChatRepository {
                             mensagens.add(msg);
                         }
                     });
-                    // Mantém as conversas recentes no topo
                     Collections.sort(mensagens, (m1, m2) -> Long.compare(m2.id, m1.id));
                     callback.onSuccess(mensagens);
                 })
                 .addOnFailureListener(callback::onError);
+    }
+
+    private boolean pertenceAConversa(Mensagem msg, long userA, long userB) {
+        return msg != null &&
+                ((msg.remetenteId == userA && msg.destinatarioId == userB) ||
+                 (msg.remetenteId == userB && msg.destinatarioId == userA));
+    }
+
+    private void ordenarCronologico(List<Mensagem> mensagens) {
+        Collections.sort(mensagens, (m1, m2) -> Long.compare(m1.id, m2.id));
     }
 }

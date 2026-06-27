@@ -13,9 +13,11 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
+import com.casaempresario.app.activity.ChatActivity;
 import com.casaempresario.app.activity.EventDetailActivity;
 import com.casaempresario.app.activity.MainActivity;
 import com.casaempresario.app.database.Evento;
+import com.casaempresario.app.database.Mensagem;
 import com.casaempresario.app.util.NotificationHelper;
 import com.casaempresario.app.util.NotificationScheduler;
 import com.casaempresario.app.util.SessionManager;
@@ -31,6 +33,7 @@ public class NotificationCheckReceiver extends BroadcastReceiver {
     private static final String PREFS = "CasaEmpresarioNotifications";
     private static final String KEY_SEEN_EVENTS = "seen_event_ids";
     private static final String KEY_SEEN_FEED = "seen_feed_posts";
+    private static final String KEY_LAST_MESSAGE_ID = "last_message_id_";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -142,6 +145,42 @@ public class NotificationCheckReceiver extends BroadcastReceiver {
                             prefs.edit().putStringSet(KEY_SEEN_FEED, seenFeed).apply();
                         }
                     } finally {
+                        verificarMensagensNovas(context, sessionManager, pendingResult);
+                    }
+                })
+                .addOnFailureListener(error -> verificarMensagensNovas(context, sessionManager, pendingResult));
+    }
+
+    private void verificarMensagensNovas(Context context, SessionManager sessionManager, PendingResult pendingResult) {
+        long currentUserId = sessionManager.getUserId();
+        FirebaseFirestore.getInstance()
+                .collection("mensagens")
+                .whereEqualTo("destinatarioId", currentUserId)
+                .get()
+                .addOnSuccessListener(snapshots -> {
+                    try {
+                        SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+                        String lastMessageKey = KEY_LAST_MESSAGE_ID + currentUserId;
+                        long lastKnownId = prefs.getLong(lastMessageKey, 0L);
+                        boolean primeiraCarga = lastKnownId == 0L;
+                        long maxSeenId = lastKnownId;
+
+                        for (QueryDocumentSnapshot document : snapshots) {
+                            Mensagem mensagem = document.toObject(Mensagem.class);
+                            long msgId = mensagem.id != 0 ? mensagem.id : parseLong(document.getId());
+                            if (msgId > maxSeenId) {
+                                maxSeenId = msgId;
+                            }
+
+                            if (!primeiraCarga && msgId > lastKnownId && mensagem.remetenteId != currentUserId) {
+                                mostrarNotificacaoNovaMensagem(context, mensagem, msgId);
+                            }
+                        }
+
+                        if (maxSeenId > lastKnownId) {
+                            prefs.edit().putLong(lastMessageKey, maxSeenId).apply();
+                        }
+                    } finally {
                         pendingResult.finish();
                     }
                 })
@@ -172,6 +211,42 @@ public class NotificationCheckReceiver extends BroadcastReceiver {
                         .setContentIntent(pendingIntent)
                         .build()
         );
+    }
+
+    private void mostrarNotificacaoNovaMensagem(Context context, Mensagem mensagem, long msgId) {
+        Intent intent = new Intent(context, ChatActivity.class);
+        intent.putExtra("eventoId", mensagem.eventoId);
+        intent.putExtra("outroUserId", mensagem.remetenteId);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context,
+                (int) (msgId % Integer.MAX_VALUE),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        String texto = mensagem.texto != null && !mensagem.texto.trim().isEmpty()
+                ? mensagem.texto.trim()
+                : "Você recebeu uma nova mensagem.";
+
+        NotificationManagerCompat.from(context).notify(
+                Math.abs(("msg_" + msgId).hashCode()),
+                NotificationHelper.baseMessageNotification(context)
+                        .setContentTitle("Nova mensagem no CapiHub")
+                        .setContentText(texto)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(texto))
+                        .setContentIntent(pendingIntent)
+                        .build()
+        );
+    }
+
+    private long parseLong(String value) {
+        try {
+            return Long.parseLong(value);
+        } catch (Exception e) {
+            return 0L;
+        }
     }
 
     private boolean deveNotificar(Evento evento, SessionManager sessionManager) {
@@ -251,7 +326,7 @@ public class NotificationCheckReceiver extends BroadcastReceiver {
         NotificationManagerCompat.from(context).notify(
                 Math.abs(eventId.hashCode()),
                 NotificationHelper.baseEventNotification(context)
-                        .setContentTitle("Novo evento na Casa do Empresário")
+                        .setContentTitle("Novo evento no CapiHub")
                         .setContentText(titulo)
                         .setStyle(new NotificationCompat.BigTextStyle().bigText(mensagem + "\n" + local))
                         .setContentIntent(pendingIntent)
