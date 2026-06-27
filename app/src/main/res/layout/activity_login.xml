@@ -12,82 +12,105 @@
         android:gravity="center_horizontal"
         android:orientation="vertical"
         android:paddingHorizontal="28dp"
-        android:paddingTop="46dp"
+        android:paddingTop="40dp"
         android:paddingBottom="28dp">
 
         <FrameLayout
-            android:layout_width="176dp"
-            android:layout_height="176dp"
+            android:layout_width="204dp"
+            android:layout_height="224dp"
             android:layout_gravity="center_horizontal">
+
+            <View
+                android:layout_width="188dp"
+                android:layout_height="188dp"
+                android:layout_gravity="top|center_horizontal"
+                android:background="@drawable/bg_login_glow" />
 
             <ImageView
                 android:id="@+id/ringOuter"
-                android:layout_width="176dp"
-                android:layout_height="176dp"
-                android:layout_gravity="center"
+                android:layout_width="190dp"
+                android:layout_height="190dp"
+                android:layout_gravity="top|center_horizontal"
                 android:background="@drawable/ring_outer" />
 
             <ImageView
                 android:id="@+id/ringInner"
-                android:layout_width="144dp"
-                android:layout_height="144dp"
-                android:layout_gravity="center"
+                android:layout_width="156dp"
+                android:layout_height="156dp"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="17dp"
                 android:background="@drawable/ring_inner" />
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/logo_core"
-                android:layout_width="108dp"
-                android:layout_height="108dp"
-                android:layout_gravity="center"
-                android:background="@drawable/circle_logo"
-                android:elevation="8dp"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_width="126dp"
+                android:layout_height="126dp"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="32dp"
+                android:foregroundGravity="center"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="10dp"
+                app:strokeColor="@color/cev_gold_border"
+                app:strokeWidth="1dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:letterSpacing="0.14"
-                    android:text="CEV"
-                    android:textColor="@color/cev_gold_light"
-                    android:textSize="28sp"
-                    android:textStyle="bold" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_mascot_frame">
 
-                <View
-                    android:layout_width="32dp"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="5dp"
-                    android:background="@color/cev_gold" />
-            </LinearLayout>
+                    <ImageView
+                        android:id="@+id/mascotImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="true"
+                        android:contentDescription="Mascote do CapiHub"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/login_capihub_mascot" />
+                </FrameLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <View
                 android:id="@+id/pulseDot"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
                 android:layout_gravity="top|center_horizontal"
-                android:layout_marginTop="7dp"
+                android:layout_marginTop="9dp"
                 android:background="@drawable/dot_gold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_gravity="bottom|center_horizontal"
+                android:background="@drawable/bg_login_badge"
+                android:elevation="8dp"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:text="CapiHub"
+                android:textColor="@color/cev_gold_light"
+                android:textSize="14sp"
+                android:textStyle="bold" />
         </FrameLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
             android:letterSpacing="0.34"
-            android:text="CASA DO EMPRESÁRIO"
+            android:text="EVENTOS • CONEXÕES • COMUNIDADE"
             android:textColor="@color/cev_gold"
             android:textSize="10sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             android:gravity="center"
-            android:letterSpacing="0.04"
-            android:text="Eventos de Viçosa"
+            android:letterSpacing="0.02"
+            android:text="Bem-vindo ao CapiHub"
             android:textColor="@color/cev_text_primary"
-            android:textSize="25sp"
+            android:textSize="26sp"
             android:textStyle="bold" />
 
         <TextView
@@ -96,14 +119,14 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:lineSpacingMultiplier="1.25"
-            android:text="Conecte empresas, organizadores e participantes em uma experiência mais simples e elegante."
+            android:text="Seu hub para eventos, networking e novidades em Viçosa, com uma experiência mais leve e divertida."
             android:textColor="@color/cev_text_muted"
             android:textSize="13sp" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="28dp"
             app:cardBackgroundColor="@color/cev_surface"
             app:cardCornerRadius="28dp"
             app:cardElevation="10dp"
@@ -231,7 +254,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="26dp"
             android:gravity="center"
-            android:text="© 2026 Casa do Empresário de Viçosa"
+            android:text="© 2026 CapiHub"
             android:textColor="@color/cev_dot_dark"
             android:textSize="10sp" />
     </LinearLayout>
