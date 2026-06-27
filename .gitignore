@@ -46,3 +46,13 @@ outputs/
 # Manter o wrapper do Gradle versionado caso exista no projeto
 !gradle/wrapper/gradle-wrapper.jar
 !gradle/wrapper/gradle-wrapper.properties
+
+.agents/
+
+# Arquivos de Build C/C++ (caso use NDK no futuro)
+.cxx/
+
+# Arquivos APK e AAB gerados
+*.apk
+*.ap_
+*.aab
