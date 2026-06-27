@@ -13,11 +13,17 @@ import com.casaempresario.app.model.EventPhoto;
 /**
  * Banco de dados local Room (SQLite).
  *
+ * Versão 10:
+ * - Adicionado horário de término dos eventos.
+ *
+ * Versão 9:
+ * - Adicionada foto de perfil de usuário e propagação no feed/chat.
+ *
  * Versão 8:
  * - Adicionado campo categoria na entidade Evento.
  *
  * Versão 7:
- * - Ajuste nos papéis dos usuários: apenas PARTICIPANTE e ORGANIZADOR.
+ * - Papéis disponíveis: PARTICIPANTE e ORGANIZADOR.
  */
 @Database(
         entities = {
@@ -27,7 +33,7 @@ import com.casaempresario.app.model.EventPhoto;
                 Interesse.class,
                 Mensagem.class
         },
-        version = 8
+        version = 10
 )
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -57,13 +63,13 @@ public abstract class AppDatabase extends RoomDatabase {
                                     "casa_empresario_db"
                             )
 
-                            // simplifica uso no projeto
+                            // Permite consultas diretas nas telas do app
                             .allowMainThreadQueries()
 
-                            // recria banco automaticamente quando mudar versão
+                            // Recria o banco quando houver mudança incompatível de versão
                             .fallbackToDestructiveMigration()
 
-                            // cria usuários padrão
+                            // Insere contas iniciais para uso do sistema
                             .addCallback(new Callback() {
 
                                 @Override
@@ -73,7 +79,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
                                     super.onCreate(db);
 
-                                    // Seed do Organizador (Equipe)
+                                    // Conta inicial de organizador
                                     db.execSQL(
                                             "INSERT INTO usuarios " +
                                                     "(email, senha, nome, role, criado_em) " +
@@ -86,7 +92,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                                     ")"
                                     );
 
-                                    // Seed do Administrador Padrão (Compatibilidade)
+                                    // Conta inicial de administração
                                     db.execSQL(
                                             "INSERT INTO usuarios " +
                                                     "(email, senha, nome, role, criado_em) " +
@@ -99,7 +105,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                                     ")"
                                     );
 
-                                    // Seed de um Participante comum de teste
+                                    // Conta inicial de participante
                                     db.execSQL(
                                             "INSERT INTO usuarios " +
                                                     "(email, senha, nome, role, criado_em) " +

@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.CasaEmpresario" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.CasaEmpresario" parent="Theme.MaterialComponents.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_variant</item>
         <item name="colorOnPrimary">@color/on_primary</item>
         <item name="colorSecondary">@color/secondary</item>
         <item name="colorSecondaryVariant">@color/secondary_variant</item>
         <item name="colorOnSecondary">@color/on_secondary</item>
-        <item name="android:statusBarColor">@color/primary</item>
-        <item name="android:windowBackground">@color/background</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/text_main</item>
+        <item name="colorError">@color/status_cancelado</item>
+        <item name="colorOutline">@color/outline</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:statusBarColor">@color/cev_background</item>
+        <item name="android:navigationBarColor">@color/cev_background</item>
+        <item name="android:windowBackground">@color/cev_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="android:forceDarkAllowed">false</item>
+        <item name="android:windowAnimationStyle">@style/WindowAnimationCasaEmpresario</item>
+        <item name="materialButtonStyle">@style/Widget.CasaEmpresario.Button.Primary</item>
+        <item name="textInputStyle">@style/Widget.CasaEmpresario.TextInputLayout</item>
     </style>
 </resources>

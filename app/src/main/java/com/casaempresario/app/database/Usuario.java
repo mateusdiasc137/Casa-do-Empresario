@@ -19,4 +19,7 @@ public class Usuario {
     @ColumnInfo(name = "criado_em")
     public String criadoEm;
 
+    @ColumnInfo(name = "foto_perfil_uri")
+    public String fotoPerfilUri;
+
 }

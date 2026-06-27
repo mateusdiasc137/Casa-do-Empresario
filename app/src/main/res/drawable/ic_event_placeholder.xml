@@ -4,29 +4,10 @@
     android:height="160dp"
     android:viewportWidth="200"
     android:viewportHeight="160">
-
-    <!-- Fundo -->
-    <path android:fillColor="#E8E0F0"
-        android:pathData="M0,0 L200,0 L200,160 L0,160 Z" />
-
-    <!-- Ícone de evento centralizado -->
-    <path android:fillColor="#9C27B0"
-        android:pathData="M85,45 L115,45 L115,50 L120,50 L120,110 L80,110 L80,50 L85,50 Z"
-        android:strokeColor="#9C27B0"
-        android:strokeWidth="2" />
-    <path android:fillColor="#CE93D8"
-        android:pathData="M83,48 L117,48 L117,108 L83,108 Z" />
-    <path android:fillColor="#9C27B0"
-        android:pathData="M88,42 L92,42 L92,52 L88,52 Z" />
-    <path android:fillColor="#9C27B0"
-        android:pathData="M108,42 L112,42 L112,52 L108,52 Z" />
-    <path android:fillColor="#9C27B0"
-        android:pathData="M83,58 L117,58 L117,62 L83,62 Z" />
-    <!-- Linhas de texto simuladas -->
-    <path android:fillColor="#9C27B0" android:alpha="0.5"
-        android:pathData="M88,68 L108,68 L108,71 L88,71 Z" />
-    <path android:fillColor="#9C27B0" android:alpha="0.5"
-        android:pathData="M88,76 L112,76 L112,79 L88,79 Z" />
-    <path android:fillColor="#9C27B0" android:alpha="0.5"
-        android:pathData="M88,84 L105,84 L105,87 L88,87 Z" />
+    <path android:fillColor="#161B2A" android:pathData="M0,0 L200,0 L200,160 L0,160 Z" />
+    <path android:fillColor="#221B13" android:pathData="M0,115 C40,88 70,105 103,82 C134,61 158,70 200,38 L200,160 L0,160 Z" />
+    <path android:fillColor="#33D6B45A" android:pathData="M42,34 L158,34 L158,132 L42,132 Z" />
+    <path android:fillColor="#161B2A" android:pathData="M50,44 L150,44 L150,124 L50,124 Z" />
+    <path android:fillColor="#D6B45A" android:pathData="M62,48 L70,48 L70,62 L62,62 Z M130,48 L138,48 L138,62 L130,62 Z M51,67 L149,67 L149,74 L51,74 Z" />
+    <path android:fillColor="#F7F0DC" android:alpha="0.78" android:pathData="M58,87 L102,87 L102,94 L58,94 Z M58,103 L132,103 L132,110 L58,110 Z" />
 </vector>

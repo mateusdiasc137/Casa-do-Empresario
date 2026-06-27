@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cev_background">#080A12</color>
+    <color name="cev_background_2">#101522</color>
+    <color name="cev_gold">#D6B45A</color>
+    <color name="cev_gold_light">#F1D37A</color>
+    <color name="cev_gold_dark">#A47F26</color>
+    <color name="cev_gold_border">#55D6B45A</color>
+    <color name="cev_text_primary">#F7F0DC</color>
+    <color name="cev_text_muted">#9C8E6B</color>
+    <color name="cev_surface">#121622</color>
+    <color name="cev_surface_2">#1B2130</color>
+    <color name="cev_surface_3">#202637</color>
+    <color name="cev_dot_dark">#4C4359</color>
+    <color name="cev_light_surface">#FFF8EC</color>
+    <color name="cev_light_surface_2">#FFFDF7</color>
+    <color name="cev_light_text">#1A1D28</color>
+    <color name="cev_light_hint">#71633F</color>
+    <color name="cev_light_stroke">#CDB880</color>
+</resources>

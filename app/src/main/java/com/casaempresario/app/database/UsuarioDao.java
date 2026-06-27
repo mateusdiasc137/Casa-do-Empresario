@@ -22,4 +22,7 @@ public interface UsuarioDao {
 
     @Query("SELECT * FROM usuarios WHERE id = :id LIMIT 1")
     Usuario getUsuarioById(long id);
+
+    @Query("UPDATE usuarios SET foto_perfil_uri = :fotoPerfilUri WHERE id = :id")
+    void updateFotoPerfil(long id, String fotoPerfilUri);
 }

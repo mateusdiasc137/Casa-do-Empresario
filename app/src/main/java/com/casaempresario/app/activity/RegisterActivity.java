@@ -36,6 +36,10 @@ public class RegisterActivity extends AppCompatActivity {
 
         sessionManager = new SessionManager(this);
 
+        binding.getRoot().setAlpha(0f);
+        binding.getRoot().setTranslationY(24f);
+        binding.getRoot().animate().alpha(1f).translationY(0f).setDuration(360).start();
+
         binding.btnCadastrar.setOnClickListener(v -> cadastrar());
         binding.btnJaTenhoConta.setOnClickListener(v -> finish()); // volta para o login
     }

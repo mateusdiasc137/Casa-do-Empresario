@@ -60,4 +60,16 @@ public class RoomUserRepository implements UserRepository {
             }
         }).start();
     }
+
+    @Override
+    public void updateFotoPerfil(long id, String fotoPerfilUri, RepositoryCallback<Void> callback) {
+        new Thread(() -> {
+            try {
+                db.usuarioDao().updateFotoPerfil(id, fotoPerfilUri);
+                callback.onSuccess(null);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        }).start();
+    }
 }

@@ -1,0 +1,5 @@
+# Copie este arquivo para local.properties e preencha apenas na sua máquina.
+# Não envie local.properties para o GitHub.
+
+sdk.dir=C:\\Users\\SEU_USUARIO\\AppData\\Local\\Android\\Sdk
+MAPS_API_KEY=COLOQUE_SUA_CHAVE_DO_GOOGLE_MAPS_AQUI

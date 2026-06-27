@@ -11,17 +11,17 @@ if (localPropertiesFile.exists()) {
 
 android {
     namespace 'com.casaempresario.app'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.casaempresario.app"
         minSdk 24
-        targetSdk 34
+        targetSdk 34 // Mantido em 34 para não alterar as regras de execução do app por enquanto
         versionCode 1
         versionName "1.0"
 
         manifestPlaceholders = [
-            mapsApiKey: localProperties.getProperty("MAPS_API_KEY", "")
+                mapsApiKey: localProperties.getProperty("MAPS_API_KEY", "")
         ]
     }
 
@@ -38,31 +38,29 @@ android {
 dependencies {
     // AndroidX / UI
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.core:core:1.13.1'
 
-    // Glide — carregamento de imagens locais (galeria / arquivos internos)
+    // Material Design
+    implementation 'com.google.android.material:material:1.14.0'
+
+    // Carregamento de imagens
     implementation 'com.github.bumptech.glide:glide:4.16.0'
-
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
-    // Room — banco de dados local (SQLite)
+    // Banco local
     def room_version = "2.6.1"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
-    // Google Maps SDK
+    // Google Maps
     implementation 'com.google.android.gms:play-services-maps:18.2.0'
 
-    // Firebase (Abstração e Nuvem)
+    // Firebase
     implementation platform('com.google.firebase:firebase-bom:34.13.0')
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-storage'
-
-    // Removidos (não usados):
-    // - retrofit2, okhttp3, gson  → app é 100% local, sem chamadas de rede
-    // - circleimageview           → não referenciado em nenhum layout
 }

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Widget.CasaEmpresario.Button.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/cev_gold</item>
+        <item name="android:textColor">@color/cev_background</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="android:minHeight">54dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="rippleColor">#33FFFFFF</item>
+        <item name="elevation">4dp</item>
+    </style>
+
+    <style name="Widget.CasaEmpresario.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">18dp</item>
+        <item name="strokeColor">@color/cev_gold_border</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:textColor">@color/cev_gold</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="rippleColor">#22D6B45A</item>
+    </style>
+
+    <style name="Widget.CasaEmpresario.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/cev_gold</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="rippleColor">#22D6B45A</item>
+    </style>
+
+    <style name="Widget.CasaEmpresario.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/cev_gold_border</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1.5dp</item>
+        <item name="hintTextColor">@color/cev_gold</item>
+        <item name="android:textColorHint">@color/cev_text_muted</item>
+        <item name="boxBackgroundColor">@color/cev_surface_2</item>
+        <item name="android:textColor">@color/cev_text_primary</item>
+        <item name="endIconTint">@color/cev_gold</item>
+        <item name="startIconTint">@color/cev_gold</item>
+    </style>
+
+    <style name="Widget.CasaEmpresario.TextInputLayout.Dropdown" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/cev_gold_border</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1.5dp</item>
+        <item name="hintTextColor">@color/cev_gold</item>
+        <item name="android:textColorHint">@color/cev_text_muted</item>
+        <item name="boxBackgroundColor">@color/cev_surface_2</item>
+        <item name="endIconTint">@color/cev_gold</item>
+    </style>
+
+    <style name="WindowAnimationCasaEmpresario" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/activity_slide_in</item>
+        <item name="android:activityOpenExitAnimation">@anim/activity_fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@anim/activity_fade_in</item>
+        <item name="android:activityCloseExitAnimation">@anim/activity_slide_out</item>
+    </style>
+
+
+    <style name="Widget.CasaEmpresario.TextInputLayout.Light" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/cev_light_stroke</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1.5dp</item>
+        <item name="hintTextColor">@color/cev_gold_dark</item>
+        <item name="android:textColorHint">@color/cev_light_hint</item>
+        <item name="boxBackgroundColor">@color/cev_light_surface_2</item>
+        <item name="android:textColor">@color/cev_light_text</item>
+        <item name="endIconTint">@color/cev_gold_dark</item>
+        <item name="startIconTint">@color/cev_gold_dark</item>
+    </style>
+
+    <style name="Widget.CasaEmpresario.TextInputLayout.Dropdown.Light" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/cev_light_stroke</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1.5dp</item>
+        <item name="hintTextColor">@color/cev_gold_dark</item>
+        <item name="android:textColorHint">@color/cev_light_hint</item>
+        <item name="boxBackgroundColor">@color/cev_light_surface_2</item>
+        <item name="android:textColor">@color/cev_light_text</item>
+        <item name="endIconTint">@color/cev_gold_dark</item>
+    </style>
+
+    <style name="ThemeOverlay.CasaEmpresario.PickerDialog" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/cev_gold_dark</item>
+        <item name="android:colorAccent">@color/cev_gold_dark</item>
+        <item name="android:textColorPrimary">@color/cev_light_text</item>
+        <item name="android:textColorSecondary">@color/cev_light_hint</item>
+        <item name="android:windowBackground">@color/cev_light_surface_2</item>
+    </style>
+
+</resources>

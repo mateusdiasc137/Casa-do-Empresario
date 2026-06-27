@@ -24,7 +24,9 @@ public class FirebaseUserRepository implements UserRepository {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
-                        Usuario u = queryDocumentSnapshots.getDocuments().get(0).toObject(Usuario.class);
+                        DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+                        Usuario u = doc.toObject(Usuario.class);
+                        hidratarId(doc, u);
                         callback.onSuccess(u);
                     } else {
                         callback.onSuccess(null);
@@ -41,7 +43,9 @@ public class FirebaseUserRepository implements UserRepository {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
-                        Usuario u = queryDocumentSnapshots.getDocuments().get(0).toObject(Usuario.class);
+                        DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+                        Usuario u = doc.toObject(Usuario.class);
+                        hidratarId(doc, u);
                         callback.onSuccess(u);
                     } else {
                         callback.onSuccess(null);
@@ -58,6 +62,7 @@ public class FirebaseUserRepository implements UserRepository {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         Usuario u = documentSnapshot.toObject(Usuario.class);
+                        hidratarId(documentSnapshot, u);
                         callback.onSuccess(u);
                     } else {
                         callback.onSuccess(null);
@@ -77,4 +82,23 @@ public class FirebaseUserRepository implements UserRepository {
                 .addOnSuccessListener(aVoid -> callback.onSuccess(usuario.id))
                 .addOnFailureListener(callback::onError);
     }
+    @Override
+    public void updateFotoPerfil(long id, String fotoPerfilUri, RepositoryCallback<Void> callback) {
+        firestore.collection(COLLECTION)
+                .document(String.valueOf(id))
+                .update("fotoPerfilUri", fotoPerfilUri)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
+
+    private void hidratarId(DocumentSnapshot doc, Usuario usuario) {
+        if (usuario != null && usuario.id == 0) {
+            try {
+                usuario.id = Long.parseLong(doc.getId());
+            } catch (Exception ignored) {
+                // Mantém 0 se o documento não usa ID numérico.
+            }
+        }
+    }
+
 }

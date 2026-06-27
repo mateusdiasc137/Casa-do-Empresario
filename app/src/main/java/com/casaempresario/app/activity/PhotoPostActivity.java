@@ -29,6 +29,10 @@ public class PhotoPostActivity extends AppCompatActivity {
         binding = ActivityPhotoPostBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.getRoot().setAlpha(0f);
+        binding.getRoot().setTranslationY(18f);
+        binding.getRoot().animate().alpha(1f).translationY(0f).setDuration(300).start();
+
         sessionManager = new SessionManager(this);
         fotoId = getIntent().getLongExtra("fotoId", -1);
 

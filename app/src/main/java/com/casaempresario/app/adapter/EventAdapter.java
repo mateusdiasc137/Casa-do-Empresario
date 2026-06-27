@@ -1,5 +1,7 @@
 package com.casaempresario.app.adapter;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.casaempresario.app.R;
 import com.casaempresario.app.database.Evento;
+import com.casaempresario.app.util.EventStatusUtils;
 
 import java.io.File;
 import java.util.List;
@@ -79,7 +82,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
         private final TextView tvStatus;
         private final TextView tvFotos;
 
-        // NOVO
+        // Campo usado na interface
         private final TextView tvCriadoPor;
         private final TextView tvCategoria;
 
@@ -96,7 +99,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             tvFotos  = itemView.findViewById(R.id.tv_fotos);
             tvCategoria = itemView.findViewById(R.id.tv_categoria);
 
-            // NOVO
+            // Campo usado na interface
             tvCriadoPor =
                     itemView.findViewById(R.id.tv_criado_por);
         }
@@ -117,7 +120,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
                                     : "")
             );
 
-            // CATEGORIA
+            // Categoria
             if (evento.categoria != null && !evento.categoria.isEmpty()) {
                 tvCategoria.setText("🏷️ " + evento.categoria);
                 tvCategoria.setVisibility(View.VISIBLE);
@@ -128,7 +131,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             // FOTOS
             tvFotos.setText("📷 fotos");
 
-            // CRIADOR
+            // Organizador
             if (evento.criadoPor != null) {
 
                 tvCriadoPor.setText(
@@ -143,72 +146,65 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
                 );
             }
 
-            // DATA
             String data = evento.dataEvento;
 
             if (data != null && data.contains("T")) {
-
-                String[] parts =
-                        data.split("T");
-
-                String[] dateParts =
-                        parts[0].split("-");
-
-                String hora =
-                        parts[1].length() >= 5
-                                ? parts[1].substring(0, 5)
-                                : "";
-
-                tvData.setText(
-                        "📅 "
-                                + dateParts[2]
-                                + "/"
-                                + dateParts[1]
-                                + "/"
-                                + dateParts[0]
-                                + " às "
-                                + hora
-                );
-
+                tvData.setText("📅 " + formatarPeriodo(evento));
             } else {
-
-                tvData.setText(
-                        "📅 " +
-                                (data != null ? data : "")
-                );
+                tvData.setText("📅 " + (data != null ? data : ""));
             }
 
             // STATUS
-            String status = evento.status;
+            String status = EventStatusUtils.calcularStatusAutomatico(evento);
+            evento.status = status;
 
             tvStatus.setText(status);
 
-            int color;
+            int textColor;
+            int strokeColor;
+            int backgroundColor;
 
             switch (status != null ? status : "") {
 
                 case "AGENDADO":
-                    color = 0xFF1976D2;
+                    textColor = 0xFFB9DCFF;
+                    strokeColor = 0xFF5AA8FF;
+                    backgroundColor = 0xFF10253D;
                     break;
 
                 case "EM_ANDAMENTO":
-                    color = 0xFF388E3C;
+                    textColor = 0xFFB9F7D5;
+                    strokeColor = 0xFF22C58B;
+                    backgroundColor = 0xFF103127;
                     break;
 
                 case "CONCLUIDO":
-                    color = 0xFF757575;
+                    textColor = 0xFFE4E8EF;
+                    strokeColor = 0xFF8A94A6;
+                    backgroundColor = 0xFF272C36;
                     break;
 
                 case "CANCELADO":
-                    color = 0xFFD32F2F;
+                    textColor = 0xFFFFB8B8;
+                    strokeColor = 0xFFEF5B5B;
+                    backgroundColor = 0xFF3A171A;
                     break;
 
                 default:
-                    color = 0xFF9C27B0;
+                    textColor = 0xFFE7D6FF;
+                    strokeColor = 0xFF9C6ADE;
+                    backgroundColor = 0xFF261A35;
                     break;
             }
 
-            tvStatus.setTextColor(color);
+            tvStatus.setText(status != null ? status.replace("_", " ") : "STATUS");
+            tvStatus.setTextColor(textColor);
+            GradientDrawable statusBackground = new GradientDrawable();
+            statusBackground.setShape(GradientDrawable.RECTANGLE);
+            statusBackground.setColor(backgroundColor);
+            statusBackground.setStroke(2, strokeColor);
+            statusBackground.setCornerRadius(999f);
+            tvStatus.setBackground(statusBackground);
 
             // BANNER REAL
             if (evento.bannerUri != null
@@ -228,10 +224,52 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
                 );
             }
 
+            // Animação de entrada do card
+            itemView.setAlpha(0f);
+            itemView.setTranslationY(24f);
+            itemView.animate()
+                    .alpha(1f)
+                    .translationY(0f)
+                    .setDuration(260)
+                    .start();
+
             // CLICK
-            itemView.setOnClickListener(
-                    v -> listener.onClick(evento)
-            );
+            itemView.setOnClickListener(v -> listener.onClick(evento));
+        }
+
+        private String formatarPeriodo(Evento evento) {
+            String inicio = formatarData(evento.dataEvento);
+            String fim = evento.dataFimEvento;
+
+            if (fim == null || !fim.contains("T")) {
+                return inicio;
+            }
+
+            try {
+                String[] inicioParts = evento.dataEvento.split("T");
+                String[] fimParts = fim.split("T");
+                String horaFim = fimParts[1].substring(0, 5);
+
+                if (inicioParts[0].equals(fimParts[0])) {
+                    return inicio + " até " + horaFim;
+                }
+
+                return inicio + " até " + formatarData(fim);
+            } catch (Exception e) {
+                return inicio;
+            }
+        }
+
+        private String formatarData(String data) {
+            if (data == null || !data.contains("T")) return data != null ? data : "";
+            try {
+                String[] parts = data.split("T");
+                String[] dateParts = parts[0].split("-");
+                String hora = parts[1].length() >= 5 ? parts[1].substring(0, 5) : "";
+                return dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0] + " às " + hora;
+            } catch (Exception e) {
+                return data;
+            }
         }
     }
 }

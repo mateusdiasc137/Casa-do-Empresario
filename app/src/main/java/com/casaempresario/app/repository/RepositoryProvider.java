@@ -13,7 +13,7 @@ import com.casaempresario.app.repository.firebase.FirebaseChatRepository;
 import com.casaempresario.app.repository.firebase.FirebasePhotoRepository;
 
 public class RepositoryProvider {
-    // Altere para true para mudar o aplicativo INTEIRO para usar o Firebase!
+    // Alterna a origem dos dados entre armazenamento local e Firebase.
     private static final boolean USE_FIREBASE = true;
 
     public static UserRepository getUserRepository(Context context) {

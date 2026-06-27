@@ -1,13 +1,48 @@
-# Pastas de build geradas automaticamente
-build/
-app/build/
-
-# Cache do Gradle
+# Gradle / Android build
 .gradle/
+build/
+**/build/
 
-# Configurações locais do Android Studio 
+# Android Studio / IntelliJ
 .idea/
 *.iml
+*.ipr
+*.iws
 
-# Caminho do SDK local 
+# Configurações locais da máquina
 local.properties
+**/local.properties
+
+# Chaves, certificados e arquivos sensíveis
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+*.crt
+.env
+.env.*
+secrets.properties
+api_keys.properties
+
+# Firebase / Google Services com dados do projeto
+app/google-services.json
+google-services.json
+**/google-services.json
+
+# Relatórios e arquivos temporários
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Capturas/saídas geradas localmente
+captures/
+outputs/
+
+# Manter o wrapper do Gradle versionado caso exista no projeto
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties

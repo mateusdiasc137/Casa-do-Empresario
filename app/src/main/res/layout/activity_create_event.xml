@@ -1,28 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@drawable/bg_app_premium">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/cev_background"
         app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary"
+            android:layout_height="64dp"
+            android:background="@drawable/gradient_primary"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:titleTextColor="@color/white" />
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:titleTextColor="@color/cev_gold" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -31,175 +34,256 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Detalhes do evento"
+                android:textColor="@color/cev_text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Monte uma capa atrativa e preencha as informações principais."
+                android:textColor="@color/cev_text_muted"
+                android:textSize="13sp" />
+
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="0dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/cev_surface"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="10dp"
+                app:strokeColor="@color/cev_gold_border"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
-                    
-                    <!-- Banner do Evento -->
+                    android:padding="18dp">
+
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
-                        android:layout_height="180dp"
-                        app:cardCornerRadius="12dp"
-                        app:strokeWidth="0dp"
-                        android:layout_marginBottom="12dp">
-                        
-                        <ImageView
-                            android:id="@+id/img_banner"
+                        android:layout_height="196dp"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="@color/cev_surface_2"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/outline"
+                        app:strokeWidth="1dp">
+
+                        <FrameLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_event_placeholder"
-                            android:background="#DDDDDD" />
+                            android:layout_height="match_parent">
+
+                            <ImageView
+                                android:id="@+id/img_banner"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/bg_event_placeholder_premium"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_event_placeholder" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="90dp"
+                                android:layout_gravity="bottom"
+                                android:background="@drawable/gradient_dark" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="bottom|start"
+                                android:layout_margin="16dp"
+                                android:background="@drawable/bg_chip_subtle"
+                                android:paddingHorizontal="12dp"
+                                android:paddingVertical="6dp"
+                                android:text="Imagem de capa"
+                                android:textColor="@color/cev_gold"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+                        </FrameLayout>
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_selecionar_banner"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        style="@style/Widget.CasaEmpresario.Button.Outlined"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Selecionar Imagem de Capa"
-                        app:cornerRadius="12dp"
-                        app:strokeColor="@color/primary"
-                        app:strokeWidth="1.5dp"
-                        android:textColor="@color/primary"
-                        android:layout_marginBottom="16dp" />
+                        android:layout_height="52dp"
+                        android:layout_marginBottom="18dp"
+                        android:text="Selecionar imagem de capa"
+                        android:textColor="@color/cev_gold"
+                        app:cornerRadius="18dp"
+                        app:icon="@android:drawable/ic_menu_gallery"
+                        app:iconTint="@color/cev_gold"
+                        app:strokeColor="@color/cev_gold_border"
+                        app:strokeWidth="1dp" />
 
-                    <!-- Título -->
                     <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.CasaEmpresario.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Título do Evento *"
                         android:layout_marginBottom="14dp"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp">
+                        android:hint="Título do evento *"
+                        app:boxCornerRadiusBottomEnd="18dp"
+                        app:boxCornerRadiusBottomStart="18dp"
+                        app:boxCornerRadiusTopEnd="18dp"
+                        app:boxCornerRadiusTopStart="18dp">
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_titulo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:imeOptions="actionNext"
                             android:inputType="textCapWords"
-                            android:textColor="@color/text_main"
-                            android:imeOptions="actionNext" />
+                            android:textColor="@color/cev_text_primary" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Descrição -->
                     <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.CasaEmpresario.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Descrição do Evento"
                         android:layout_marginBottom="14dp"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp">
+                        android:hint="Descrição do evento"
+                        app:boxCornerRadiusBottomEnd="18dp"
+                        app:boxCornerRadiusBottomStart="18dp"
+                        app:boxCornerRadiusTopEnd="18dp"
+                        app:boxCornerRadiusTopStart="18dp">
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_descricao"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:gravity="top"
                             android:inputType="textMultiLine"
-                            android:textColor="@color/text_main"
                             android:minLines="3"
-                            android:gravity="top" />
+                            android:textColor="@color/cev_text_primary" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Categoria Dropdown (Novo) -->
                     <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                        style="@style/Widget.CasaEmpresario.TextInputLayout.Dropdown"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="18dp"
                         android:hint="Categoria *"
-                        android:layout_marginBottom="14dp"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp">
+                        app:boxCornerRadiusBottomEnd="18dp"
+                        app:boxCornerRadiusBottomStart="18dp"
+                        app:boxCornerRadiusTopEnd="18dp"
+                        app:boxCornerRadiusTopStart="18dp">
+
                         <AutoCompleteTextView
                             android:id="@+id/et_categoria"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="none"
-                            android:textColor="@color/text_main"
+                            android:clickable="true"
                             android:focusable="false"
-                            android:clickable="true" />
+                            android:inputType="none"
+                            android:popupBackground="@drawable/bg_card_soft"
+                            android:textColor="@color/cev_text_primary" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Data e Hora (clicável) -->
                     <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.CasaEmpresario.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Data e Hora *"
-                        android:layout_marginBottom="14dp"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp">
+                        android:layout_marginBottom="18dp"
+                        android:hint="Data e horário de início *"
+                        app:boxCornerRadiusBottomEnd="18dp"
+                        app:boxCornerRadiusBottomStart="18dp"
+                        app:boxCornerRadiusTopEnd="18dp"
+                        app:boxCornerRadiusTopStart="18dp"
+                        app:endIconDrawable="@drawable/ic_calendar"
+                        app:endIconMode="custom">
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_data"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:focusable="false"
                             android:clickable="true"
                             android:cursorVisible="false"
-                            android:textColor="@color/text_main"
-                            android:drawableEnd="@drawable/ic_calendar" />
+                            android:focusable="false"
+                            android:textColor="@color/cev_text_primary" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Local (Endereço Real Validado) -->
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/layout_local"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.CasaEmpresario.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Local (Digite endereço real completo) *"
+                        android:layout_marginBottom="18dp"
+                        android:hint="Horário de término *"
+                        app:boxCornerRadiusBottomEnd="18dp"
+                        app:boxCornerRadiusBottomStart="18dp"
+                        app:boxCornerRadiusTopEnd="18dp"
+                        app:boxCornerRadiusTopStart="18dp"
+                        app:endIconDrawable="@drawable/ic_calendar"
+                        app:endIconMode="custom">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_hora_fim"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="true"
+                            android:cursorVisible="false"
+                            android:focusable="false"
+                            android:textColor="@color/cev_text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="-4dp"
+                        android:layout_marginBottom="12dp"
+                        android:text="O status muda automaticamente conforme o início e o término do evento."
+                        android:textColor="@color/cev_text_muted"
+                        android:textSize="12sp" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/layout_local"
+                        style="@style/Widget.CasaEmpresario.TextInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginBottom="14dp"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:endIconMode="custom"
+                        android:hint="Local/endereço completo *"
+                        app:boxCornerRadiusBottomEnd="18dp"
+                        app:boxCornerRadiusBottomStart="18dp"
+                        app:boxCornerRadiusTopEnd="18dp"
+                        app:boxCornerRadiusTopStart="18dp"
+                        app:endIconContentDescription="Selecionar no mapa"
                         app:endIconDrawable="@drawable/ic_map_pin"
-                        app:endIconContentDescription="Selecionar no mapa">
+                        app:endIconMode="custom">
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_local"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:imeOptions="actionNext"
                             android:inputType="textCapWords"
-                            android:textColor="@color/text_main"
-                            android:imeOptions="actionNext" />
+                            android:textColor="@color/cev_text_primary" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Capacidade -->
                     <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        style="@style/Widget.CasaEmpresario.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Capacidade máxima (opcional)"
-                        android:layout_marginBottom="20dp"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp">
+                        android:layout_marginBottom="16dp"
+                        android:hint="Capacidade máxima"
+                        app:boxCornerRadiusBottomEnd="18dp"
+                        app:boxCornerRadiusBottomStart="18dp"
+                        app:boxCornerRadiusTopEnd="18dp"
+                        app:boxCornerRadiusTopStart="18dp">
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_capacidade"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:imeOptions="actionDone"
                             android:inputType="number"
-                            android:textColor="@color/text_main"
-                            android:imeOptions="actionDone" />
+                            android:textColor="@color/cev_text_primary" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <ProgressBar
@@ -207,20 +291,21 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:visibility="gone"
-                        android:layout_marginBottom="8dp" />
+                        android:layout_marginBottom="10dp"
+                        android:indeterminateTint="@color/cev_gold"
+                        android:visibility="gone" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_salvar"
+                        style="@style/Widget.CasaEmpresario.Button.Primary"
                         android:layout_width="match_parent"
-                        android:layout_height="54dp"
-                        android:text="Salvar Evento"
-                        android:textSize="16sp"
+                        android:layout_height="56dp"
+                        android:text="Salvar evento"
+                        android:textColor="@color/cev_background"
+                        android:textSize="15sp"
                         android:textStyle="bold"
-                        app:cornerRadius="12dp"
-                        app:backgroundTint="@color/primary"
-                        android:textColor="@color/white" />
-
+                        app:backgroundTint="@color/cev_gold"
+                        app:cornerRadius="18dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>

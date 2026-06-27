@@ -13,13 +13,16 @@ import java.io.InputStream;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.casaempresario.app.R;
 import com.casaempresario.app.database.Evento;
 import com.casaempresario.app.databinding.ActivityCreateEventBinding;
 import com.casaempresario.app.repository.RepositoryCallback;
 import com.casaempresario.app.repository.RepositoryProvider;
+import com.casaempresario.app.util.EventStatusUtils;
 import com.casaempresario.app.util.SessionManager;
 
 import java.util.Calendar;
+import java.util.Date;
 
 public class CreateEventActivity extends AppCompatActivity {
 
@@ -29,6 +32,8 @@ public class CreateEventActivity extends AppCompatActivity {
     private Long eventoId;
 
     private Calendar dataSelecionada = Calendar.getInstance();
+    private Calendar dataFimSelecionada = Calendar.getInstance();
+    private boolean horarioFimDefinido = false;
 
     // Banner
     private static final int PICK_BANNER = 1001;
@@ -55,6 +60,10 @@ public class CreateEventActivity extends AppCompatActivity {
 
         binding = ActivityCreateEventBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.getRoot().setAlpha(0f);
+        binding.getRoot().setTranslationY(18f);
+        binding.getRoot().animate().alpha(1f).translationY(0f).setDuration(300).start();
 
         sessionManager = new SessionManager(this);
 
@@ -84,7 +93,7 @@ public class CreateEventActivity extends AppCompatActivity {
         // Inicializa Dropdown de Categorias
         android.widget.ArrayAdapter<String> adapterCategorias = new android.widget.ArrayAdapter<>(
                 this,
-                android.R.layout.simple_dropdown_item_1line,
+                R.layout.item_dropdown_dark,
                 CATEGORIAS
         );
         binding.etCategoria.setAdapter(adapterCategorias);
@@ -93,8 +102,10 @@ public class CreateEventActivity extends AppCompatActivity {
         binding.btnSalvar.setOnClickListener(v -> salvar());
 
         binding.etData.setOnClickListener(v -> selecionarData());
+        binding.etHoraFim.setOnClickListener(v -> selecionarHoraFim());
 
         binding.etData.setFocusable(false);
+        binding.etHoraFim.setFocusable(false);
 
         // Seletor de Localização
         binding.layoutLocal.setEndIconOnClickListener(v -> {
@@ -246,6 +257,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         DatePickerDialog dateDialog = new DatePickerDialog(
                 this,
+                R.style.ThemeOverlay_CasaEmpresario_PickerDialog,
                 (view, year, month, day) -> {
 
                     dataSelecionada.set(Calendar.YEAR, year);
@@ -254,28 +266,22 @@ public class CreateEventActivity extends AppCompatActivity {
 
                     new TimePickerDialog(
                             this,
+                            R.style.ThemeOverlay_CasaEmpresario_PickerDialog,
                             (tv, hour, min) -> {
 
-                                dataSelecionada.set(
-                                        Calendar.HOUR_OF_DAY,
-                                        hour
-                                );
+                                dataSelecionada.set(Calendar.HOUR_OF_DAY, hour);
+                                dataSelecionada.set(Calendar.MINUTE, min);
+                                dataSelecionada.set(Calendar.SECOND, 0);
+                                dataSelecionada.set(Calendar.MILLISECOND, 0);
 
-                                dataSelecionada.set(
-                                        Calendar.MINUTE,
-                                        min
-                                );
+                                binding.etData.setText(formatarDataHora(dataSelecionada));
 
-                                String texto = String.format(
-                                        "%02d/%02d/%04d às %02d:%02d",
-                                        day,
-                                        month + 1,
-                                        year,
-                                        hour,
-                                        min
-                                );
-
-                                binding.etData.setText(texto);
+                                if (!horarioFimDefinido || !dataFimSelecionada.after(dataSelecionada)) {
+                                    dataFimSelecionada = (Calendar) dataSelecionada.clone();
+                                    dataFimSelecionada.add(Calendar.HOUR_OF_DAY, 2);
+                                    horarioFimDefinido = true;
+                                    binding.etHoraFim.setText(formatarFim(dataSelecionada, dataFimSelecionada));
+                                }
 
                             },
                             dataSelecionada.get(Calendar.HOUR_OF_DAY),
@@ -293,6 +299,86 @@ public class CreateEventActivity extends AppCompatActivity {
                 .setMinDate(System.currentTimeMillis());
 
         dateDialog.show();
+    }
+
+    private void selecionarHoraFim() {
+        if (binding.etData.getText().toString().trim().isEmpty()) {
+            Toast.makeText(this, "Selecione primeiro a data e o horário de início.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Calendar baseFim = horarioFimDefinido ? dataFimSelecionada : (Calendar) dataSelecionada.clone();
+        if (!horarioFimDefinido) {
+            baseFim.add(Calendar.HOUR_OF_DAY, 2);
+        }
+
+        new TimePickerDialog(
+                this,
+                R.style.ThemeOverlay_CasaEmpresario_PickerDialog,
+                (view, hour, minute) -> {
+                    Calendar fim = (Calendar) dataSelecionada.clone();
+                    fim.set(Calendar.HOUR_OF_DAY, hour);
+                    fim.set(Calendar.MINUTE, minute);
+                    fim.set(Calendar.SECOND, 0);
+                    fim.set(Calendar.MILLISECOND, 0);
+
+                    if (!fim.after(dataSelecionada)) {
+                        fim.add(Calendar.DAY_OF_MONTH, 1);
+                    }
+
+                    dataFimSelecionada = fim;
+                    horarioFimDefinido = true;
+                    binding.etHoraFim.setText(formatarFim(dataSelecionada, dataFimSelecionada));
+                },
+                baseFim.get(Calendar.HOUR_OF_DAY),
+                baseFim.get(Calendar.MINUTE),
+                true
+        ).show();
+    }
+
+    private String formatarDataHora(Calendar cal) {
+        return String.format(
+                "%02d/%02d/%04d às %02d:%02d",
+                cal.get(Calendar.DAY_OF_MONTH),
+                cal.get(Calendar.MONTH) + 1,
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE)
+        );
+    }
+
+    private String formatarFim(Calendar inicio, Calendar fim) {
+        boolean mesmoDia = inicio.get(Calendar.YEAR) == fim.get(Calendar.YEAR)
+                && inicio.get(Calendar.DAY_OF_YEAR) == fim.get(Calendar.DAY_OF_YEAR);
+
+        if (mesmoDia) {
+            return String.format(
+                    "%02d:%02d",
+                    fim.get(Calendar.HOUR_OF_DAY),
+                    fim.get(Calendar.MINUTE)
+            );
+        }
+
+        return formatarDataHora(fim);
+    }
+
+    private String formatarIso(Calendar cal) {
+        return String.format(
+                "%04d-%02d-%02dT%02d:%02d:00",
+                cal.get(Calendar.YEAR),
+                cal.get(Calendar.MONTH) + 1,
+                cal.get(Calendar.DAY_OF_MONTH),
+                cal.get(Calendar.HOUR_OF_DAY),
+                cal.get(Calendar.MINUTE)
+        );
+    }
+
+    private Calendar calendarFromDate(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
     }
 
     private void salvar() {
@@ -315,11 +401,12 @@ public class CreateEventActivity extends AppCompatActivity {
         if (titulo.isEmpty()
                 || local.isEmpty()
                 || binding.etData.getText().toString().isEmpty()
+                || binding.etHoraFim.getText().toString().isEmpty()
                 || categoria.isEmpty()) {
 
             Toast.makeText(
                     this,
-                    "Preencha título, local, categoria e data",
+                    "Preencha título, local, categoria, início e término",
                     Toast.LENGTH_SHORT
             ).show();
 
@@ -331,14 +418,13 @@ public class CreateEventActivity extends AppCompatActivity {
                         ? null
                         : Integer.parseInt(capStr);
 
-        String dataISO = String.format(
-                "%04d-%02d-%02dT%02d:%02d:00",
-                dataSelecionada.get(Calendar.YEAR),
-                dataSelecionada.get(Calendar.MONTH) + 1,
-                dataSelecionada.get(Calendar.DAY_OF_MONTH),
-                dataSelecionada.get(Calendar.HOUR_OF_DAY),
-                dataSelecionada.get(Calendar.MINUTE)
-        );
+        if (!dataFimSelecionada.after(dataSelecionada)) {
+            Toast.makeText(this, "O horário de término precisa ser depois do início.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String dataISO = formatarIso(dataSelecionada);
+        String dataFimISO = formatarIso(dataFimSelecionada);
 
         setLoading(true);
 
@@ -389,12 +475,14 @@ public class CreateEventActivity extends AppCompatActivity {
                             evento.titulo = titulo;
                             evento.descricao = descricao;
                             evento.dataEvento = dataISO;
+                            evento.dataFimEvento = dataFimISO;
                             evento.local = local;
                             evento.capacidadeMaxima = capacidade;
                             evento.categoria = categoria;
                             evento.latitude = finalLat;
                             evento.longitude = finalLng;
                             evento.bannerUri = bannerUri;
+                            evento.status = EventStatusUtils.calcularStatusAutomatico(evento);
 
                             RepositoryProvider.getEventRepository(CreateEventActivity.this).update(evento, new RepositoryCallback<Void>() {
                                 @Override
@@ -431,12 +519,14 @@ public class CreateEventActivity extends AppCompatActivity {
                     evento.titulo = titulo;
                     evento.descricao = descricao;
                     evento.dataEvento = dataISO;
+                    evento.dataFimEvento = dataFimISO;
                     evento.local = local;
                     evento.capacidadeMaxima = capacidade;
                     evento.categoria = categoria;
                     evento.latitude = finalLat;
                     evento.longitude = finalLng;
                     evento.bannerUri = bannerUri;
+                    evento.status = EventStatusUtils.calcularStatusAutomatico(evento);
 
                     RepositoryProvider.getEventRepository(this).insert(evento, new RepositoryCallback<Long>() {
                         @Override
@@ -493,15 +583,26 @@ public class CreateEventActivity extends AppCompatActivity {
                 );
             }
 
-            if (e.dataEvento != null
-                    && e.dataEvento.contains("T")) {
+            if (e.dataEvento != null && e.dataEvento.contains("T")) {
+                Date inicio = EventStatusUtils.parseDate(e.dataEvento);
+                if (inicio != null) {
+                    dataSelecionada = calendarFromDate(inicio);
+                    binding.etData.setText(formatarDataHora(dataSelecionada));
+                } else {
+                    binding.etData.setText(e.dataEvento.replace("T", " às ").substring(0, 16));
+                }
+            }
 
-                String dataFormatada =
-                        e.dataEvento
-                                .replace("T", " às ")
-                                .substring(0, 16);
-
-                binding.etData.setText(dataFormatada);
+            Date fim = EventStatusUtils.parseDate(e.dataFimEvento);
+            if (fim != null) {
+                dataFimSelecionada = calendarFromDate(fim);
+                horarioFimDefinido = true;
+                binding.etHoraFim.setText(formatarFim(dataSelecionada, dataFimSelecionada));
+            } else if (!binding.etData.getText().toString().trim().isEmpty()) {
+                dataFimSelecionada = (Calendar) dataSelecionada.clone();
+                dataFimSelecionada.add(Calendar.HOUR_OF_DAY, 3);
+                horarioFimDefinido = true;
+                binding.etHoraFim.setText(formatarFim(dataSelecionada, dataFimSelecionada));
             }
 
             // Banner

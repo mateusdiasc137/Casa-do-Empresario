@@ -5,6 +5,10 @@
         android:icon="@drawable/ic_home"
         android:title="Eventos" />
     <item
+        android:id="@+id/nav_feed"
+        android:icon="@drawable/ic_feed"
+        android:title="Comunicados" />
+    <item
         android:id="@+id/nav_interests"
         android:icon="@drawable/ic_heart"
         android:title="Interesses" />
