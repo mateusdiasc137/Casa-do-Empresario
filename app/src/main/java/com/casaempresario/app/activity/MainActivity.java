@@ -37,6 +37,7 @@ import com.casaempresario.app.util.NotificationHelper;
 import com.casaempresario.app.util.NotificationPermissionHelper;
 import com.casaempresario.app.util.NotificationScheduler;
 import com.casaempresario.app.service.EventNotificationService;
+import com.casaempresario.app.service.FCMService;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -110,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
             NotificationPermissionHelper.requestPostNotificationsDelayed(this);
             EventNotificationService.start(this);
             NotificationScheduler.scheduleEventChecks(this);
+            FCMService.registrarToken(this);
         }
 
         setSupportActionBar(binding.toolbar);
