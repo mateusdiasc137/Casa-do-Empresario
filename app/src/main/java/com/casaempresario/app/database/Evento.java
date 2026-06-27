@@ -29,6 +29,9 @@ public class Evento {
     @ColumnInfo(name = "criado_por")
     public Long criadoPor;
 
+    @androidx.room.Ignore
+    public String nomeOrganizador;
+
     // Campo usado na interface
     @ColumnInfo(name = "banner_uri")
     public String bannerUri;

@@ -6,8 +6,19 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.content.IntentSender;
 import android.view.View;
 import android.widget.Toast;
+
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.Task;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +50,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private SessionManager sessionManager;
     private GoogleMap mMap;
     private static final int REQUEST_LOCATION_MAP = 4201;
+    private static final int REQUEST_CHECK_SETTINGS = 4202;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +70,26 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        // Inicializa o fragmento do Google Maps
+        // Em vez de carregar o mapa imediatamente, iniciamos o fluxo de localização
+        iniciarFluxoDeLocalizacao();
+    }
+
+    private void iniciarFluxoDeLocalizacao() {
+        boolean granted = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+
+        if (granted) {
+            verificarAtivacaoGPS();
+        } else {
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    REQUEST_LOCATION_MAP
+            );
+        }
+    }
+
+    private void carregarMapa() {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         if (mapFragment != null) {
@@ -103,36 +134,57 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 mMap.setMyLocationEnabled(true);
                 centralizarUsuarioSePossivel();
             } catch (SecurityException ignored) { }
-        } else {
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    REQUEST_LOCATION_MAP
-            );
         }
     }
 
+    private void verificarAtivacaoGPS() {
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000).build();
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        SettingsClient client = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+
+        task.addOnSuccessListener(this, locationSettingsResponse -> {
+            // O GPS já está ativado
+            carregarMapa();
+        });
+
+        task.addOnFailureListener(this, e -> {
+            if (e instanceof ResolvableApiException) {
+                // O GPS está desativado, solicita ao usuário para ativar com um clique
+                try {
+                    ResolvableApiException resolvable = (ResolvableApiException) e;
+                    resolvable.startResolutionForResult(MapActivity.this, REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException sendEx) {
+                    carregarMapa();
+                }
+            } else {
+                carregarMapa();
+            }
+        });
+    }
+
     private void centralizarUsuarioSePossivel() {
+        if (mMap == null) return;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
         try {
-            LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-            if (locationManager == null) return;
-
-            Location location = null;
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            }
-            if (location == null && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-            }
-
-            if (location != null && mMap != null) {
-                LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.addMarker(new MarkerOptions()
-                        .position(userPosition)
-                        .title("Você está aqui")
-                        .snippet("Localização aproximada")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-            }
+            FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                    .addOnSuccessListener(this, location -> {
+                        if (location != null && mMap != null) {
+                            LatLng userPosition = new LatLng(location.getLatitude(), location.getLongitude());
+                            
+                            // Apenas anima a câmera para a bolinha azul se não houver evento em foco
+                            if (getIntent().getLongExtra("focusEventoId", -1) == -1) {
+                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(userPosition, 15));
+                            }
+                        }
+                    });
         } catch (Exception ignored) { }
     }
 
@@ -277,7 +329,30 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_LOCATION_MAP) {
-            habilitarMinhaLocalizacao();
+            boolean granted = false;
+            for (int result : grantResults) {
+                if (result == PackageManager.PERMISSION_GRANTED) {
+                    granted = true;
+                    break;
+                }
+            }
+            if (granted) {
+                verificarAtivacaoGPS();
+            } else {
+                carregarMapa();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CHECK_SETTINGS) {
+            if (resultCode != RESULT_OK) {
+                Toast.makeText(this, "A localização (GPS) não foi ativada", Toast.LENGTH_SHORT).show();
+            }
+            // Independente do resultado, agora carregamos o mapa
+            carregarMapa();
         }
     }
 

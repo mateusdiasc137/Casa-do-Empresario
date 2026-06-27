@@ -525,17 +525,14 @@ public class MainActivity extends AppCompatActivity {
 
         if (visitante) {
             binding.tvFeedTituloPublicacao.setText("Acompanhe o mural");
-            binding.tvFeedSubtituloPublicacao.setText("Você pode ler comunicados sem login. Para publicar, entre ou crie uma conta.");
             binding.etFeedMensagem.setHint("Entre para participar da conversa");
             binding.btnFeedEnviar.setText("Entrar para publicar");
         } else if (organizador) {
             binding.tvFeedTituloPublicacao.setText("Publicar aviso oficial");
-            binding.tvFeedSubtituloPublicacao.setText("Promova eventos, envie comunicados ou converse com todos os participantes em tempo real.");
             binding.etFeedMensagem.setHint("Ex.: Últimas vagas para o evento de hoje. Esperamos vocês!");
             binding.btnFeedEnviar.setText("Publicar como organizador");
         } else {
             binding.tvFeedTituloPublicacao.setText("Participar da conversa");
-            binding.tvFeedSubtituloPublicacao.setText("Responda aos avisos, tire dúvidas e acompanhe a comunidade.");
             binding.etFeedMensagem.setHint("Escreva uma mensagem pública para a comunidade");
             binding.btnFeedEnviar.setText("Enviar mensagem");
         }

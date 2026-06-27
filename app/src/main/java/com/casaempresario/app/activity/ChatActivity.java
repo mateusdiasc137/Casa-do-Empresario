@@ -146,6 +146,8 @@ public class ChatActivity extends AppCompatActivity {
         String texto = binding.etMensagem.getText().toString().trim();
         if (texto.isEmpty()) return;
 
+        boolean ehPrimeiraMensagem = adapter.getItemCount() == 0;
+
         binding.etMensagem.setText("");
 
         Mensagem msg = new Mensagem();
@@ -161,7 +163,9 @@ public class ChatActivity extends AppCompatActivity {
             public void onSuccess(Long result) {
                 runOnUiThread(() -> {
                     carregarHistorico();
-                    verificarESimularAutoResposta(texto);
+                    if (ehPrimeiraMensagem) {
+                        verificarESimularAutoResposta(texto);
+                    }
                 });
             }
 

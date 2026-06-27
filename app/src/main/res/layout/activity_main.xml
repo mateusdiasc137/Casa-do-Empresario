@@ -82,32 +82,13 @@
                             android:paddingEnd="18dp">
 
                             <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_chip_subtle"
-                                android:paddingHorizontal="12dp"
-                                android:paddingVertical="6dp"
-                                android:text="CEV • Plataforma oficial"
-                                android:textColor="@color/cev_gold"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
-
-                            <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="14dp"
-                                android:text="Agenda da cidade"
+                                android:text="Agenda de Eventos"
                                 android:textColor="@color/cev_text_primary"
                                 android:textSize="29sp"
                                 android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
-                                android:text="Descubra eventos, oportunidades e conexões em Viçosa com uma navegação mais rápida e elegante."
-                                android:textColor="@color/cev_text_muted"
-                                android:textSize="13sp" />
                         </LinearLayout>
 
                         <com.google.android.material.card.MaterialCardView
@@ -128,35 +109,10 @@
                                 android:orientation="vertical"
                                 android:padding="18dp">
 
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Explore eventos com mais facilidade"
-                                    android:textColor="@color/cev_text_primary"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Pesquise rapidamente e filtre o que realmente importa para você."
-                                    android:textColor="@color/cev_text_muted"
-                                    android:textSize="12sp" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="12dp"
-                                    android:text="Use a busca inteligente para encontrar eventos por título, local, descrição ou organizador."
-                                    android:textColor="@color/cev_text_muted"
-                                    android:textSize="12sp" />
-
                                 <com.google.android.material.textfield.TextInputLayout
                                     style="@style/Widget.CasaEmpresario.TextInputLayout"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="16dp"
                                     android:hint="Buscar por título, local, descrição ou organizador"
                                     app:boxCornerRadiusBottomEnd="20dp"
                                     app:boxCornerRadiusBottomStart="20dp"
@@ -195,27 +151,10 @@
                                 android:orientation="vertical"
                                 android:padding="16dp">
 
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Navegue do seu jeito"
-                                    android:textColor="@color/cev_text_primary"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Escolha o status e a categoria para refinar sua busca."
-                                    android:textColor="@color/cev_text_muted"
-                                    android:textSize="12sp" />
-
                                 <com.google.android.material.tabs.TabLayout
                                     android:id="@+id/tab_layout"
                                     android:layout_width="match_parent"
                                     android:layout_height="48dp"
-                                    android:layout_marginTop="14dp"
                                     android:background="@drawable/bg_subtle_panel"
                                     app:tabGravity="fill"
                                     app:tabIndicatorColor="@color/cev_gold"
@@ -253,39 +192,6 @@
                             android:paddingEnd="18dp"
                             android:paddingBottom="4dp">
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Eventos em destaque"
-                                    android:textColor="@color/cev_text_primary"
-                                    android:textSize="19sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
-                                    android:text="Atualizado em tempo real conforme os filtros escolhidos."
-                                    android:textColor="@color/cev_text_muted"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_chip_subtle"
-                                android:paddingHorizontal="12dp"
-                                android:paddingVertical="6dp"
-                                android:text="Feed"
-                                android:textColor="@color/cev_gold"
-                                android:textSize="11sp"
-                                android:textStyle="bold" />
                         </LinearLayout>
 
                         <FrameLayout
@@ -360,17 +266,6 @@
                         android:paddingEnd="18dp">
 
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_metric_pill_secondary"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="6dp"
-                            android:text="Comunicação ao vivo"
-                            android:textColor="@color/cev_text_primary"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="14dp"
@@ -378,14 +273,6 @@
                             android:textColor="@color/cev_text_primary"
                             android:textSize="28sp"
                             android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:text="Um espaço para avisos, promoções de eventos e conversas públicas entre organizadores e participantes."
-                            android:textColor="@color/cev_text_muted"
-                            android:textSize="13sp" />
                     </LinearLayout>
 
                     <com.google.android.material.card.MaterialCardView
@@ -414,15 +301,6 @@
                                 android:textColor="@color/cev_text_primary"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tv_feed_subtitulo_publicacao"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Publique avisos, tire dúvidas ou converse com todos em tempo real."
-                                android:textColor="@color/cev_text_muted"
-                                android:textSize="12sp" />
 
                             <com.google.android.material.textfield.TextInputLayout
                                 style="@style/Widget.CasaEmpresario.TextInputLayout"
@@ -521,22 +399,6 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Publicações recentes"
-                                android:textColor="@color/cev_text_primary"
-                                android:textSize="19sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Novas mensagens aparecem automaticamente."
-                                android:textColor="@color/cev_text_muted"
-                                android:textSize="12sp" />
                         </LinearLayout>
 
                         <ProgressBar
@@ -591,19 +453,11 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:text="Meus interesses"
                 android:textColor="@color/cev_text_primary"
                 android:textSize="24sp"
                 android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="16dp"
-                android:text="Eventos que você marcou para acompanhar de perto."
-                android:textColor="@color/cev_text_muted"
-                android:textSize="13sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_ver_no_mapa"
@@ -656,19 +510,11 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:text="Mensagens"
                 android:textColor="@color/cev_text_primary"
                 android:textSize="24sp"
                 android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="16dp"
-                android:text="Continue conversas com organizadores e participantes."
-                android:textColor="@color/cev_text_muted"
-                android:textSize="13sp" />
 
             <FrameLayout
                 android:layout_width="match_parent"

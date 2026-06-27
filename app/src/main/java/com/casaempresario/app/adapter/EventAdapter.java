@@ -11,13 +11,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import androidx.recyclerview.widget.DiffUtil;
+
 import com.bumptech.glide.Glide;
 import com.casaempresario.app.R;
 import com.casaempresario.app.database.Evento;
+import com.casaempresario.app.database.Usuario;
+import com.casaempresario.app.repository.RepositoryCallback;
+import com.casaempresario.app.repository.RepositoryProvider;
 import com.casaempresario.app.util.EventStatusUtils;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Adapter da lista de eventos na MainActivity.
@@ -31,6 +38,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
     private List<Evento> eventos;
     private final OnEventClickListener listener;
+    private final Set<Long> animatedIds = new HashSet<>();
 
     public EventAdapter(List<Evento> eventos,
                         OnEventClickListener listener) {
@@ -40,8 +48,34 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
     }
 
     public void atualizar(List<Evento> novos) {
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return eventos.size();
+            }
+
+            @Override
+            public int getNewListSize() {
+                return novos.size();
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                return eventos.get(oldItemPosition).id == novos.get(newItemPosition).id;
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                Evento oldItem = eventos.get(oldItemPosition);
+                Evento newItem = novos.get(newItemPosition);
+                return java.util.Objects.equals(oldItem.titulo, newItem.titulo) &&
+                       java.util.Objects.equals(oldItem.status, newItem.status) &&
+                       java.util.Objects.equals(oldItem.bannerUri, newItem.bannerUri);
+            }
+        });
+
         this.eventos = novos;
-        notifyDataSetChanged();
+        result.dispatchUpdatesTo(this);
     }
 
     @NonNull
@@ -63,8 +97,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             @NonNull EventViewHolder holder,
             int position
     ) {
-
-        holder.bind(eventos.get(position), listener);
+        Evento evento = eventos.get(position);
+        boolean shouldAnimate = !animatedIds.contains(evento.id);
+        if (shouldAnimate) {
+            animatedIds.add(evento.id);
+        }
+        holder.bind(evento, listener, shouldAnimate);
     }
 
     @Override
@@ -106,7 +144,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
 
         public void bind(
                 Evento evento,
-                OnEventClickListener listener
+                OnEventClickListener listener,
+                boolean shouldAnimate
         ) {
 
             // TÍTULO
@@ -132,18 +171,39 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             tvFotos.setText("📷 fotos");
 
             // Organizador
-            if (evento.criadoPor != null) {
+            if (evento.nomeOrganizador != null) {
+                tvCriadoPor.setText("Criado por " + evento.nomeOrganizador);
+                tvCriadoPor.setVisibility(View.VISIBLE);
+            } else if (evento.criadoPor != null) {
+                tvCriadoPor.setText("");
+                tvCriadoPor.setVisibility(View.INVISIBLE); // Deixa em branco para atualizar depois sem piscar errado
 
-                tvCriadoPor.setText(
-                        "Criado por usuário #" +
-                                evento.criadoPor
-                );
+                RepositoryProvider.getUserRepository(itemView.getContext()).getUsuarioById(evento.criadoPor, new RepositoryCallback<Usuario>() {
+                    @Override
+                    public void onSuccess(Usuario usuario) {
+                        itemView.post(() -> {
+                            if (usuario != null && usuario.nome != null) {
+                                evento.nomeOrganizador = usuario.nome;
+                            } else {
+                                evento.nomeOrganizador = "Criador desconhecido";
+                            }
+                            tvCriadoPor.setText("Criado por " + evento.nomeOrganizador);
+                            tvCriadoPor.setVisibility(View.VISIBLE);
+                        });
+                    }
 
+                    @Override
+                    public void onError(Exception e) {
+                        itemView.post(() -> {
+                            evento.nomeOrganizador = "Criador desconhecido";
+                            tvCriadoPor.setText("Criado por " + evento.nomeOrganizador);
+                            tvCriadoPor.setVisibility(View.VISIBLE);
+                        });
+                    }
+                });
             } else {
-
-                tvCriadoPor.setText(
-                        "Criador desconhecido"
-                );
+                tvCriadoPor.setText("Criador desconhecido");
+                tvCriadoPor.setVisibility(View.VISIBLE);
             }
 
             String data = evento.dataEvento;
@@ -225,13 +285,18 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHol
             }
 
             // Animação de entrada do card
-            itemView.setAlpha(0f);
-            itemView.setTranslationY(24f);
-            itemView.animate()
-                    .alpha(1f)
-                    .translationY(0f)
-                    .setDuration(260)
-                    .start();
+            if (shouldAnimate) {
+                itemView.setAlpha(0f);
+                itemView.setTranslationY(24f);
+                itemView.animate()
+                        .alpha(1f)
+                        .translationY(0f)
+                        .setDuration(260)
+                        .start();
+            } else {
+                itemView.setAlpha(1f);
+                itemView.setTranslationY(0f);
+            }
 
             // CLICK
             itemView.setOnClickListener(v -> listener.onClick(evento));
