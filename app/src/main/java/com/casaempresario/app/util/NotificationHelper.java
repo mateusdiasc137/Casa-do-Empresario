@@ -12,38 +12,23 @@ import com.casaempresario.app.R;
 
 public class NotificationHelper {
     public static final String CHANNEL_EVENTOS = "novos_eventos_channel";
-    public static final String CHANNEL_MENSAGENS = "mensagens_channel";
 
     public static void createNotificationChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (manager == null) return;
-
-            // Canal de eventos
-            if (manager.getNotificationChannel(CHANNEL_EVENTOS) == null) {
-                NotificationChannel channel = new NotificationChannel(
-                        CHANNEL_EVENTOS,
-                        "Novos eventos",
-                        NotificationManager.IMPORTANCE_HIGH
-                );
-                channel.setDescription("Avisos quando organizadores publicarem novos eventos.");
-                channel.enableVibration(true);
-                channel.setShowBadge(true);
-                manager.createNotificationChannel(channel);
+            if (manager == null || manager.getNotificationChannel(CHANNEL_EVENTOS) != null) {
+                return;
             }
 
-            // Canal de mensagens de chat
-            if (manager.getNotificationChannel(CHANNEL_MENSAGENS) == null) {
-                NotificationChannel chatChannel = new NotificationChannel(
-                        CHANNEL_MENSAGENS,
-                        "Mensagens",
-                        NotificationManager.IMPORTANCE_HIGH
-                );
-                chatChannel.setDescription("Notificações de novas mensagens de chat.");
-                chatChannel.enableVibration(true);
-                chatChannel.setShowBadge(true);
-                manager.createNotificationChannel(chatChannel);
-            }
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_EVENTOS,
+                    "Novos eventos",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Avisos quando organizadores publicarem novos eventos.");
+            channel.enableVibration(true);
+            channel.setShowBadge(true);
+            manager.createNotificationChannel(channel);
         }
     }
 

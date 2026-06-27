@@ -15,7 +15,6 @@ import com.casaempresario.app.database.Usuario;
 import com.casaempresario.app.databinding.ActivityLoginBinding;
 import com.casaempresario.app.repository.RepositoryCallback;
 import com.casaempresario.app.repository.RepositoryProvider;
-import com.casaempresario.app.service.FCMService;
 import com.casaempresario.app.util.SessionManager;
 
 /**
@@ -103,7 +102,6 @@ public class LoginActivity extends AppCompatActivity {
                                 usuario.role,
                                 usuario.id);
                         sessionManager.setProfilePhotoUri(usuario.fotoPerfilUri);
-                        FCMService.registrarToken(LoginActivity.this);
                         irParaMain();
                     } else {
                         Toast.makeText(LoginActivity.this, "Email ou senha incorretos", Toast.LENGTH_SHORT).show();
