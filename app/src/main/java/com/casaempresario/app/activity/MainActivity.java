@@ -112,10 +112,7 @@ public class MainActivity extends AppCompatActivity {
             NotificationScheduler.scheduleEventChecks(this);
         }
 
-        setSupportActionBar(binding.toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Casa do Empresário");
-        }
+        configurarMarcaToolbar();
 
         binding.getRoot().setAlpha(0f);
         binding.getRoot().animate().alpha(1f).setDuration(320).start();
@@ -158,6 +155,24 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    private void configurarMarcaToolbar() {
+        setSupportActionBar(binding.toolbar);
+        binding.toolbar.setTitle("");
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
+
+        View brandView = getLayoutInflater().inflate(R.layout.view_toolbar_brand, binding.toolbar, false);
+        androidx.appcompat.widget.Toolbar.LayoutParams params =
+                new androidx.appcompat.widget.Toolbar.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                );
+        params.gravity = android.view.Gravity.START | android.view.Gravity.CENTER_VERTICAL;
+        binding.toolbar.addView(brandView, params);
     }
 
     @Override

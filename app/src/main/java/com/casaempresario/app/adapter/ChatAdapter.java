@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide;
 import com.casaempresario.app.R;
 import com.casaempresario.app.database.Mensagem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -28,12 +29,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private String otherUserInitials = "CE";
 
     public ChatAdapter(List<Mensagem> mensagens, long currentUserId) {
-        this.mensagens = mensagens;
+        this.mensagens = mensagens != null ? new ArrayList<>(mensagens) : new ArrayList<>();
         this.currentUserId = currentUserId;
     }
 
     public ChatAdapter(List<Mensagem> mensagens, long currentUserId, String currentUserPhotoUri, String otherUserPhotoUri) {
-        this.mensagens = mensagens;
+        this.mensagens = mensagens != null ? new ArrayList<>(mensagens) : new ArrayList<>();
         this.currentUserId = currentUserId;
         this.currentUserPhotoUri = currentUserPhotoUri;
         this.otherUserPhotoUri = otherUserPhotoUri;
@@ -52,7 +53,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void atualizar(List<Mensagem> novasMensagens) {
-        this.mensagens = novasMensagens;
+        this.mensagens = novasMensagens != null ? new ArrayList<>(novasMensagens) : new ArrayList<>();
         notifyDataSetChanged();
     }
 

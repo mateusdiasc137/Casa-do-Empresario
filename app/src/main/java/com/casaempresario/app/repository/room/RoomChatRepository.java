@@ -39,6 +39,12 @@ public class RoomChatRepository implements ChatRepository {
     }
 
     @Override
+    public ChatRepository.ChatListener listenChatThread(long userA, long userB, long eventoId, RepositoryCallback<List<Mensagem>> callback) {
+        getChatThread(userA, userB, eventoId, callback);
+        return () -> { };
+    }
+
+    @Override
     public void getTodasMensagensUsuario(long userId, RepositoryCallback<List<Mensagem>> callback) {
         new Thread(() -> {
             try {
