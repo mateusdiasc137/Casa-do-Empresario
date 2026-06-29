@@ -6,6 +6,8 @@ import com.casaempresario.app.repository.UserRepository;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.DocumentSnapshot;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FirebaseUserRepository implements UserRepository {
     private final FirebaseFirestore firestore;
@@ -87,6 +89,23 @@ public class FirebaseUserRepository implements UserRepository {
         firestore.collection(COLLECTION)
                 .document(String.valueOf(id))
                 .update("fotoPerfilUri", fotoPerfilUri)
+                .addOnSuccessListener(aVoid -> callback.onSuccess(null))
+                .addOnFailureListener(callback::onError);
+    }
+
+    @Override
+    public void updatePerfilProfissional(long id, String empresa, String cargo, String cidade, String telefone, String linkedin, String bio, RepositoryCallback<Void> callback) {
+        Map<String, Object> dados = new HashMap<>();
+        dados.put("empresa", empresa);
+        dados.put("cargo", cargo);
+        dados.put("cidade", cidade);
+        dados.put("telefone", telefone);
+        dados.put("linkedin", linkedin);
+        dados.put("bio", bio);
+
+        firestore.collection(COLLECTION)
+                .document(String.valueOf(id))
+                .update(dados)
                 .addOnSuccessListener(aVoid -> callback.onSuccess(null))
                 .addOnFailureListener(callback::onError);
     }

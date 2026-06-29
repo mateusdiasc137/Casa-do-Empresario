@@ -8,4 +8,5 @@ public interface UserRepository {
     void getUsuarioById(long id, RepositoryCallback<Usuario> callback);
     void insert(Usuario usuario, RepositoryCallback<Long> callback);
     void updateFotoPerfil(long id, String fotoPerfilUri, RepositoryCallback<Void> callback);
+    void updatePerfilProfissional(long id, String empresa, String cargo, String cidade, String telefone, String linkedin, String bio, RepositoryCallback<Void> callback);
 }

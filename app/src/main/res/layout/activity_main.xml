@@ -663,6 +663,87 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="18dp"
+                    app:cardBackgroundColor="@color/cev_surface"
+                    app:cardCornerRadius="28dp"
+                    app:cardElevation="8dp"
+                    app:strokeColor="@color/cev_gold_border"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Central do usuário"
+                            android:textColor="@color/cev_text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_profile_completion_preview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_profile_completion"
+                            android:padding="12dp"
+                            android:text="Perfil corporativo em construção"
+                            android:textColor="@color/cev_gold_light"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tv_profile_company_preview"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Complete empresa, cargo e cidade para melhorar o networking."
+                            android:textColor="@color/cev_text_muted"
+                            android:textSize="13sp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_perfil_completo"
+                            style="@style/Widget.CasaEmpresario.Button.Outlined"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="16dp"
+                            android:text="Ver perfil completo"
+                            android:textColor="@color/cev_gold"
+                            app:icon="@android:drawable/ic_menu_myplaces"
+                            app:iconTint="@color/cev_gold" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_central_notificacoes"
+                            style="@style/Widget.CasaEmpresario.Button.Outlined"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="10dp"
+                            android:text="Central de notificações"
+                            android:textColor="@color/cev_gold"
+                            app:icon="@drawable/ic_notification_event"
+                            app:iconTint="@color/cev_gold" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_dashboard_organizador"
+                            style="@style/Widget.CasaEmpresario.Button.Primary"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:layout_marginTop="10dp"
+                            android:text="Dashboard do organizador"
+                            android:visibility="gone"
+                            app:icon="@android:drawable/ic_menu_manage"
+                            app:iconTint="@color/cev_background" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

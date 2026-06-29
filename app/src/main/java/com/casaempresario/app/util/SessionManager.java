@@ -13,6 +13,12 @@ public class SessionManager {
     private static final String KEY_ROLE = "role";
     private static final String KEY_USER_ID = "userId";
     private static final String KEY_PROFILE_PHOTO_URI = "profilePhotoUri";
+    private static final String KEY_EMPRESA = "empresa";
+    private static final String KEY_CARGO = "cargo";
+    private static final String KEY_CIDADE = "cidade";
+    private static final String KEY_TELEFONE = "telefone";
+    private static final String KEY_LINKEDIN = "linkedin";
+    private static final String KEY_BIO = "bio";
 
     private final SharedPreferences prefs;
 
@@ -74,7 +80,55 @@ public class SessionManager {
     }
 
     public void setProfilePhotoUri(String profilePhotoUri) {
-        prefs.edit().putString(KEY_PROFILE_PHOTO_URI, profilePhotoUri != null ? profilePhotoUri : "").apply();
+        prefs.edit().putString(KEY_PROFILE_PHOTO_URI, safe(profilePhotoUri)).apply();
+    }
+
+    public void salvarPerfilProfissional(String empresa, String cargo, String cidade, String telefone, String linkedin, String bio) {
+        prefs.edit()
+                .putString(KEY_EMPRESA, safe(empresa))
+                .putString(KEY_CARGO, safe(cargo))
+                .putString(KEY_CIDADE, safe(cidade))
+                .putString(KEY_TELEFONE, safe(telefone))
+                .putString(KEY_LINKEDIN, safe(linkedin))
+                .putString(KEY_BIO, safe(bio))
+                .apply();
+    }
+
+    public String getEmpresa() {
+        return prefs.getString(KEY_EMPRESA, "");
+    }
+
+    public String getCargo() {
+        return prefs.getString(KEY_CARGO, "");
+    }
+
+    public String getCidade() {
+        return prefs.getString(KEY_CIDADE, "");
+    }
+
+    public String getTelefone() {
+        return prefs.getString(KEY_TELEFONE, "");
+    }
+
+    public String getLinkedin() {
+        return prefs.getString(KEY_LINKEDIN, "");
+    }
+
+    public String getBio() {
+        return prefs.getString(KEY_BIO, "");
+    }
+
+    public int getPercentualPerfilCompleto() {
+        int total = 7;
+        int preenchidos = 0;
+        if (!isBlank(getNome())) preenchidos++;
+        if (!isBlank(getEmail())) preenchidos++;
+        if (!isBlank(getEmpresa())) preenchidos++;
+        if (!isBlank(getCargo())) preenchidos++;
+        if (!isBlank(getCidade())) preenchidos++;
+        if (!isBlank(getTelefone())) preenchidos++;
+        if (!isBlank(getBio())) preenchidos++;
+        return Math.round((preenchidos * 100f) / total);
     }
 
     public boolean isOrganizador() {
@@ -83,5 +137,13 @@ public class SessionManager {
 
     public void logout() {
         prefs.edit().clear().apply();
+    }
+
+    private String safe(String valor) {
+        return valor != null ? valor : "";
+    }
+
+    private boolean isBlank(String valor) {
+        return valor == null || valor.trim().isEmpty();
     }
 }

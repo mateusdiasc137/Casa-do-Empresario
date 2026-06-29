@@ -72,4 +72,16 @@ public class RoomUserRepository implements UserRepository {
             }
         }).start();
     }
+
+    @Override
+    public void updatePerfilProfissional(long id, String empresa, String cargo, String cidade, String telefone, String linkedin, String bio, RepositoryCallback<Void> callback) {
+        new Thread(() -> {
+            try {
+                db.usuarioDao().updatePerfilProfissional(id, empresa, cargo, cidade, telefone, linkedin, bio);
+                callback.onSuccess(null);
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        }).start();
+    }
 }

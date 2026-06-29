@@ -879,6 +879,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupProfileTab() {
         binding.btnAlterarFotoPerfil.setOnClickListener(v -> abrirGaleriaPerfil());
+        binding.btnPerfilCompleto.setOnClickListener(v -> startActivity(new Intent(this, ProfileDetailsActivity.class)));
+        binding.btnCentralNotificacoes.setOnClickListener(v -> startActivity(new Intent(this, NotificationCenterActivity.class)));
+        binding.btnDashboardOrganizador.setOnClickListener(v -> {
+            if (sessionManager.isOrganizador()) {
+                startActivity(new Intent(this, OrganizerDashboardActivity.class));
+            } else {
+                Toast.makeText(this, "Recurso disponível para organizadores.", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         binding.btnLogout.setOnClickListener(v -> {
             EventNotificationService.stop(this);
@@ -902,12 +911,19 @@ public class MainActivity extends AppCompatActivity {
             binding.tvPerfilAvatar.setText("CE");
             binding.btnAlterarFotoPerfil.setEnabled(false);
             binding.btnAlterarFotoPerfil.setText("Entre para alterar foto");
+            binding.btnDashboardOrganizador.setVisibility(View.GONE);
+            binding.btnPerfilCompleto.setText("Entrar para completar perfil");
+            binding.tvProfileCompletionPreview.setText("Entre para habilitar perfil corporativo e notificações personalizadas.");
+            binding.tvProfileCompanyPreview.setText("Você pode explorar eventos como visitante, mas recursos de networking exigem autenticação.");
             binding.btnLogout.setText("Entrar ou criar conta");
             return;
         }
         binding.btnAlterarFotoPerfil.setEnabled(true);
         binding.btnAlterarFotoPerfil.setText("Alterar foto de perfil");
+        binding.btnPerfilCompleto.setText("Ver perfil completo");
+        binding.btnDashboardOrganizador.setVisibility(sessionManager.isOrganizador() ? View.VISIBLE : View.GONE);
         binding.btnLogout.setText("Fazer logout");
+        atualizarResumoPerfilCorporativo();
         binding.tvPerfilNome.setText(sessionManager.getNome());
         binding.tvPerfilEmail.setText(sessionManager.getEmail());
         String role = sessionManager.getRole();
@@ -923,6 +939,14 @@ public class MainActivity extends AppCompatActivity {
                             sessionManager.setProfilePhotoUri(usuario.fotoPerfilUri);
                             exibirFotoPerfil(usuario.fotoPerfilUri);
                         }
+                        sessionManager.salvarPerfilProfissional(
+                                usuario.empresa,
+                                usuario.cargo,
+                                usuario.cidade,
+                                usuario.telefone,
+                                usuario.linkedin,
+                                usuario.bio);
+                        atualizarResumoPerfilCorporativo();
                     });
                 }
             }
@@ -932,6 +956,33 @@ public class MainActivity extends AppCompatActivity {
                 // Mantém a foto local salva na sessão.
             }
         });
+    }
+
+    private void atualizarResumoPerfilCorporativo() {
+        int percentual = sessionManager.getPercentualPerfilCompleto();
+        binding.tvProfileCompletionPreview.setText("Perfil corporativo " + percentual + "% completo");
+
+        String empresa = sessionManager.getEmpresa();
+        String cargo = sessionManager.getCargo();
+        String cidade = sessionManager.getCidade();
+        if ((empresa == null || empresa.trim().isEmpty())
+                && (cargo == null || cargo.trim().isEmpty())
+                && (cidade == null || cidade.trim().isEmpty())) {
+            binding.tvProfileCompanyPreview.setText("Complete empresa, cargo e cidade para melhorar o networking.");
+            return;
+        }
+
+        StringBuilder resumo = new StringBuilder();
+        if (cargo != null && !cargo.trim().isEmpty()) resumo.append(cargo.trim());
+        if (empresa != null && !empresa.trim().isEmpty()) {
+            if (resumo.length() > 0) resumo.append(" • ");
+            resumo.append(empresa.trim());
+        }
+        if (cidade != null && !cidade.trim().isEmpty()) {
+            if (resumo.length() > 0) resumo.append(" • ");
+            resumo.append(cidade.trim());
+        }
+        binding.tvProfileCompanyPreview.setText(resumo.toString());
     }
 
     private void abrirGaleriaPerfil() {

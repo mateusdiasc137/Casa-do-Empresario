@@ -13,6 +13,9 @@ import com.casaempresario.app.model.EventPhoto;
 /**
  * Banco de dados local Room (SQLite).
  *
+ * Versão 11:
+ * - Adicionados campos de perfil corporativo expandido.
+ *
  * Versão 10:
  * - Adicionado horário de término dos eventos.
  *
@@ -33,7 +36,7 @@ import com.casaempresario.app.model.EventPhoto;
                 Interesse.class,
                 Mensagem.class
         },
-        version = 10
+        version = 11
 )
 public abstract class AppDatabase extends RoomDatabase {
 

@@ -69,6 +69,29 @@
             android:name=".activity.MainActivity"
             android:exported="false" />
 
+        <!-- Experiências complementares de produto -->
+        <activity
+            android:name=".activity.OrganizerDashboardActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.MainActivity" />
+
+        <activity
+            android:name=".activity.NotificationCenterActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.MainActivity" />
+
+        <activity
+            android:name=".activity.ProfileDetailsActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.MainActivity" />
+
+        <activity
+            android:name=".activity.EditProfileActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".activity.ProfileDetailsActivity" />
+
+
         <!-- Detalhes do evento -->
         <activity
             android:name=".activity.EventDetailActivity"

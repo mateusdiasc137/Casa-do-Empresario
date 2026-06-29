@@ -111,6 +111,13 @@ public class LoginActivity extends AppCompatActivity {
                                 usuario.role,
                                 usuario.id);
                         sessionManager.setProfilePhotoUri(usuario.fotoPerfilUri);
+                        sessionManager.salvarPerfilProfissional(
+                                usuario.empresa,
+                                usuario.cargo,
+                                usuario.cidade,
+                                usuario.telefone,
+                                usuario.linkedin,
+                                usuario.bio);
                         irParaMain();
                     } else {
                         Toast.makeText(LoginActivity.this, "Email ou senha incorretos", Toast.LENGTH_SHORT).show();
