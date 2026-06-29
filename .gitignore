@@ -30,6 +30,9 @@ app/google-services.json
 google-services.json
 **/google-services.json
 
+
+# Cloud Functions
+functions/node_modules/
 # Relatórios e arquivos temporários
 *.log
 *.tmp
