@@ -35,8 +35,6 @@ import com.casaempresario.app.util.SessionManager;
 import com.casaempresario.app.util.EventStatusUtils;
 import com.casaempresario.app.util.NotificationHelper;
 import com.casaempresario.app.util.NotificationPermissionHelper;
-import com.casaempresario.app.util.NotificationScheduler;
-import com.casaempresario.app.service.EventNotificationService;
 import com.casaempresario.app.service.FCMService;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.tabs.TabLayout;
@@ -109,8 +107,6 @@ public class MainActivity extends AppCompatActivity {
         NotificationHelper.createNotificationChannel(this);
         if (sessionManager.isLogado()) {
             NotificationPermissionHelper.requestPostNotificationsDelayed(this);
-            EventNotificationService.start(this);
-            NotificationScheduler.scheduleEventChecks(this);
             FCMService.registrarToken(this);
         }
 
@@ -136,8 +132,6 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Usuario user) {
                             if (user == null) {
-                                EventNotificationService.stop(MainActivity.this);
-                                NotificationScheduler.cancelEventChecks(MainActivity.this);
                                 sessionManager.logout();
                                 runOnUiThread(() -> {
                                     Toast.makeText(MainActivity.this,
@@ -181,8 +175,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (sessionManager.isLogado()) {
-            EventNotificationService.start(this);
-            NotificationScheduler.scheduleEventChecks(this);
             NotificationPermissionHelper.requestPostNotificationsDelayed(this);
         }
         // Recarrega os dados ao retornar para esta tela
@@ -892,8 +884,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         binding.btnLogout.setOnClickListener(v -> {
-            EventNotificationService.stop(this);
-            NotificationScheduler.cancelEventChecks(this);
             sessionManager.logout();
             Intent intent = new Intent(this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

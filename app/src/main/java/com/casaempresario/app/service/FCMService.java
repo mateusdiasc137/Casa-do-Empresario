@@ -73,6 +73,10 @@ public class FCMService extends FirebaseMessagingService {
             mostrarNotificacaoMensagem(data);
         } else if ("evento".equals(tipo)) {
             mostrarNotificacaoEvento(data);
+        } else if ("evento_atualizacao".equals(tipo)) {
+            mostrarNotificacaoAtualizacaoEvento(data);
+        } else if ("feed".equals(tipo)) {
+            mostrarNotificacaoFeed(data);
         } else {
             // Notificação genérica (campanha do Console ou outro)
             RemoteMessage.Notification notification = remoteMessage.getNotification();
@@ -133,19 +137,12 @@ public class FCMService extends FirebaseMessagingService {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationHelper.CHANNEL_MENSAGENS)
-                .setSmallIcon(R.drawable.ic_notification_event)
-                .setColor(getColor(R.color.secondary))
+        NotificationCompat.Builder builder = NotificationHelper.baseMessageNotification(this)
                 .setContentTitle(remetenteNome)
                 .setContentText(texto)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(texto))
                 .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setDefaults(android.app.Notification.DEFAULT_ALL)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
-                .setSubText("CapiHub");
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
 
         int notificationId = ("chat_" + remetenteIdStr + "_" + eventoIdStr).hashCode();
         NotificationManagerCompat.from(this).notify(Math.abs(notificationId), builder.build());
@@ -189,18 +186,79 @@ public class FCMService extends FirebaseMessagingService {
         NotificationManagerCompat.from(this).notify(Math.abs(notificationId), builder.build());
     }
 
+    private void mostrarNotificacaoAtualizacaoEvento(Map<String, String> data) {
+        String titulo = data.get("titulo");
+        String status = data.get("status");
+        String eventoIdStr = data.get("eventoId");
+        String mensagemCustomizada = data.get("mensagemCustomizada");
+
+        if (titulo == null) titulo = "Evento atualizado";
+
+        Intent intent = new Intent(this, EventDetailActivity.class);
+        if (eventoIdStr != null) {
+            try {
+                intent.putExtra("eventoId", Long.parseLong(eventoIdStr));
+                intent.putExtra("eventoTitulo", titulo);
+            } catch (NumberFormatException ignored) {}
+        }
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                ("update_" + eventoIdStr).hashCode(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        String mensagem = (mensagemCustomizada != null && !mensagemCustomizada.trim().isEmpty())
+                ? mensagemCustomizada
+                : "O status do evento mudou para: " + (status != null ? status : "atualizado");
+
+        NotificationCompat.Builder builder = NotificationHelper.baseEventNotification(this)
+                .setContentTitle("Atualização em evento")
+                .setContentText(titulo)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(titulo + "\n" + mensagem))
+                .setContentIntent(pendingIntent);
+
+        int notificationId = ("update_" + eventoIdStr + status).hashCode();
+        NotificationManagerCompat.from(this).notify(Math.abs(notificationId), builder.build());
+    }
+
+    private void mostrarNotificacaoFeed(Map<String, String> data) {
+        String texto = data.get("texto");
+        String postId = data.get("postId");
+
+        Intent intent = new Intent(this, com.casaempresario.app.activity.MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                (postId != null ? postId.hashCode() : (int) System.currentTimeMillis()),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        String mensagem = texto != null && !texto.trim().isEmpty()
+                ? texto.trim()
+                : "A Casa do Empresário publicou um novo comunicado.";
+
+        NotificationCompat.Builder builder = NotificationHelper.baseEventNotification(this)
+                .setContentTitle("Comunicado importante")
+                .setContentText(mensagem)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(mensagem))
+                .setContentIntent(pendingIntent);
+
+        int notificationId = ("feed_" + postId).hashCode();
+        NotificationManagerCompat.from(this).notify(Math.abs(notificationId), builder.build());
+    }
+
     private void mostrarNotificacaoGenerica(String titulo, String corpo) {
         if (titulo == null) titulo = "CapiHub";
         if (corpo == null) corpo = "Você tem uma nova notificação.";
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationHelper.CHANNEL_EVENTOS)
-                .setSmallIcon(R.drawable.ic_notification_event)
-                .setColor(getColor(R.color.secondary))
+        NotificationCompat.Builder builder = NotificationHelper.baseEventNotification(this)
                 .setContentTitle(titulo)
-                .setContentText(corpo)
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSubText("CapiHub");
+                .setContentText(corpo);
 
         NotificationManagerCompat.from(this).notify((int) System.currentTimeMillis(), builder.build());
     }

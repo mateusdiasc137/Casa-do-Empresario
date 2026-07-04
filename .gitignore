@@ -49,6 +49,9 @@ outputs/
 
 .agents/
 
+# Cloud Functions
+functions/node_modules/
+
 # Arquivos de Build C/C++ (caso use NDK no futuro)
 .cxx/
 

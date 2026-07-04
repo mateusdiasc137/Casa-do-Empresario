@@ -1,11 +1,17 @@
-# Casa do Empresário - Eventos
+# CapiHub
 
-Aplicativo Android desenvolvido para divulgação e consulta de eventos locais na região de Viçosa.
-
-O projeto ainda está em fase inicial e atualmente possui funcionalidades básicas de *cadastro de usuários* e *criação/publicação de eventos*.
+Aplicativo Android desenvolvido para divulgação e consulta de eventos na região de Viçosa.
 
 ## Sobre o Projeto
 
-O aplicativo *Casa do Empresário - Eventos* tem como objetivo facilitar a divulgação de eventos turísticos, culturais, comerciais e locais da região de Viçosa.
+O **CapiHub** tem como objetivo conectar pessoas e facilitar a divulgação de eventos culturais, comerciais e locais. A proposta é oferecer uma plataforma centralizada e moderna para que os usuários possam descobrir o que está acontecendo na cidade, e para que os organizadores possam promover suas atividades de forma eficaz.
 
-A proposta é oferecer uma plataforma simples para que usuários possam encontrar eventos e organizadores possam divulgar suas atividades.
+## Principais Funcionalidades
+
+- **Explorar Eventos**: Descubra e pesquise novos eventos acontecendo na região.
+- **Criação e Gestão**: Organizadores podem cadastrar, publicar e gerenciar seus próprios eventos (local, data, horário e status).
+- **Lista de Interesse**: Usuários podem marcar interesse em eventos para receberem atualizações exclusivas.
+- **Chat Integrado**: Converse em tempo real com o organizador ou outros usuários através de um chat vinculado ao evento.
+- **Feed da Comunidade**: Acompanhe postagens e comunicados oficiais.
+- **Notificações Push**: Receba alertas em tempo real sobre novos eventos, atualizações de local/horário ou novas mensagens.
+- **Compartilhamento rápido**: Compartilhe os eventos facilmente com outras pessoas.

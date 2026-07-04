@@ -131,27 +131,7 @@
             android:windowSoftInputMode="adjustResize"
             android:parentActivityName=".activity.MainActivity" />
 
-        <!-- Verificação periódica de novidades -->
-        <receiver
-            android:name=".receiver.NotificationCheckReceiver"
-            android:enabled="true"
-            android:exported="false" />
 
-        <!-- Mantém as verificações após reinicialização -->
-        <receiver
-            android:name=".receiver.BootReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Serviço de notificações de eventos -->
-        <service
-            android:name=".service.EventNotificationService"
-            android:enabled="true"
-            android:exported="false" />
 
         <!-- Serviço FCM para notificações push -->
         <service

@@ -4,6 +4,8 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
@@ -49,8 +51,8 @@ public class NotificationHelper {
 
     public static NotificationCompat.Builder baseEventNotification(Context context) {
         return new NotificationCompat.Builder(context, CHANNEL_EVENTOS)
-                .setSmallIcon(R.drawable.ic_notification_event)
-                .setColor(context.getColor(R.color.secondary))
+                .setSmallIcon(R.drawable.ic_capihub_mark)
+                .setColor(context.getColor(R.color.primary))
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setDefaults(Notification.DEFAULT_ALL)
@@ -61,8 +63,8 @@ public class NotificationHelper {
 
     public static NotificationCompat.Builder baseMessageNotification(Context context) {
         return new NotificationCompat.Builder(context, CHANNEL_MENSAGENS)
-                .setSmallIcon(R.drawable.ic_notification_event)
-                .setColor(context.getColor(R.color.secondary))
+                .setSmallIcon(R.drawable.ic_capihub_mark)
+                .setColor(context.getColor(R.color.primary))
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setDefaults(Notification.DEFAULT_ALL)
